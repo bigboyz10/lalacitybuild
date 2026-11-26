@@ -15,7 +15,7 @@ if _HERE not in sys.path:
 import core as C
 from core import CONFIG, U, rng, add_box, add_plane, add_cylinder, plan_city
 import buildings_core as BC
-from buildings_core import emit_building, STYLES, pick_style, BASE_Z, FLOOR_H
+from buildings_core import emit_building, STYLES, pick_style, BASE_Z, FLOOR_H, GROUND_H
 
 SW = 3.20
 SIDEWALK = SW

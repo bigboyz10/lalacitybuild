@@ -496,7 +496,15 @@ def make_emissive(name, color, strength=6.0):
 
 
 def M(name):
-    """Look up / lazily build a material by name."""
+    """Look up / lazily build a material by name.
+
+    Accepts an already-resolved Material (callers sometimes pass one through),
+    in which case it is returned unchanged.
+    """
+    if isinstance(name, bpy.types.Material):
+        return name
+    if name is None:
+        return None
     if name in MATS:
         return MATS[name]
     if name in EMISSIVE:
