@@ -29,10 +29,10 @@ TEXTURES = {
     "brick_old":      "red_brick_03",
     "brick_modern":   "brick_wall_006",
     "plaster":        "beige_wall_001",
-    "stone_old":      "stone_wall_015",
+    "stone_old":      "cobblestone_floor_01",
     "metal_dark":     "metal_plate",
     "rust":           "rusty_metal_sheet",
-    "roof_tar":       "roofing_shingles",
+    "roof_tar":       "grey_roof_tiles",
     "grass":          "aerial_grass_rock",
     "tiles_floor":    "floor_tiles_06",
 }
