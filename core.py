@@ -421,6 +421,7 @@ EMISSIVE = {
     "traffic_amber": ("#ffb020", 9.0),
     "traffic_green": ("#22ff66", 9.0),
     "screen_white": ("#dfefff", 3.0),
+    "lamp_red":    ("#ff2a18", 4.0),
 }
 
 

@@ -93,6 +93,8 @@ build-only runs. Force either with `--engine eevee` / `--engine cycles`.
 | vehicles | `vehicles.py` | 16 vehicle types, parked + moving + abandoned |
 | vegetation | `vegetation.py` | street/park trees, hedges, weeds, ivy, moss, stumps |
 | story | `story.py` | signs, billboards, graffiti, posters, litter, puddles |
+| models | `assets_models.py` | CC0 photoscanned props, grass, weeds, ferns, boulders, barriers |
+| people | `people.py` | proportioned pedestrians: walking, standing, sitting, leaning, on phones |
 | lighting | `lighting.py` | physical sky, sun/moon, practicals, lit windows, fog, steam, birds |
 | enhance | `enhance.py` | post-critique additions: cranes, food carts, fences, stands, piles |
 | render | `render_export.py` | 3 street cameras + 1 aerial, test renders, GLB export |

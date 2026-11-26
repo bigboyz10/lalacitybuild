@@ -1,0 +1,36 @@
+{
+ "objects": 307,
+ "triangles": 19720,
+ "collections": {
+  "CITY": {
+   "objects": 0,
+   "triangles": 0
+  },
+  "CITY_Vehicles": {
+   "objects": 307,
+   "triangles": 19720
+  }
+ },
+ "config": {
+  "seed": 1337,
+  "city_size": 220.0,
+  "density": 0.85,
+  "quality": "preview",
+  "render": false,
+  "export": false,
+  "only": [],
+  "out_dir": "/home/user/workspace",
+  "samples_preview": 48,
+  "samples_high": 320,
+  "render_res": [
+   1280,
+   720
+  ],
+  "band_lod": true,
+  "save_blend": true,
+  "blend_name": "city.blend",
+  "textures": true,
+  "engine": "auto",
+  "samples_render": 64
+ }
+}

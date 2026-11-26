@@ -75,6 +75,40 @@ class Part:
 
 
 # -----------------------------------------------------------------------------
+def _loft(part, sections, taper_ends=True):
+    """Build a closed hull through ordered cross-sections.
+
+    Each section is (x, half_width, z_bottom, z_top).  Lofting these gives a
+    real car silhouette - sloped bonnet, curved roofline, tapered tail - for
+    roughly the same triangle count as the stacked boxes it replaces.
+    """
+    rings = []
+    for (x, hw, z0, z1) in sections:
+        ring = [
+            part.bm.verts.new((x, -hw, z0)),
+            part.bm.verts.new((x,  hw, z0)),
+            part.bm.verts.new((x,  hw, z1)),
+            part.bm.verts.new((x, -hw, z1)),
+        ]
+        rings.append(ring)
+    for a, b in zip(rings, rings[1:]):
+        for i in range(4):
+            j = (i + 1) % 4
+            part.bm.faces.new((a[i], a[j], b[j], b[i]))
+    if taper_ends:
+        part.bm.faces.new(list(reversed(rings[0])))
+        part.bm.faces.new(rings[-1])
+    return part
+
+
+def _arch(part, L, W, r, width):
+    """Shallow wheel arches so wheels sit in a recess, not against a slab."""
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            part.box(sx * L * 0.31, sy * (W * 0.5 - width * 0.42),
+                     r * 0.98, r * 2.35, width * 1.15, r * 0.30)
+
+
 def _wheels(p, L, W, r=0.33, width=0.22):
     for sx in (-1, 1):
         for sy in (-1, 1):
@@ -83,50 +117,114 @@ def _wheels(p, L, W, r=0.33, width=0.22):
 
 
 def vehicle_sedan(color):
-    L, W = 4.55, 1.86
+    L, W = 4.62, 1.84
+    hl = L * 0.5
     body = Part()
-    body.box(0, 0, 0.62, L, W, 0.52)
-    body.box(-0.15, 0, 0.95, L * 0.52, W * 0.92, 0.34)
-    body.box(0, 0, 0.36, L * 0.96, W * 0.98, 0.18)
+    # bonnet -> windscreen -> roof -> boot, as a single lofted hull
+    _loft(body, [
+        (-hl,          W * 0.40, 0.46, 0.78),
+        (-hl * 0.86,   W * 0.47, 0.34, 0.86),
+        (-hl * 0.52,   W * 0.50, 0.30, 0.95),
+        (-hl * 0.18,   W * 0.50, 0.28, 1.40),
+        ( hl * 0.16,   W * 0.49, 0.28, 1.44),
+        ( hl * 0.50,   W * 0.48, 0.30, 1.22),
+        ( hl * 0.84,   W * 0.45, 0.34, 0.92),
+        ( hl,          W * 0.38, 0.46, 0.82),
+    ])
+    _arch(body, L, W, 0.33, 0.22)
     glass = Part()
-    glass.box(-0.15, 0, 1.00, L * 0.50, W * 0.86, 0.26)
+    # greenhouse: inset and narrower than the body, with a raked screen
+    _loft(glass, [
+        (-hl * 0.20, W * 0.44, 0.97, 1.36),
+        ( hl * 0.02, W * 0.45, 1.00, 1.42),
+        ( hl * 0.34, W * 0.44, 1.00, 1.33),
+        ( hl * 0.56, W * 0.42, 0.99, 1.16),
+    ])
     wheels = Part()
     _wheels(wheels, L, W)
     lights = Part()
-    lights.box(L * 0.5 - 0.03, 0, 0.68, 0.06, W * 0.72, 0.16)
+    lights.box(-hl + 0.06, -W * 0.30, 0.70, 0.10, W * 0.26, 0.15)
+    lights.box(-hl + 0.06,  W * 0.30, 0.70, 0.10, W * 0.26, 0.15)
+    tail = Part()
+    tail.box(hl - 0.05, -W * 0.31, 0.76, 0.08, W * 0.24, 0.13)
+    tail.box(hl - 0.05,  W * 0.31, 0.76, 0.08, W * 0.24, 0.13)
+    trim = Part()
+    for sy in (-1, 1):
+        trim.box(-hl * 0.10, sy * W * 0.52, 1.18, 0.16, 0.05, 0.09)   # mirrors
     return [(body, color), (glass, "glass_dirty"), (wheels, "rubber"),
-            (lights, "lamp_warm")]
+            (lights, "lamp_warm"), (tail, "lamp_red"), (trim, "metal_dark")]
 
 
 def vehicle_suv(color):
-    L, W = 4.85, 1.98
+    L, W = 4.88, 1.98
+    hl = L * 0.5
     body = Part()
-    body.box(0, 0, 0.72, L, W, 0.66)
-    body.box(-0.10, 0, 1.18, L * 0.58, W * 0.94, 0.52)
+    _loft(body, [
+        (-hl,        W * 0.42, 0.52, 0.98),
+        (-hl * 0.84, W * 0.48, 0.40, 1.08),
+        (-hl * 0.46, W * 0.50, 0.36, 1.20),
+        (-hl * 0.12, W * 0.50, 0.34, 1.80),
+        ( hl * 0.30, W * 0.50, 0.34, 1.86),
+        ( hl * 0.70, W * 0.49, 0.36, 1.82),
+        ( hl,        W * 0.45, 0.50, 1.66),
+    ])
+    _arch(body, L, W, 0.38, 0.26)
     glass = Part()
-    glass.box(-0.10, 0, 1.22, L * 0.55, W * 0.88, 0.40)
+    _loft(glass, [
+        (-hl * 0.14, W * 0.45, 1.24, 1.74),
+        ( hl * 0.16, W * 0.46, 1.26, 1.80),
+        ( hl * 0.54, W * 0.45, 1.26, 1.76),
+        ( hl * 0.86, W * 0.42, 1.24, 1.62),
+    ])
     wheels = Part()
     _wheels(wheels, L, W, r=0.38, width=0.26)
     lights = Part()
-    lights.box(L * 0.5 - 0.03, 0, 0.80, 0.06, W * 0.70, 0.18)
+    lights.box(-hl + 0.06, -W * 0.31, 0.88, 0.10, W * 0.26, 0.17)
+    lights.box(-hl + 0.06,  W * 0.31, 0.88, 0.10, W * 0.26, 0.17)
+    tail = Part()
+    tail.box(hl - 0.05, -W * 0.32, 1.30, 0.08, W * 0.20, 0.26)
+    tail.box(hl - 0.05,  W * 0.32, 1.30, 0.08, W * 0.20, 0.26)
+    rails = Part()
+    for sy in (-1, 1):
+        rails.box(hl * 0.22, sy * W * 0.38, 1.90, L * 0.52, 0.07, 0.06)
     return [(body, color), (glass, "glass_dirty"), (wheels, "rubber"),
-            (lights, "lamp_warm")]
+            (lights, "lamp_warm"), (tail, "lamp_red"), (rails, "metal_dark")]
 
 
 def vehicle_pickup(color):
-    L, W = 5.40, 2.02
+    L, W = 5.42, 2.02
+    hl = L * 0.5
     body = Part()
-    body.box(0, 0, 0.70, L, W, 0.58)
-    body.box(L * 0.16, 0, 1.18, L * 0.34, W * 0.96, 0.62)
-    body.box(-L * 0.28, 0, 1.02, L * 0.40, W * 0.94, 0.30)
+    _loft(body, [
+        (-hl,        W * 0.44, 0.52, 1.02),
+        (-hl * 0.80, W * 0.49, 0.42, 1.10),
+        (-hl * 0.42, W * 0.50, 0.38, 1.22),
+        (-hl * 0.12, W * 0.50, 0.38, 1.88),
+        ( hl * 0.08, W * 0.50, 0.38, 1.90),
+        ( hl * 0.14, W * 0.50, 0.38, 1.24),
+        ( hl,        W * 0.50, 0.42, 1.20),
+    ])
+    _arch(body, L, W, 0.40, 0.28)
+    # load bed walls
+    for sy in (-1, 1):
+        body.box(hl * 0.56, sy * W * 0.46, 1.08, L * 0.42, W * 0.08, 0.42)
+    body.box(hl - 0.07, 0.0, 1.08, 0.12, W * 0.96, 0.42)
     glass = Part()
-    glass.box(L * 0.16, 0, 1.24, L * 0.32, W * 0.88, 0.44)
+    _loft(glass, [
+        (-hl * 0.14, W * 0.45, 1.28, 1.82),
+        ( hl * 0.00, W * 0.46, 1.30, 1.86),
+        ( hl * 0.10, W * 0.45, 1.30, 1.84),
+    ])
     wheels = Part()
     _wheels(wheels, L, W, r=0.40, width=0.28)
     lights = Part()
-    lights.box(L * 0.5 - 0.03, 0, 0.78, 0.06, W * 0.70, 0.20)
+    lights.box(-hl + 0.06, -W * 0.32, 0.92, 0.10, W * 0.26, 0.18)
+    lights.box(-hl + 0.06,  W * 0.32, 0.92, 0.10, W * 0.26, 0.18)
+    tail = Part()
+    tail.box(hl - 0.05, -W * 0.34, 1.02, 0.08, W * 0.18, 0.22)
+    tail.box(hl - 0.05,  W * 0.34, 1.02, 0.08, W * 0.18, 0.22)
     return [(body, color), (glass, "glass_dirty"), (wheels, "rubber"),
-            (lights, "lamp_warm")]
+            (lights, "lamp_warm"), (tail, "lamp_red")]
 
 
 def vehicle_van(color):
