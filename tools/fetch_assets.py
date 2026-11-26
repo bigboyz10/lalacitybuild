@@ -37,9 +37,14 @@ TEXTURES = {
     "tiles_floor":    "floor_tiles_06",
 }
 
-# which PBR maps we want, in Blender-friendly order
-MAPS = ["Diffuse", "diff", "albedo", "Rough", "rough", "nor_gl", "Displacement", "disp", "AO", "ao", "arm"]
-WANTED = {"diff": "diffuse", "rough": "roughness", "nor_gl": "normal", "ao": "ao", "disp": "displacement"}
+# Poly Haven map key -> local filename. Alternatives are tried in order.
+WANTED = {
+    "diffuse":   ["Diffuse", "diff", "albedo", "Color"],
+    "roughness": ["Rough", "rough"],
+    "normal":    ["nor_gl", "nor_dx"],
+    "ao":        ["AO", "ao"],
+    "displacement": ["Displacement", "disp"],
+}
 
 HDRI = "kloppenheim_06_puresky"
 
@@ -73,17 +78,21 @@ def fetch_texture(key, slug, res):
         print("  !! {:14s} {} -> {}".format(key, slug, exc))
         return 0
     got = 0
-    for api_map, local in WANTED.items():
-        node = files.get(api_map)
+    for local, candidates in WANTED.items():
+        node = None
+        for cand in candidates:
+            if cand in files:
+                node = files[cand]
+                break
         if not node:
             continue
         entry = node.get(res) or node.get("2k") or node.get("1k")
         if not entry:
             continue
-        info = entry.get("jpg") or entry.get("png") or next(iter(entry.values()))
-        url = info.get("url") if isinstance(info, dict) else None
-        if not url:
+        info = entry.get("jpg") or entry.get("png")
+        if not isinstance(info, dict) or not info.get("url"):
             continue
+        url = info["url"]
         ext = os.path.splitext(url)[1] or ".jpg"
         dest = os.path.join(TEX_DIR, key, local + ext)
         try:
@@ -91,7 +100,8 @@ def fetch_texture(key, slug, res):
                 got += 1
         except Exception as exc:
             print("  !! {} {} -> {}".format(key, local, exc))
-    print("  {:14s} {:28s} {} maps".format(key, slug, got if got else "cached/none"))
+    have = len(os.listdir(os.path.join(TEX_DIR, key))) if os.path.isdir(os.path.join(TEX_DIR, key)) else 0
+    print("  {:14s} {:28s} +{} new, {} maps on disk".format(key, slug, got, have))
     return got
 
 
