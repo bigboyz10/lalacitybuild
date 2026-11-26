@@ -39,6 +39,8 @@ CONFIG = {
     "save_blend": True,       # write city.blend at the end of a master run
     "blend_name": "city.blend",
     "textures": True,         # use downloaded photographic PBR when available
+    "engine": "auto",         # auto | eevee | cycles  (auto -> cycles headless)
+    "samples_render": 64,     # cycles samples for a normal --render pass
 }
 
 # real-world unit constants (metres)
@@ -97,6 +99,10 @@ def parse_argv():
             CONFIG["save_blend"] = False; i += 1
         elif a == "--no-textures":
             CONFIG["textures"] = False; i += 1
+        elif a == "--engine" and nxt is not None:
+            CONFIG["engine"] = nxt.lower(); i += 2
+        elif a == "--samples" and nxt is not None:
+            CONFIG["samples_render"] = int(nxt); i += 2
         else:
             i += 1
     os.makedirs(CONFIG["out_dir"], exist_ok=True)
@@ -174,36 +180,53 @@ def setup_units():
 
 
 def set_engine(quality=None):
+    """Pick a render engine.
+
+    EEVEE needs a real GPU; headless Blender falls back to the llvmpipe
+    software rasteriser where it is slower than Cycles by a wide margin. So
+    "auto" uses Cycles on CPU whenever we are actually going to render, and
+    only keeps EEVEE for build-only runs where the engine never executes.
+    """
     sc = bpy.context.scene
     q = quality or CONFIG["quality"]
-    if q == "high":
+    want = CONFIG.get("engine", "auto")
+
+    if want == "auto":
+        use_cycles = (q == "high") or bool(CONFIG.get("render"))
+    else:
+        use_cycles = (want == "cycles")
+
+    if use_cycles:
         sc.render.engine = "CYCLES"
         try:
-            sc.cycles.samples = CONFIG["samples_high"]
+            sc.cycles.samples = (CONFIG["samples_high"] if q == "high"
+                                 else CONFIG["samples_render"])
             sc.cycles.use_denoising = True
             sc.cycles.device = "CPU"
-            sc.cycles.max_bounces = 8
+            sc.cycles.max_bounces = 8 if q == "high" else 4
             sc.cycles.caustics_reflective = False
             sc.cycles.caustics_refractive = False
-        except Exception:
+            sc.cycles.use_fast_gi = q != "high"
+ључ        except Exception:
             pass
-    else:
-        for engine in ("BLENDER_EEVEE_NEXT", "BLENDER_EEVEE"):
-            try:
-                sc.render.engine = engine
-                break
-            except TypeError:
-                continue
+        return
+
+    for engine in ("BLENDER_EEVEE_NEXT", "BLENDER_EEVEE"):
         try:
-            sc.eevee.taa_render_samples = CONFIG["samples_preview"]
+            sc.render.engine = engine
+            break
+        except TypeError:
+            continue
+    try:
+        sc.eevee.taa_render_samples = CONFIG["samples_preview"]
+    except Exception:
+        pass
+    for attr, val in (("use_gtao", True), ("use_volumetric_lights", True),
+                      ("use_raytracing", True)):
+        try:
+            setattr(sc.eevee, attr, val)
         except Exception:
             pass
-        for attr, val in (("use_gtao", True), ("use_volumetric_lights", True),
-                          ("use_raytracing", True)):
-            try:
-                setattr(sc.eevee, attr, val)
-            except Exception:
-                pass
 
 
 def set_color_management():
