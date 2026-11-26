@@ -142,8 +142,44 @@ Measured on a 2-core headless box, Blender 4.2.1:
 900 m is the current default. Larger footprints keep working but memory climbs
 roughly linearly with triangle count.
 
+## Environment
+
+A sandbox reset wipes everything outside the workspace, Blender included.
+Rebuild the toolchain with no root required:
+
+```bash
+bash tools/setup_env.sh && source tools/env.sh
+```
+
 ## Backups
 
 The workspace autosaves: `autosave.sh` commits every change within a second and
 mirrors it outside the workspace. `snapshot.sh` does the same on demand, and
 `restore.sh` rebuilds the workspace from the mirror. See `RECOVERY.md`.
+
+
+## Realism pass
+
+What changed from the original procedural-only build:
+
+- **People** (`people.py`) — the critique's biggest gap. Figures are built to
+  real proportions (7.6 heads tall, correct limb ratios) in five poses, with
+  randomised skin, hair, top and trouser materials. Fourteen silhouettes are
+  linked-duplicated across sidewalks, crossings, benches and bus shelters.
+- **Scanned props** (`assets_models.py`) — 22 CC0 photoscans from Poly Haven:
+  hydrants, bins, benches, barriers, barrels, AC units, planters, plus grass
+  tufts, dandelions, nettles, ferns, bushes, boulders and dead trunks.
+- **Vehicles** — sedan, SUV and pickup bodies are now lofted through
+  cross-sections rather than stacked boxes, giving a sloped bonnet, raked
+  screen, curved roofline and tapered tail, with wheel arches, mirrors,
+  headlights and tail lights.
+- **Materials** — 17 procedural shaders replaced by photographic PBR with an
+  HDRI sky.
+
+### Triangle budgets
+
+Photoscans ship at film resolution — one grass tuft is 24,730 triangles, a
+hydrant 86,316. Instanced across a city that does not fit in memory, so every
+source is decimated once on import to a per-key budget (`TRI_BUDGET` in
+`assets_models.py`). That cut the scanned layer from 9.2M triangles to 420k
+with no visible difference at street distance.
