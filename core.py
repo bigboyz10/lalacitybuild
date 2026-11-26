@@ -207,7 +207,7 @@ def set_engine(quality=None):
             sc.cycles.caustics_reflective = False
             sc.cycles.caustics_refractive = False
             sc.cycles.use_fast_gi = q != "high"
-ључ        except Exception:
+        except Exception:
             pass
         return
 
