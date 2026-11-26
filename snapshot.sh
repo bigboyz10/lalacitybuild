@@ -14,6 +14,13 @@ cd "$(dirname "$0")"
 MIRROR="/home/user/.workspace-backup/repo.git"   # outside the workspace: hydration cannot reach it
 REMOTE_FILE=".snapshot-remote"                   # tracked, so an origin URL survives a config wipe
 
+# .snapshot-remote is committed, so a token embedded in the remote URL would be
+# published to GitHub (and auto-revoked by secret scanning). Strip any
+# user:pass@ before the URL is ever written to disk.
+_clean_url() {
+  printf '%s' "$1" | sed -E 's#(https?://)[^@/]*@#\1#'
+}
+
 # --- repair anything hydration removed -------------------------------------
 if ! git config user.email >/dev/null 2>&1; then
   git config user.name "Workspace"
@@ -29,8 +36,8 @@ fi
 
 if git remote get-url origin >/dev/null 2>&1; then
   url="$(git remote get-url origin)"
-  if [ ! -f "$REMOTE_FILE" ] || [ "$(tr -d '[:space:]' < "$REMOTE_FILE")" != "$url" ]; then
-    printf '%s\n' "$url" > "$REMOTE_FILE"
+  if [ ! -f "$REMOTE_FILE" ] || [ "$(tr -d '[:space:]' < "$REMOTE_FILE")" != "$(_clean_url "$url")" ]; then
+    printf '%s\n' "$(_clean_url "$url")" > "$REMOTE_FILE"
     echo "Recorded origin in ${REMOTE_FILE}."
   fi
 fi

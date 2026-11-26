@@ -35,3 +35,7 @@ npm-debug.log*
 __pycache__/
 build/renders/
 *.glb
+
+# never commit credentials
+.git-credentials
+*.token
