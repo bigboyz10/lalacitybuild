@@ -25,8 +25,8 @@ if _HERE not in sys.path:
 # -----------------------------------------------------------------------------
 CONFIG = {
     "seed": 1337,
-    "city_size": 480.0,       # metres, square footprint of the built city
-    "density": 0.75,          # 0..1, fraction of lots that get buildings
+    "city_size": 900.0,       # metres, square footprint of the built city
+    "density": 0.85,          # 0..1, fraction of lots that get buildings
     "quality": "preview",     # "preview" (EEVEE) | "high" (Cycles)
     "render": False,          # render the 4 test frames
     "export": False,          # write city.glb
