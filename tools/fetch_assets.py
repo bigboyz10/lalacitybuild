@@ -14,6 +14,7 @@ import sys
 import urllib.request
 
 API = "https://api.polyhaven.com"
+UA = {"User-Agent": "lalacitybuild/1.0 (Blender city generator; contact: local)"}
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEX_DIR = os.path.join(HERE, "assets", "textures")
 HDRI_DIR = os.path.join(HERE, "assets", "hdri")
@@ -44,7 +45,8 @@ HDRI = "kloppenheim_06_puresky"
 
 
 def _get_json(url):
-    with urllib.request.urlopen(url, timeout=60) as fh:
+    req = urllib.request.Request(url, headers=UA)
+    with urllib.request.urlopen(req, timeout=60) as fh:
         return json.load(fh)
 
 
@@ -53,7 +55,8 @@ def _download(url, dest):
         return False
     os.makedirs(os.path.dirname(dest), exist_ok=True)
     tmp = dest + ".part"
-    with urllib.request.urlopen(url, timeout=300) as src, open(tmp, "wb") as out:
+    req = urllib.request.Request(url, headers=UA)
+    with urllib.request.urlopen(req, timeout=300) as src, open(tmp, "wb") as out:
         while True:
             chunk = src.read(1 << 16)
             if not chunk:
