@@ -77,6 +77,14 @@ def run():
     C.bootstrap(banner="CITY BUILD  MASTER")
     C.build_all_materials()
 
+    # photographic PBR upgrade (no-op when nothing has been downloaded)
+    if C.CONFIG.get("textures", True):
+        try:
+            import assets_pbr
+            assets_pbr.build()
+        except Exception as exc:
+            print("  !! texture upgrade failed: {}".format(exc))
+
     only = C.CONFIG["only"]
     for key, mod_name, fn_name in PIPELINE:
         if only and key not in only:
@@ -107,6 +115,12 @@ def run():
             render_export.build()
         except Exception as exc:
             print("  !! render/export failed: {}".format(exc))
+
+    if C.CONFIG.get("save_blend", True):
+        try:
+            C.save_blend()
+        except Exception as exc:
+            print("  !! saving .blend failed: {}".format(exc))
 
     print(CRITIQUE)
     data = C.report()

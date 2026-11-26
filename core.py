@@ -36,6 +36,9 @@ CONFIG = {
     "samples_high": 320,
     "render_res": (1280, 720),
     "band_lod": True,
+    "save_blend": True,       # write city.blend at the end of a master run
+    "blend_name": "city.blend",
+    "textures": True,         # use downloaded photographic PBR when available
 }
 
 # real-world unit constants (metres)
@@ -88,6 +91,12 @@ def parse_argv():
             CONFIG["render"] = False; i += 1
         elif a == "--no-lod":
             CONFIG["band_lod"] = False; i += 1
+        elif a == "--blend" and nxt is not None:
+            CONFIG["blend_name"] = nxt; CONFIG["save_blend"] = True; i += 2
+        elif a == "--no-blend":
+            CONFIG["save_blend"] = False; i += 1
+        elif a == "--no-textures":
+            CONFIG["textures"] = False; i += 1
         else:
             i += 1
     os.makedirs(CONFIG["out_dir"], exist_ok=True)
@@ -514,6 +523,23 @@ def M(name):
     if spec is None:
         spec = dict(base="#8a8a8a", roughness=0.6)
     return make_pbr(name, **spec)
+
+
+def save_blend(path=None):
+    """Write the built city to a .blend, packing external images so the file
+    is self-contained and openable anywhere."""
+    import bpy as _bpy
+    path = path or os.path.join(CONFIG["out_dir"], CONFIG["blend_name"])
+    path = os.path.abspath(path)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    try:
+        _bpy.ops.file.pack_all()
+    except Exception as exc:
+        print("  (could not pack images: {})".format(exc))
+    _bpy.ops.wm.save_as_mainfile(filepath=path, compress=True)
+    size = os.path.getsize(path) / (1024.0 * 1024.0)
+    print("  saved {}  ({:.1f} MB)".format(path, size))
+    return path
 
 
 def build_all_materials():
