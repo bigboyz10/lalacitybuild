@@ -30,6 +30,10 @@ target/
 npm-debug.log*
 
 # Blender / build artifacts
+# .blend files are large binaries: git cannot diff or merge them, and the
+# 1-second autosave would add ~70 MB per commit. Generated blends stay out of
+# the repo and are published as GitHub Release assets instead.
+*.blend
 *.blend1
 __pycache__/
 build/renders/

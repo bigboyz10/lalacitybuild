@@ -1,11 +1,17 @@
 {
+<<<<<<< HEAD
  "objects": 22,
  "triangles": 6620,
+=======
+ "objects": 1516,
+ "triangles": 382370,
+>>>>>>> 30f4f06 (autosave 2026-11-27 12:12:48 UTC)
  "collections": {
   "CITY": {
    "objects": 0,
    "triangles": 0
   },
+<<<<<<< HEAD
   "CITY_Signage": {
    "objects": 10,
    "triangles": 5464
@@ -19,6 +25,89 @@
   "seed": 1337,
   "city_size": 200.0,
   "density": 0.85,
+=======
+  "CITY_Assets": {
+   "objects": 6,
+   "triangles": 1096
+  },
+  "CITY_Buildings": {
+   "objects": 54,
+   "triangles": 41428
+  },
+  "CITY_Damage": {
+   "objects": 4,
+   "triangles": 930
+  },
+  "CITY_Enhance": {
+   "objects": 17,
+   "triangles": 4076
+  },
+  "CITY_FacadeDetail": {
+   "objects": 18,
+   "triangles": 3076
+  },
+  "CITY_Lighting": {
+   "objects": 19,
+   "triangles": 1734
+  },
+  "CITY_Models": {
+   "objects": 128,
+   "triangles": 163222
+  },
+  "CITY_Models_src": {
+   "objects": 13,
+   "triangles": 43914
+  },
+  "CITY_People": {
+   "objects": 25,
+   "triangles": 8900
+  },
+  "CITY_People_src": {
+   "objects": 14,
+   "triangles": 4984
+  },
+  "CITY_Props": {
+   "objects": 20,
+   "triangles": 1836
+  },
+  "CITY_Roads": {
+   "objects": 43,
+   "triangles": 2482
+  },
+  "CITY_Roofs": {
+   "objects": 64,
+   "triangles": 1266
+  },
+  "CITY_Sidewalks": {
+   "objects": 10,
+   "triangles": 2824
+  },
+  "CITY_Story": {
+   "objects": 11,
+   "triangles": 1120
+  },
+  "CITY_Terrain": {
+   "objects": 519,
+   "triangles": 27068
+  },
+  "CITY_Utilities": {
+   "objects": 56,
+   "triangles": 3532
+  },
+  "CITY_Vegetation": {
+   "objects": 289,
+   "triangles": 55894
+  },
+  "CITY_Vehicles": {
+   "objects": 206,
+   "triangles": 12988
+  }
+ },
+ "config": {
+  "seed": 99,
+  "city_size": 180.0,
+  "density": 0.6000000238418579,
+>>>>>>> 30f4f06 (autosave 2026-11-27 12:12:48 UTC)
   "quality": "preview",
   "render": false,
   "export": false,
@@ -31,7 +120,7 @@
    720
   ],
   "band_lod": true,
-  "save_blend": true,
+  "save_blend": false,
   "blend_name": "city.blend",
   "traffic_sim": true,
   "textures": true,
