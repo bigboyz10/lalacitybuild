@@ -1,124 +1,24 @@
 {
- "objects": 1777,
- "triangles": 727006,
+ "objects": 128,
+ "triangles": 48592,
  "collections": {
   "CITY": {
    "objects": 0,
    "triangles": 0
   },
-  "CITY_Animals": {
-   "objects": 108,
-   "triangles": 24830
-  },
-  "CITY_Animals_src": {
-   "objects": 11,
-   "triangles": 2706
-  },
-  "CITY_Assets": {
-   "objects": 6,
-   "triangles": 1096
-  },
-  "CITY_Buildings": {
-   "objects": 5,
-   "triangles": 188
-  },
-  "CITY_Damage": {
-   "objects": 3,
-   "triangles": 24
-  },
-  "CITY_Enhance": {
-   "objects": 8,
-   "triangles": 2102
-  },
-  "CITY_FacadeDetail": {
-   "objects": 7,
-   "triangles": 162
-  },
-  "CITY_LA": {
-   "objects": 51,
-   "triangles": 38434
-  },
-  "CITY_LA_src": {
-   "objects": 19,
-   "triangles": 13709
-  },
-  "CITY_Lib_src": {
-   "objects": 27,
-   "triangles": 58328
-  },
-  "CITY_Library": {
-   "objects": 389,
-   "triangles": 442958
-  },
-  "CITY_Lighting": {
-   "objects": 3,
-   "triangles": 56
-  },
   "CITY_People": {
-   "objects": 17,
-   "triangles": 6052
+   "objects": 95,
+   "triangles": 35948
   },
   "CITY_People_src": {
-   "objects": 14,
-   "triangles": 4984
-  },
-  "CITY_Props": {
-   "objects": 14,
-   "triangles": 1776
-  },
-  "CITY_Roads": {
-   "objects": 23,
-   "triangles": 1423
-  },
-  "CITY_Roofs": {
-   "objects": 13,
-   "triangles": 298
-  },
-  "CITY_Sidewalks": {
-   "objects": 8,
-   "triangles": 2500
-  },
-  "CITY_Signage": {
-   "objects": 5,
-   "triangles": 1892
-  },
-  "CITY_Story": {
-   "objects": 7,
-   "triangles": 1080
-  },
-  "CITY_Terrain": {
-   "objects": 496,
-   "triangles": 25202
-  },
-  "CITY_Traffic": {
-   "objects": 355,
-   "triangles": 22636
-  },
-  "CITY_Trees": {
-   "objects": 48,
-   "triangles": 51904
-  },
-  "CITY_Trees_src": {
-   "objects": 16,
-   "triangles": 13914
-  },
-  "CITY_Utilities": {
-   "objects": 20,
-   "triangles": 1912
-  },
-  "CITY_Vegetation": {
-   "objects": 7,
-   "triangles": 748
-  },
-  "CITY_Vehicles": {
-   "objects": 97,
-   "triangles": 6092
+   "objects": 33,
+   "triangles": 12644
   }
  },
  "config": {
   "seed": 1337,
-  "city_size": 150.0,
-  "density": 0.5,
+  "city_size": 300.0,
+  "density": 0.85,
   "quality": "preview",
   "render": false,
   "export": false,
@@ -131,7 +31,7 @@
    720
   ],
   "band_lod": true,
-  "save_blend": false,
+  "save_blend": true,
   "blend_name": "city.blend",
   "traffic_sim": true,
   "textures": true,
