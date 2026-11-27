@@ -417,6 +417,11 @@ def emit_building(name, rect, height, style, collection, R, base_z=BASE_Z,
         objs.append(_mesh(name + "_Cornice", bm_cornice, st["sill"], collection))
     if len(bm_frame.faces):
         objs.append(_mesh(name + "_Frames", bm_frame, st["frame"], collection))
+    if len(bm_reveal.faces):
+        objs.append(_mesh(name + "_Reveals", bm_reveal, st["sill"], collection))
+    if len(bm_room.faces):
+        # interiors are built last and shaded dark, so they only read as depth
+        objs.append(_mesh(name + "_Interiors", bm_room, "interior_dark", collection))
     if len(bm_glass.faces):
         objs.append(_mesh(name + "_Glass", bm_glass, glass_mat, collection))
     if len(bm_sill.faces):
