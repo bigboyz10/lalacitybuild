@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-vendor/
 .venv/
 venv/
 __pycache__/
@@ -39,3 +38,7 @@ build/renders/
 # never commit credentials
 .git-credentials
 *.token
+
+# vendored toolchain IS committed (split tarball, see tools/setup_env.sh)
+!vendor/
+!vendor/blender/*
