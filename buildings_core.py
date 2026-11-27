@@ -138,7 +138,15 @@ def _facades(rect):
 # -----------------------------------------------------------------------------
 def emit_window(bm_frame, bm_glass, bm_sill, bm_balcony, bm_rail,
                 px, py, ux, uy, nx, ny, s, z, ww, wh, style, R,
-                balcony=False, depth=0.10):
+                balcony=False, depth=0.10, bm_reveal=None, bm_room=None,
+                recess=0.22, interior=True, mullion=True):
+    """One window.
+
+    Glass is set back into a reveal rather than sitting flush, and a dark room
+    volume is built behind it.  That gives real parallax at eye level: the
+    opening reads as a hole into a space instead of a decal on a wall, which
+    was the single biggest tell in the previous build.
+    """
     rot = math.atan2(uy, ux)
     cx = px + ux * s
     cy = py + uy * s
@@ -146,8 +154,46 @@ def emit_window(bm_frame, bm_glass, bm_sill, bm_balcony, bm_rail,
     # frame slab (reads as a chunky surround)
     _box_bm(bm_frame, cx + nx * 0.02, cy + ny * 0.02, z,
             ww + 0.16, depth, wh + 0.16, rot)
-    # glass
-    _vquad_bm(bm_glass, cx, cy, z, ux, uy, nx, ny, ww, wh, out=depth * 0.5 + 0.012)
+
+    # --- reveal: jambs, head and cill faces lining the recess -------------
+    target = bm_reveal if bm_reveal is not None else bm_frame
+    inner = -recess * 0.5
+    for sgn in (-1, 1):
+        _box_bm(target,
+                cx + ux * (sgn * (ww * 0.5 + 0.03)) + nx * inner,
+                cy + uy * (sgn * (ww * 0.5 + 0.03)) + ny * inner,
+                z, 0.07, recess, wh, rot)
+    _box_bm(target, cx + nx * inner, cy + ny * inner, z + wh * 0.5 + 0.03,
+            ww + 0.14, recess, 0.07, rot)
+    _box_bm(target, cx + nx * inner, cy + ny * inner, z - wh * 0.5 - 0.03,
+            ww + 0.14, recess, 0.07, rot)
+
+    # --- room volume behind the opening -----------------------------------
+    if interior and bm_room is not None:
+        d = R.uniform(1.6, 3.0)
+        _box_bm(bm_room, cx - nx * (d * 0.5 + recess), cy - ny * (d * 0.5 + recess),
+                z - wh * 0.10, ww + 0.9, d, wh + 1.5, rot)
+        # a slab of furniture / clutter catching the light near the glass
+        if R.random() < 0.55:
+            fh = R.uniform(0.5, 1.1)
+            _box_bm(bm_room,
+                    cx - nx * (recess + R.uniform(0.45, 1.0)),
+                    cy - ny * (recess + R.uniform(0.45, 1.0)),
+                    z - wh * 0.5 + fh * 0.5,
+                    ww * R.uniform(0.35, 0.85), R.uniform(0.3, 0.7), fh,
+                    rot + R.uniform(-0.3, 0.3))
+
+    # glass, set back inside the reveal
+    _vquad_bm(bm_glass, cx - nx * recess, cy - ny * recess, z,
+              ux, uy, nx, ny, ww, wh, out=0.0)
+
+    # --- mullion / transom so large panes are not single sheets -----------
+    if mullion and ww > 1.25:
+        _box_bm(bm_frame, cx - nx * (recess - 0.02), cy - ny * (recess - 0.02),
+                z, 0.06, 0.06, wh, rot)
+    if mullion and wh > 1.9:
+        _box_bm(bm_frame, cx - nx * (recess - 0.02), cy - ny * (recess - 0.02),
+                z + wh * 0.18, ww, 0.06, 0.06, rot)
     # sill
     _box_bm(bm_sill, cx + nx * 0.09, cy + ny * 0.09, z - wh * 0.5 - 0.07,
             ww + 0.30, 0.20, 0.09, rot)
