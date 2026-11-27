@@ -35,6 +35,7 @@ PIPELINE = [
     ("story",      "story",            "build"),
     ("models",     "assets_models",    "build"),
     ("people",     "people",           "build"),
+    ("animals",    "animals",          "build"),
     ("lighting",   "lighting",         "build"),
     ("enhance",    "enhance",          "build"),
 ]
