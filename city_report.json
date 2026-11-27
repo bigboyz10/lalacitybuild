@@ -1,18 +1,18 @@
 {
- "objects": 306,
- "triangles": 242443,
+ "objects": 189,
+ "triangles": 43552,
  "collections": {
   "CITY": {
    "objects": 0,
    "triangles": 0
   },
-  "CITY_Trees": {
-   "objects": 274,
-   "triangles": 214856
+  "CITY_Animals": {
+   "objects": 178,
+   "triangles": 40846
   },
-  "CITY_Trees_src": {
-   "objects": 32,
-   "triangles": 27587
+  "CITY_Animals_src": {
+   "objects": 11,
+   "triangles": 2706
   }
  },
  "config": {
