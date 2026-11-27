@@ -109,3 +109,4 @@ that survive are tracked ones — where a token must never go. Re-running
 the remote URL before writing it. Verified with a dummy token: the file stayed
 clean and the string never entered history. The real token lives only in
 `/home/user/.git-credentials`, mode 600, outside the workspace and gitignored.
+
