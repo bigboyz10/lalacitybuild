@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-"""Download CC0 photoscanned models from Poly Haven for the city build.
+"""Download the raw CC0 model library from Poly Haven.
 
-Usage:  python3 tools/fetch_models.py [--res 1k] [--only key1,key2] [--list]
+Usage:  python3 tools/fetch_models.py [--res 1k] [--only k1,k2] [--tag tree]
 
-Only models that are cheap enough to instance thousands of times are listed
-here; Poly Haven's hero trees run to ~500 MB of geometry each, which a city
-cannot afford, so foliage at that scale stays procedural.
-
-Everything downloaded is CC0. Files land in assets/models/<key>/.
+Raw scans are big (a single tree is 60-200 MB) and land in assets/raw/, which
+is gitignored.  Run tools/build_library.py afterwards to decimate them into the
+compact, committed assets/lib/*.glb that the city actually loads.
 """
 import argparse
 import json
@@ -15,44 +13,18 @@ import os
 import sys
 import urllib.request
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from catalog import MODELS, by_tag
+
 API = "https://api.polyhaven.com"
 UA = {"User-Agent": "lalacitybuild/1.0 (Blender city generator)"}
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_DIR = os.path.join(HERE, "assets", "models")
-
-# key -> Poly Haven slug.  Sizes are the 1k gltf payload, measured.
-MODELS = {
-    # street furniture
-    "hydrant":        "fire_hydrant",             # 5.5 MB
-    "trash_can":      "metal_trash_can",          # 5.0 MB
-    "bench":          "painted_wooden_bench",     # 2.0 MB
-    "road_barrier":   "concrete_road_barrier",    # 3.8 MB
-    "road_barrier_2": "concrete_road_barrier_02",
-    "barrel":         "Barrel_01",                # 0.7 MB
-    "barrel_rust":    "barrel_03",
-    "cardboard_box":  "cardboard_box_01",         # 2.2 MB
-    "trashbag":       "trashbag",
-    "aircon":         "exterior_aircon_unit",     # 7.7 MB
-    "planter":        "planter_box_01",           # 2.3 MB
-    "wet_sign":       "WetFloorSign_01",
-    # vegetation small enough to scatter
-    "grass_tuft":     "grass_medium_01",          # 3.1 MB
-    "grass_tuft_2":   "grass_medium_02",
-    "grass_bermuda":  "grass_bermuda_01",
-    "weed_dandelion": "dandelion_01",             # 3.1 MB
-    "weed_nettle":    "nettle_plant",             # 2.5 MB
-    "fern":           "fern_02",                  # 1.1 MB
-    "bush":           "wild_rooibos_bush",        # 2.5 MB
-    "potted_plant":   "potted_plant_01",          # 6.3 MB
-    # rock / debris
-    "boulder":        "boulder_01",               # 5.8 MB
-    "dead_trunk":     "dead_tree_trunk",          # 4.8 MB
-}
+RAW_DIR = os.path.join(HERE, "assets", "raw")
 
 
 def _get_json(url):
     req = urllib.request.Request(url, headers=UA)
-    with urllib.request.urlopen(req, timeout=60) as fh:
+    with urllib.request.urlopen(req, timeout=90) as fh:
         return json.load(fh)
 
 
@@ -62,57 +34,59 @@ def _download(url, dest):
     os.makedirs(os.path.dirname(dest), exist_ok=True)
     tmp = dest + ".part"
     req = urllib.request.Request(url, headers=UA)
-    with urllib.request.urlopen(req, timeout=600) as src, open(tmp, "wb") as out:
-        n = 0
+    total = 0
+    with urllib.request.urlopen(req, timeout=900) as src, open(tmp, "wb") as out:
         while True:
-            chunk = src.read(1 << 16)
+            chunk = src.read(1 << 18)
             if not chunk:
                 break
             out.write(chunk)
-            n += len(chunk)
+            total += len(chunk)
     os.replace(tmp, dest)
-    return n
+    return total
 
 
-def fetch_model(key, slug, res):
+def fetch(key, spec, res):
+    slug = spec["slug"]
     try:
         files = _get_json("{}/files/{}".format(API, slug))
         entry = files["gltf"][res]["gltf"]
     except Exception as exc:
-        print("  !! {:16s} {:26s} {}".format(key, slug, exc))
+        print("  !! {:18s} {:28s} {}".format(key, slug, exc), flush=True)
         return 0
-    folder = os.path.join(MODEL_DIR, key)
-    total = 0
+    folder = os.path.join(RAW_DIR, key)
+    got = 0
     try:
-        total += _download(entry["url"], os.path.join(folder, slug + "_" + res + ".gltf"))
+        got += _download(entry["url"], os.path.join(folder, slug + "_" + res + ".gltf"))
         for rel, info in entry.get("include", {}).items():
-            total += _download(info["url"], os.path.join(folder, rel.replace("/", os.sep)))
+            got += _download(info["url"], os.path.join(folder, rel.replace("/", os.sep)))
     except Exception as exc:
-        print("  !! {:16s} {}".format(key, exc))
+        print("  !! {:18s} {}".format(key, exc), flush=True)
         return 0
-    print("  {:16s} {:26s} {:>7}".format(
-        key, slug, "cached" if total == 0 else "{:.1f} MB".format(total / 1e6)))
-    return total
+    print("  {:18s} {:28s} {:>9}".format(
+        key, slug, "cached" if got == 0 else "{:.1f} MB".format(got / 1e6)), flush=True)
+    return got
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--res", default="1k")
     ap.add_argument("--only", default="")
-    ap.add_argument("--list", action="store_true")
+    ap.add_argument("--tag", default="")
     args = ap.parse_args()
-    if args.list:
-        for k, v in MODELS.items():
-            print("  {:16s} {}".format(k, v))
-        return 0
-    only = [s.strip() for s in args.only.split(",") if s.strip()]
-    print("Poly Haven CC0 models -> {}".format(MODEL_DIR))
+
+    keys = list(MODELS)
+    if args.tag:
+        keys = by_tag(args.tag)
+    if args.only:
+        want = [s.strip() for s in args.only.split(",") if s.strip()]
+        keys = [k for k in keys if k in want]
+
+    print("raw models -> {}  ({} assets)".format(RAW_DIR, len(keys)), flush=True)
     total = 0
-    for key, slug in MODELS.items():
-        if only and key not in only:
-            continue
-        total += fetch_model(key, slug, args.res)
-    print("downloaded {:.1f} MB".format(total / 1e6))
+    for key in keys:
+        total += fetch(key, MODELS[key], args.res)
+    print("downloaded {:.1f} MB".format(total / 1e6), flush=True)
     return 0
 
 
