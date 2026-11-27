@@ -33,6 +33,7 @@ npm-debug.log*
 *.blend1
 __pycache__/
 build/renders/
+# *.glb exports are ignored, EXCEPT the baked asset library below
 *.glb
 
 # never commit credentials
@@ -46,3 +47,7 @@ build/renders/
 # raw scans are huge; only the baked library is committed
 assets/raw/
 assets/models/
+
+# the baked library is the whole point of the bake step - always commit it
+!assets/lib/
+!assets/lib/*.glb
