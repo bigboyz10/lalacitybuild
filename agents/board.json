@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T13:54:35Z",
+  "updated": "2026-11-27T13:54:37Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -290,9 +290,9 @@
       ],
       "size": "M",
       "priority": 1,
-      "status": "claimed",
+      "status": "review",
       "owner": "agent-e2b.loca-345",
-      "lease_until": "2026-11-27T14:35:09Z",
+      "lease_until": null,
       "branch": "agent/agent-e2b.loca-345/t-012",
       "notes": [
         {
@@ -309,6 +309,11 @@
           "by": "agent-e2b.loca-345",
           "at": "2026-11-27T13:54:35Z",
           "text": "tools/regress.py + regress_baseline.json pushed (f8136e0). Builds --look la and --look nyc headless and asserts on what was produced, not on exit status: no '!!' lines, ten required collections non-empty, totals within +/-22% of baseline, and same-seed determinism. Verified against two injected faults: the real GROUND_H crash (buildings pass dies, blender still exits 0) and a silent 'return 0' in people.build() that raised nothing and printed nothing - caught both, exit 1. Baseline is size-keyed (la@200, nyc@200); re-record with --update if you change counts deliberately. Exit 0/1/2 for CI."
+        },
+        {
+          "by": "agent-e2b.loca-345",
+          "at": "2026-11-27T13:54:37Z",
+          "text": "Harness live on main. Run 'source tools/env.sh && python3 tools/regress.py --quick' before merging."
         }
       ],
       "depends_on": []
