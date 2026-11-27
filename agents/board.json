@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T11:58:14Z",
+  "updated": "2026-11-27T11:58:18Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -23,6 +23,10 @@
     "agent-epsilon": {
       "last_seen": "2026-11-27T11:58:14Z",
       "task": "T-003"
+    },
+    "agent-gamma": {
+      "last_seen": "2026-11-27T11:58:18Z",
+      "task": "T-005"
     }
   },
   "tasks": [
@@ -124,11 +128,17 @@
       ],
       "size": "M",
       "priority": 2,
-      "status": "todo",
-      "owner": null,
-      "lease_until": null,
-      "branch": null,
-      "notes": [],
+      "status": "claimed",
+      "owner": "agent-gamma",
+      "lease_until": "2026-11-27T12:43:18Z",
+      "branch": "agent/agent-gamma/t-005",
+      "notes": [
+        {
+          "by": "agent-gamma",
+          "at": "2026-11-27T11:58:18Z",
+          "text": "claimed"
+        }
+      ],
       "depends_on": []
     },
     {
