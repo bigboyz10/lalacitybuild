@@ -367,6 +367,80 @@ def emit_ac_units(bm, px, py, ux, uy, nx, ny, length, z0, height, R, count):
 # -----------------------------------------------------------------------------
 # main building emitter
 # -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# facade rhythm (T-003)
+# -----------------------------------------------------------------------------
+# Per-building scale jitter already lives in emit_building. These tables and
+# helpers add what that cannot: variation *within* a facade, ribbon glazing and
+# style-dependent blank party walls.
+
+# Chance a building gets continuous ribbon glazing instead of punched openings.
+# Only styles where a horizontal band is plausible appear here.
+RIBBON_P = {
+    "concrete_panel": 0.40, "brick_modern": 0.20, "modern_la": 0.35,
+    "industrial": 0.45, "warehouse": 0.50, "stucco_white": 0.06,
+    "dingbat": 0.05,
+}
+
+# Chance a building has one blank party wall. Dense old stock has them often;
+# a glass tower almost never does.
+BLANK_FACE_P = {
+    "curtain": 0.08, "stone_old": 0.70, "brick_old": 0.70,
+    "brick_modern": 0.55, "plaster": 0.60, "plaster_pink": 0.60,
+    "plaster_teal": 0.60, "concrete_panel": 0.45, "industrial": 0.50,
+    "warehouse": 0.55, "strip_mall": 0.60,
+}
+BLANK_FACE_DEFAULT = 0.45
+
+# Weighted by repetition: most buildings stay regular, a minority get a
+# distinctive rhythm.
+RHYTHMS = ("even", "even", "even", "even", "even",
+           "paired", "paired", "varied", "varied", "stair")
+
+
+def _bay_plan(length, cols, ww, rhythm, floors, R):
+    """Per-bay layout for one punched facade.
+
+    Returns a list of [centre offset, width multiplier, is_stair_window].  The
+    plan is made once per facade, so every floor shares it and openings stay
+    vertically aligned, while neighbouring bays can differ.
+    """
+    step = length / cols
+    room = max(0.5, step - 0.45)            # widest opening a bay can hold
+    bays = [[-length * 0.5 + step * (c + 0.5), 1.0, False]
+            for c in range(cols)]
+    if rhythm == "paired" and cols >= 4:
+        # windows grouped in twos, with wider piers between the pairs
+        shift = max(0.0, min(step * 0.22, (step - ww - 0.45) * 0.5))
+        for c in range(cols - (cols % 2)):
+            bays[c][0] += shift if c % 2 == 0 else -shift
+    elif rhythm == "varied" and cols >= 3:
+        for b in bays:
+            b[1] = R.choice((0.8, 1.0, 1.0, 1.0, 1.2))
+    elif rhythm == "stair" and cols >= 4 and floors >= 3:
+        # one narrow stair-core window per half-landing, away from the corners
+        k = R.randint(1, cols - 2)
+        bays[k][1] = 0.5
+        bays[k][2] = True
+    for b in bays:
+        if ww * b[1] > room:                # never let neighbours collide
+            b[1] = room / ww
+    return bays
+
+
+def _ribbon_plan(length, R):
+    """Segments (centre offset, width) of a continuous ribbon window run, or
+    None when the facade is too short to carry one."""
+    margin = 0.8
+    usable = length - 2.0 * margin
+    if usable < 4.0:
+        return None
+    n = max(1, int(round(usable / R.uniform(2.6, 3.8))))
+    seg = usable / n
+    pier = 0.30                              # mullion between segments
+    return [(-usable * 0.5 + seg * (i + 0.5), seg - pier) for i in range(n)]
+
+
 def emit_building(name, rect, height, style, collection, R, base_z=BASE_Z,
                   detail=1.0, ground_floor=True):
     x0, y0, x1, y1 = rect
@@ -426,7 +500,12 @@ def emit_building(name, rect, height, style, collection, R, base_z=BASE_Z,
     recess = R.uniform(0.14, 0.34)
     tall_ground_band = R.random() < 0.35      # taller windows on the first floor
     top_band = R.random() < 0.30              # squatter windows on the top floor
-    blank_wall_face = R.randint(0, 5)         # >3 means no blank face at all
+    # T-003: style-dependent blank party wall, ribbon glazing, bay rhythm
+    blank_p = BLANK_FACE_P.get(style, BLANK_FACE_DEFAULT)
+    blank_wall_face = R.randint(0, 3) if R.random() < blank_p else -1
+    ribbon_bldg = R.random() < RIBBON_P.get(style, 0.0)
+    ribbon_h = st["win_h"] * jitter_h * R.uniform(0.55, 0.75)
+    rhythm = R.choice(RHYTHMS)
 
     for (face_i, (px, py, ux, uy, nx, ny, length)) in enumerate(_facades(rect)):
         rot = math.atan2(uy, ux)
@@ -435,30 +514,49 @@ def emit_building(name, rect, height, style, collection, R, base_z=BASE_Z,
         cols = max(1, int(length // (st["cols"] * jitter_cols)))
         win_w = st["win_w"] * jitter_w
         win_h = st["win_h"] * jitter_h
-        step = length / cols
+        ribbon = _ribbon_plan(length, R) if ribbon_bldg else None
+        bays = (None if ribbon is not None
+                else _bay_plan(length, cols, win_w, rhythm, floors, R))
 
         # ---- upper floors
         for f in range(floors):
             z = base_z + (GROUND_H if ground_floor else 0.0) + f * FLOOR_H + 1.45
             if z + win_h * 0.5 > base_z + height - 0.4:
                 continue
+            if ribbon is not None:
+                # continuous band: short, wide segments split by piers
+                for (s, rw) in ribbon:
+                    if detail < 1.0 and R.random() > detail:
+                        continue
+                    emit_window(bm_frame, bm_glass, bm_sill, bm_balcony, bm_rail,
+                                px, py, ux, uy, nx, ny, s, z, rw, ribbon_h,
+                                style, R, balcony=False,
+                                bm_reveal=bm_reveal, bm_room=bm_room,
+                                recess=recess, interior=(f < 6))
+                continue
             fw, fh = win_w, win_h
             if tall_ground_band and f == 0:
                 fh *= 1.26
             elif top_band and f == floors - 1:
                 fh *= 0.80
-            for c in range(cols):
+            for (s, wm, stair) in bays:
                 if detail < 1.0 and R.random() > detail:
                     continue
-                # occasional bricked-up or blanked opening breaks the grid
-                if R.random() < 0.035:
+                zz = z
+                if stair:
+                    # stair-core window sits on the half-landing between floors
+                    zz = z + FLOOR_H * 0.5
+                    if f >= floors - 1 or zz + fh * 0.5 > base_z + height - 0.4:
+                        continue
+                elif R.random() < 0.035:
+                    # occasional bricked-up or blanked opening breaks the grid
                     continue
-                s = -length * 0.5 + step * (c + 0.5)
-                cw = fw * R.uniform(0.95, 1.05)
+                cw = fw * wm * R.uniform(0.95, 1.05)
                 emit_window(bm_frame, bm_glass, bm_sill, bm_balcony, bm_rail,
-                            px, py, ux, uy, nx, ny, s, z, cw, fh,
+                            px, py, ux, uy, nx, ny, s, zz, cw, fh,
                             style, R,
-                            balcony=(st["balcony"] > 0.3 and R.random() < st["balcony"]),
+                            balcony=(not stair and st["balcony"] > 0.3
+                                     and R.random() < st["balcony"]),
                             bm_reveal=bm_reveal, bm_room=bm_room, recess=recess,
                             interior=(f < 6))
         # ---- ground floor
