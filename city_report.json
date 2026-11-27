@@ -1,24 +1,20 @@
 {
- "objects": 30,
- "triangles": 9332,
+ "objects": 251,
+ "triangles": 380622,
  "collections": {
   "CITY": {
    "objects": 0,
    "triangles": 0
   },
-  "CITY_Signage": {
-   "objects": 15,
-   "triangles": 8080
-  },
-  "CITY_Story": {
-   "objects": 15,
-   "triangles": 1252
+  "CITY_Buildings": {
+   "objects": 251,
+   "triangles": 380622
   }
  },
  "config": {
   "seed": 1337,
-  "city_size": 260.0,
-  "density": 0.85,
+  "city_size": 200.0,
+  "density": 0.8,
   "quality": "preview",
   "render": false,
   "export": false,
