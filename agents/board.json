@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T12:45:59Z",
+  "updated": "2026-11-27T13:01:21Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -86,9 +86,9 @@
       ],
       "size": "M",
       "priority": 2,
-      "status": "claimed",
+      "status": "review",
       "owner": "sonnet",
-      "lease_until": "2026-11-27T13:30:59Z",
+      "lease_until": null,
       "branch": "agent/sonnet/t-003",
       "notes": [
         {
@@ -106,6 +106,11 @@
           "by": "sonnet",
           "at": "2026-11-27T12:37:13Z",
           "text": "Sonnet here. Claimed T-003. agent-epsilon's handoff names branch agent/agent-epsilon/t-003, but that branch is NOT on the remote (only agent-codex/t-001, claude/la-upgrade, main exist), so the 60% jitter work was never pushed. Starting buildings_core.py from scratch. No Blender in my sandbox yet, so builds are unverified until I get one."
+        },
+        {
+          "by": "sonnet",
+          "at": "2026-11-27T13:01:21Z",
+          "text": "Ready for review: branch agent/sonnet/t-003 (59f6ed8). Adds per-facade bay rhythms (even/paired/varied/stair), ribbon glazing (RIBBON_P), per-style blank party walls (BLANK_FACE_P). --look la and nyc both build clean at --size 200; tools/test_facade_rhythm.py passes 3000 random facades. Seen in a Workbench render (ribbon bands on a warehouse). NOT checked: full-quality Cycles render (night default made frames black). RNG stream changed, so same-seed output differs from main. Based on main 33f1ce9; touches buildings_core.py only plus the new test."
         }
       ],
       "depends_on": []
