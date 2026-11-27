@@ -1,20 +1,24 @@
 {
- "objects": 234,
- "triangles": 241278,
+ "objects": 22,
+ "triangles": 6620,
  "collections": {
   "CITY": {
    "objects": 0,
    "triangles": 0
   },
-  "CITY_Buildings": {
-   "objects": 234,
-   "triangles": 241278
+  "CITY_Signage": {
+   "objects": 10,
+   "triangles": 5464
+  },
+  "CITY_Story": {
+   "objects": 12,
+   "triangles": 1156
   }
  },
  "config": {
   "seed": 1337,
   "city_size": 200.0,
-  "density": 0.8,
+  "density": 0.85,
   "quality": "preview",
   "render": false,
   "export": false,
@@ -29,8 +33,12 @@
   "band_lod": true,
   "save_blend": true,
   "blend_name": "city.blend",
+  "traffic_sim": true,
   "textures": true,
   "engine": "auto",
-  "samples_render": 64
+  "samples_render": 64,
+  "look": "nyc",
+  "time": null,
+  "damage": false
  }
 }

@@ -47,6 +47,46 @@ AVENUES = ["LEXINGTON", "MADISON", "COLUMBUS", "AMSTERDAM", "HUDSON",
            "ATLANTIC", "PACIFIC", "GRAND", "UNION", "CANAL", "DELANCEY",
            "BOWERY", "ORCHARD", "LUDLOW", "RIVINGTON"]
 
+# --- LA pool (requested in COLLAB.md) --------------------------------------
+# Used only when --look la is active; --look nyc keeps the pools above.
+LA_TRADES = ["TACOS", "LIQUOR", "NAILS", "DONUTS", "SMOG CHECK",
+             "CHECK CASHING", "24 HR", "CARNICERIA", "TAQUERIA", "MARISCOS",
+             "AUTO BODY", "TIRES", "CAR WASH", "PANADERIA", "BURGERS",
+             "LAUNDRY", "DISPENSARY", "BAIL BONDS", "PAYDAY LOANS",
+             "PUPUSERIA", "BOBA", "RAMEN", "THRIFT", "VINYL"]
+LA_PREFIX = ["EL", "LA", "LOS", "SUNSET", "PACIFIC", "GOLDEN STATE",
+             "VALLEY", "WESTSIDE", "ECHO", "SILVER", "VENICE", "24 HR"]
+LA_SURNAMES = ["GARCIA", "HERNANDEZ", "MARTINEZ", "LOPEZ", "RAMIREZ",
+               "NGUYEN", "KIM", "PARK", "SANCHEZ", "FLORES", "CHAVEZ",
+               "TRAN", "GUTIERREZ", "VARGAS", "SALAZAR", "ORTIZ"]
+LA_AD_LINES = ["SE HABLA ESPANOL", "OPEN 24 HOURS", "SMOG CHECK $29.95",
+               "NOW LEASING", "TACOS AL PASTOR", "WE BUY GOLD",
+               "NO CREDIT NEEDED", "GRAND OPENING", "FREE WIFI",
+               "AIR CONDITIONED", "DRIVE THRU", "VALET PARKING"]
+LA_AVENUES = ["SUNSET", "WILSHIRE", "VENTURA", "SEPULVEDA", "FIGUEROA",
+              "VERMONT", "WESTERN", "ALVARADO", "OLYMPIC", "PICO",
+              "CAHUENGA", "LA BREA", "FAIRFAX", "CRENSHAW", "WHITTIER"]
+
+
+def _trades():
+    return LA_TRADES if C.is_la() else TRADES
+
+
+def _surnames():
+    return LA_SURNAMES if C.is_la() else SURNAMES
+
+
+def _prefix():
+    return LA_PREFIX if C.is_la() else PREFIX
+
+
+def _ad_lines():
+    return LA_AD_LINES if C.is_la() else AD_LINES
+
+
+def _avenues():
+    return LA_AVENUES if C.is_la() else AVENUES
+
 _FONT = None
 
 
@@ -95,12 +135,15 @@ def text_mesh(body, name, size=0.5, extrude=0.012, align="CENTER",
 
 
 def _shop_name(R):
+    trades, surnames, prefix = _trades(), _surnames(), _prefix()
+    suffix = (["& SONS", "& CO", "BROS"] if not C.is_la()
+              else ["& SONS", "Y HIJOS", "& CO", "MARKET"])
     roll = R.random()
     if roll < 0.34:
-        return "{} {}".format(R.choice(SURNAMES), R.choice(["& SONS", "& CO", "BROS"]))
+        return "{} {}".format(R.choice(surnames), R.choice(suffix))
     if roll < 0.68:
-        return R.choice(TRADES)
-    return "{} {}".format(R.choice(PREFIX), R.choice(TRADES))
+        return R.choice(trades)
+    return "{} {}".format(R.choice(prefix), R.choice(trades))
 
 
 def _fit(body, max_w, size):
@@ -134,7 +177,7 @@ def build():
 
     # ---- ad copy on billboards -----------------------------------------
     for ob in [o for o in bpy.data.objects if o.name.startswith("BillboardFace_")]:
-        body = R.choice(AD_LINES)
+        body = R.choice(_ad_lines())
         size = _fit(body, 5.2, 0.78)
         loc = ob.location
         t = text_mesh(body, "BillboardText_{:04d}".format(n_board),
@@ -153,7 +196,8 @@ def build():
         street_no = int(round((it["y"] + half) / 20.0)) + 8
         ew = "{}{} ST".format(street_no, {1: "ST", 2: "ND", 3: "RD"}.get(
             street_no % 10 if street_no % 100 not in (11, 12, 13) else 0, "TH"))
-        ns = "{} AVE".format(AVENUES[int(abs(it["x"]) / 25.0) % len(AVENUES)])
+        _av = _avenues()
+        ns = "{} AVE".format(_av[int(abs(it["x"]) / 25.0) % len(_av)])
 
         px = it["x"] + it["w"] * 0.5 + 0.35
         py = it["y"] + it["w"] * 0.5 + 0.35

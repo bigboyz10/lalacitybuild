@@ -31,6 +31,7 @@ PIPELINE = [
     ("props",      "props",            "build"),
     ("utilities",  "utilities",        "build"),
     ("vehicles",   "vehicles",         "build"),
+    ("traffic",    "traffic",          "build"),
     ("vegetation", "vegetation",       "build"),
     ("trees",      "trees",            "build"),
     ("la",         "la_style",         "build"),

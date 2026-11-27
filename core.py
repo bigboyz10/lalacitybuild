@@ -38,6 +38,7 @@ CONFIG = {
     "band_lod": True,
     "save_blend": True,       # write city.blend at the end of a master run
     "blend_name": "city.blend",
+    "traffic_sim": True,      # traffic.py owns moving cars; False = old random pass
     "textures": True,         # use downloaded photographic PBR when available
     "engine": "auto",         # auto | eevee | cycles  (auto -> cycles headless)
     "samples_render": 64,     # cycles samples for a normal --render pass
@@ -100,6 +101,8 @@ def parse_argv():
             CONFIG["blend_name"] = nxt; CONFIG["save_blend"] = True; i += 2
         elif a == "--no-blend":
             CONFIG["save_blend"] = False; i += 1
+        elif a == "--no-traffic-sim":
+            CONFIG["traffic_sim"] = False; i += 1
         elif a == "--no-textures":
             CONFIG["textures"] = False; i += 1
         elif a == "--engine" and nxt is not None:

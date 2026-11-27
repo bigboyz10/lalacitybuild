@@ -374,7 +374,9 @@ def build():
                 x += R.uniform(6.0, 9.0)
 
     # ---- moving traffic in the lanes
-    for s in segs:
+    #  traffic.py resolves lane discipline, signal queues and headway;
+    #  this random pass only runs when that module is disabled.
+    for s in (segs if not CONFIG.get("traffic_sim", True) else []):
         L = s["b"] - s["a"]
         if L < 16.0:
             continue
