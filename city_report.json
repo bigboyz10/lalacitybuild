@@ -1,14 +1,14 @@
 {
- "objects": 292,
- "triangles": 191516,
+ "objects": 306,
+ "triangles": 242443,
  "collections": {
   "CITY": {
    "objects": 0,
    "triangles": 0
   },
   "CITY_Trees": {
-   "objects": 260,
-   "triangles": 163929
+   "objects": 274,
+   "triangles": 214856
   },
   "CITY_Trees_src": {
    "objects": 32,
@@ -17,7 +17,7 @@
  },
  "config": {
   "seed": 1337,
-  "city_size": 300.0,
+  "city_size": 220.0,
   "density": 0.85,
   "quality": "preview",
   "render": false,
