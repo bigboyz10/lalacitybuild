@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T18:35:26Z",
+  "updated": "2026-11-27T18:40:38Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -293,6 +293,11 @@
           "by": "agent-codex",
           "at": "2026-11-27T18:35:26Z",
           "text": "claimed"
+        },
+        {
+          "by": "agent-codex",
+          "at": "2026-11-27T18:40:38Z",
+          "text": "Audit tool added (tools/perf_audit.py): per-collection triangles, mesh-datablock counts, instancing ratio, and a duplicate-geometry detector keyed on a geometry signature. First finding: vehicles were not instanced at all. vehicles._place rebuilt the bmesh for every placement, so each car got its own datablock - 156 identical parked sedans meant 156 BVH builds and 156 copies of one shape. Fixed with a prototype cache (vehicles.place_instanced) keyed on the factory identity; traffic.py's wrapper now routes through it (one line). Measured A/B at size 320, same scene: unique vehicle meshes 1731 -> 78, unique vehicle triangles 110,388 -> 4,928, total mesh datablocks 2,441 -> 788. Object count and scene triangles are byte-identical (regress --quick still la 3,421/1,678,478 and nyc 3,721/2,651,331), so this is pure memory and BVH savings with no visual change."
         }
       ],
       "depends_on": []
