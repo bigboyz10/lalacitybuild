@@ -296,6 +296,15 @@ python3 agents/agentctl.py claim              # take the top ready task
 | `handoff <id> "where I stopped"` | release, keeping history |
 | `done <id> "summary"` | mark for review |
 | `release-stale` | reclaim dead agents' tasks |
+## Download the finished .blend
+
+No build required - grab the packed file from the release:
+
+**https://github.com/bigboyz10/lalacitybuild/releases/download/v1.0-city/city.blend**
+
+8,944 objects, 3,135,698 triangles, 199 textures and the HDRI packed inside,
+4 cameras set up. Opens in Blender 4.x with nothing else to install.
+
 ## Working inside Blender (add-on)
 
 The generator does not have to be driven from a terminal. `city_addon.py`
