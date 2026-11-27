@@ -15,12 +15,27 @@ BL="$PREFIX/blender/blender"
 
 mkdir -p "$PREFIX/bin" "$PREFIX/libs"
 
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
+VENDOR="$REPO/vendor/blender"
+
 if [ ! -x "$BL" ]; then
-  echo "==> downloading Blender ${VER}"
-  curl -sL -o /tmp/blender.tar.xz \
-    "https://download.blender.org/release/Blender${SERIES}/blender-${VER}-linux-x64.tar.xz"
+  TARBALL=/tmp/blender.tar.xz
+  # Prefer the copy vendored in the repo: no network, no re-download.
+  # GitHub caps single files at 100 MB, so it is stored as 90 MB parts.
+  if ls "$VENDOR"/blender-*.tar.xz.part* >/dev/null 2>&1; then
+    echo "==> reassembling Blender from vendor/blender (offline)"
+    cat "$VENDOR"/blender-*.tar.xz.part* > "$TARBALL"
+    if [ -f "$VENDOR/SHA256SUMS" ]; then
+      (cd "$VENDOR" && sha256sum -c SHA256SUMS --quiet) \
+        && echo "    checksums ok" || echo "    !! checksum mismatch"
+    fi
+  else
+    echo "==> downloading Blender ${VER}"
+    curl -sL -o "$TARBALL" \
+      "https://download.blender.org/release/Blender${SERIES}/blender-${VER}-linux-x64.tar.xz"
+  fi
   mkdir -p "$PREFIX/blender"
-  tar -xf /tmp/blender.tar.xz -C "$PREFIX/blender" --strip-components=1
+  tar -xf "$TARBALL" -C "$PREFIX/blender" --strip-components=1
   ln -sf "$BL" "$PREFIX/bin/blender"
   echo "==> installed to $BL"
 else
