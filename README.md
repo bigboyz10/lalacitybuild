@@ -263,3 +263,36 @@ real, readable type rather than coloured slabs.
 Type is set in Blender's built-in font and **converted to mesh**, so the signs
 are real geometry: they survive `.glb` export and need no font installed on
 whatever machine opens the file. Each string is auto-shrunk to fit its board.
+
+
+## Working with several agents
+
+Up to five AI agents share this repo through the GitHub remote. Each starts by
+reading `agents/AGENT_BRIEF.md`, then:
+
+```bash
+export AGENT_ID=agent-<name>                  # identity; autosave uses it too
+python3 agents/agentctl.py status             # see who holds what
+python3 agents/agentctl.py claim              # take the top ready task
+```
+
+- **`main` is shared.** Agents never push code to it; work goes to
+  `agent/<id>/<task-id>`. The board is the only file written on `main`, and
+  only through `agentctl`, which retries when another agent wins the race.
+- **Claims are atomic**, riding git's own ref-update race.
+- **Leases are 45 minutes.** `heartbeat` extends; `note` records progress.
+- **`handoff` releases a task with its notes intact** so another agent resumes
+  mid-stream instead of restarting. If an agent dies, the lease expires and
+  `release-stale` frees it.
+- **`autosave.sh` pushes to `agent/<AGENT_ID>/autosave`** when `AGENT_ID` is
+  set, so five one-second autosaves cannot stall each other on `main`.
+
+| Command | Does |
+|---|---|
+| `status [-v]` | board, with notes under `-v` |
+| `claim [--area F] [--size S]` | take the highest-priority ready task |
+| `note <id> "text"` | append a progress note |
+| `heartbeat` | extend the lease |
+| `handoff <id> "where I stopped"` | release, keeping history |
+| `done <id> "summary"` | mark for review |
+| `release-stale` | reclaim dead agents' tasks |
