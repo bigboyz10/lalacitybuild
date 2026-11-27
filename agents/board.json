@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T11:58:10Z",
+  "updated": "2026-11-27T11:58:14Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -19,6 +19,10 @@
     "agent-delta": {
       "last_seen": "2026-11-27T11:58:10Z",
       "task": "T-012"
+    },
+    "agent-epsilon": {
+      "last_seen": "2026-11-27T11:58:14Z",
+      "task": "T-003"
     }
   },
   "tasks": [
@@ -78,11 +82,17 @@
       ],
       "size": "M",
       "priority": 2,
-      "status": "todo",
-      "owner": null,
-      "lease_until": null,
-      "branch": null,
-      "notes": [],
+      "status": "claimed",
+      "owner": "agent-epsilon",
+      "lease_until": "2026-11-27T12:43:14Z",
+      "branch": "agent/agent-epsilon/t-003",
+      "notes": [
+        {
+          "by": "agent-epsilon",
+          "at": "2026-11-27T11:58:14Z",
+          "text": "claimed"
+        }
+      ],
       "depends_on": []
     },
     {
