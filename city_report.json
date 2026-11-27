@@ -1,19 +1,23 @@
 {
- "objects": 307,
- "triangles": 19720,
+ "objects": 555,
+ "triangles": 275636,
  "collections": {
   "CITY": {
    "objects": 0,
    "triangles": 0
   },
-  "CITY_Vehicles": {
-   "objects": 307,
-   "triangles": 19720
+  "CITY_Lib_src": {
+   "objects": 3,
+   "triangles": 3904
+  },
+  "CITY_Library": {
+   "objects": 552,
+   "triangles": 271732
   }
  },
  "config": {
   "seed": 1337,
-  "city_size": 220.0,
+  "city_size": 200.0,
   "density": 0.85,
   "quality": "preview",
   "render": false,
