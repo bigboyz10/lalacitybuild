@@ -347,3 +347,38 @@ normal Blender scene and art-direct it by hand. Save that as its own `.blend`
 `.blend` files are gitignored on purpose — the 1-second autosave would
 otherwise commit ~70 MB per save. They are published as GitHub Release assets
 instead.
+
+
+## Regression harness
+
+Before merging anything, prove the build still works:
+
+```bash
+source tools/env.sh
+python3 tools/regress.py                 # both looks, with determinism re-run
+python3 tools/regress.py --quick         # skip the re-run, ~2x faster
+python3 tools/regress.py --size 200      # smaller city
+python3 tools/regress.py --update        # re-record the baseline after real work
+```
+
+Exit codes: `0` pass, `1` regression, `2` toolchain problem — so it drops
+straight into CI or a pre-merge check.
+
+It asserts on **what was produced**, not on exit status, because a module can
+crash while the build still exits 0. That is not theoretical: a missing
+`GROUND_H` import once took out the entire buildings pass and the run reported
+success with a city that had no buildings in it.
+
+Per look (`la` and `nyc`) it checks:
+
+1. the process exits 0
+2. no module printed a `!!` failure line
+3. ten required collections exist and are non-empty
+4. object and triangle totals sit within ±22% of `tools/regress_baseline.json`
+5. the same seed twice yields identical counts
+
+The band is deliberately loose and the collection check deliberately strict: a
+module dropping out removes a collection outright, which the band alone would
+miss. Both failure modes were verified by injecting them — the real `GROUND_H`
+crash, and a silent `return 0` in `people.build()` that raised nothing and
+printed nothing. Both were caught, exit 1.
