@@ -191,6 +191,7 @@ with no visible difference at street distance.
 <!-- autosave verification -->
 
 
+<<<<<<< HEAD
 ## Asset library
 
 `tools/catalog.py` lists 64 CC0 photoscans from Poly Haven - trees, shrubs,
@@ -296,3 +297,47 @@ python3 agents/agentctl.py claim              # take the top ready task
 | `handoff <id> "where I stopped"` | release, keeping history |
 | `done <id> "summary"` | mark for review |
 | `release-stale` | reclaim dead agents' tasks |
+=======
+## Working inside Blender (add-on)
+
+The generator does not have to be driven from a terminal. `city_addon.py`
+registers a **City** tab in the 3D viewport sidebar.
+
+```
+Edit > Preferences > Add-ons > Install...  ->  pick city_addon.py  ->  tick it
+3D Viewport > press N > "City" tab
+```
+
+The panel gives you seed, size, density and quality as live fields, toggles for
+people / scanned props / vehicles / vegetation / textures, and buttons for:
+
+- **Build City** — wipe and generate
+- **Re-roll Seed** — random seed, rebuild
+- **Rebuild Module** — re-run just `people`, `roads`, `vehicles`… without
+  regenerating everything else
+- **Save .blend** — packs textures and writes a standalone file
+- **Download CC0 Assets** — runs both fetchers
+
+After a build, everything is ordinary Blender data: select, move, delete,
+re-material, sculpt, animate. Nothing is locked or procedural-only.
+
+## Scripts or .blend?
+
+Both, with different jobs.
+
+| | Scripts (`*.py`) | `.blend` |
+|---|---|---|
+| Role | source of truth | build output / working file |
+| Versioning | diffable, mergeable, ~400 KB | 70 MB binary, git cannot merge it |
+| Scale | 25,715 objects from one command | hand-placing that is not realistic |
+| Variation | any seed, any size, instantly | one frozen city |
+| Hand edits | not preserved on rebuild | exactly what it is good at |
+
+The practical workflow is: generate with the add-on, then treat the result as a
+normal Blender scene and art-direct it by hand. Save that as its own `.blend`
+(`city_edited.blend`) so a later rebuild cannot overwrite your work.
+
+`.blend` files are gitignored on purpose — the 1-second autosave would
+otherwise commit ~70 MB per save. They are published as GitHub Release assets
+instead.
+>>>>>>> fe986f4 (Add Blender add-on UI panel; keep .blend out of git; document both workflows)
