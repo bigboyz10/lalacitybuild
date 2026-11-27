@@ -359,6 +359,7 @@ PALETTE = {
     "concrete":       dict(base="#9b968f", roughness=0.86, bump=0.30, bump_scale=13, var_noise=4, grime=0.55, grime_tint=0.62),
     "concrete_lot":   dict(base="#8b867f", roughness=0.90, bump=0.26, bump_scale=8, var_noise=3, grime=0.6),
     "curb":           dict(base="#8f8a83", roughness=0.88, bump=0.30, bump_scale=15, var_noise=5, grime=0.5),
+    "paint_black":    dict(base="#141414", roughness=0.74, bump=0.10, var_noise=5, grime=0.30),
     "paint_white":    dict(base="#d8d4ca", roughness=0.80, bump=0.10, var_noise=6, grime=0.35),
     "paint_yellow":   dict(base="#d6ae35", roughness=0.80, bump=0.10, var_noise=6, grime=0.35),
     "paint_green":    dict(base="#2f6b45", roughness=0.82, bump=0.10, var_noise=6, grime=0.4),
