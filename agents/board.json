@@ -7,40 +7,7 @@
     "code_goes_on_agent_branches": true,
     "board_is_the_only_file_agents_write_on_main": true
   },
-  "agents": {
-    "agent-solo": {
-      "last_seen": "2026-11-27T11:57:23Z",
-      "task": "T-001"
-    },
-    "agent-alpha": {
-      "last_seen": "2026-11-27T11:58:06Z",
-      "task": "T-002"
-    },
-    "agent-delta": {
-      "last_seen": "2026-11-27T11:58:10Z",
-      "task": "T-012"
-    },
-    "agent-epsilon": {
-      "last_seen": "2026-11-27T11:58:14Z",
-      "task": "T-003"
-    },
-    "agent-gamma": {
-      "last_seen": "2026-11-27T11:58:18Z",
-      "task": "T-005"
-    },
-    "agent-beta": {
-      "last_seen": "2026-11-27T11:58:27Z",
-      "task": "T-009"
-    },
-    "agent-zeta": {
-      "last_seen": "2026-11-27T11:59:20Z",
-      "task": "T-003"
-    },
-    "agent-eta": {
-      "last_seen": "2026-11-27T11:59:47Z",
-      "task": "T-005"
-    }
-  },
+  "agents": {},
   "tasks": [
     {
       "id": "T-001",
@@ -52,17 +19,11 @@
       ],
       "size": "S",
       "priority": 1,
-      "status": "claimed",
-      "owner": "agent-solo",
-      "lease_until": "2026-11-27T12:42:23Z",
-      "branch": "agent/agent-solo/t-001",
-      "notes": [
-        {
-          "by": "agent-solo",
-          "at": "2026-11-27T11:57:23Z",
-          "text": "claimed"
-        }
-      ],
+      "status": "todo",
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
       "depends_on": []
     },
     {
@@ -76,17 +37,11 @@
       ],
       "size": "M",
       "priority": 1,
-      "status": "claimed",
-      "owner": "agent-alpha",
-      "lease_until": "2026-11-27T12:43:06Z",
-      "branch": "agent/agent-alpha/t-002",
-      "notes": [
-        {
-          "by": "agent-alpha",
-          "at": "2026-11-27T11:58:06Z",
-          "text": "claimed"
-        }
-      ],
+      "status": "todo",
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
       "depends_on": []
     },
     {
@@ -98,31 +53,16 @@
       ],
       "size": "M",
       "priority": 2,
-      "status": "claimed",
-      "owner": "agent-zeta",
-      "lease_until": "2026-11-27T12:44:20Z",
-      "branch": "agent/agent-zeta/t-003",
+      "status": "todo",
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
       "notes": [
-        {
-          "by": "agent-epsilon",
-          "at": "2026-11-27T11:58:14Z",
-          "text": "claimed"
-        },
-        {
-          "by": "agent-epsilon",
-          "at": "2026-11-27T11:58:33Z",
-          "text": "jitter hook found in emit_building(); brick + plaster varied, concrete_panel still uniform"
-        },
         {
           "by": "agent-epsilon",
           "at": "2026-11-27T11:58:35Z",
           "text": "HANDOFF: 60% done. Branch agent/agent-epsilon/t-003 has the working jitter for brick/plaster. Resume at emit_building() line ~280, concrete_panel + stone_old still need the pass.",
           "branch": "agent/agent-epsilon/t-003"
-        },
-        {
-          "by": "agent-zeta",
-          "at": "2026-11-27T11:59:20Z",
-          "text": "claimed"
         }
       ],
       "depends_on": []
@@ -156,22 +96,11 @@
       ],
       "size": "M",
       "priority": 2,
-      "status": "claimed",
-      "owner": "agent-eta",
-      "lease_until": "2026-11-27T12:44:47Z",
-      "branch": "agent/agent-eta/t-005",
-      "notes": [
-        {
-          "by": "agent-gamma",
-          "at": "2026-11-27T11:58:18Z",
-          "text": "claimed"
-        },
-        {
-          "by": "agent-eta",
-          "at": "2026-11-27T11:59:47Z",
-          "text": "reclaimed after expired lease"
-        }
-      ],
+      "status": "todo",
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
       "depends_on": []
     },
     {
@@ -235,17 +164,11 @@
       ],
       "size": "M",
       "priority": 2,
-      "status": "claimed",
-      "owner": "agent-beta",
-      "lease_until": "2026-11-27T12:43:27Z",
-      "branch": "agent/agent-beta/t-009",
-      "notes": [
-        {
-          "by": "agent-beta",
-          "at": "2026-11-27T11:58:27Z",
-          "text": "claimed"
-        }
-      ],
+      "status": "todo",
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
       "depends_on": []
     },
     {
@@ -290,17 +213,11 @@
       ],
       "size": "M",
       "priority": 1,
-      "status": "claimed",
-      "owner": "agent-delta",
-      "lease_until": "2026-11-27T12:43:10Z",
-      "branch": "agent/agent-delta/t-012",
-      "notes": [
-        {
-          "by": "agent-delta",
-          "at": "2026-11-27T11:58:10Z",
-          "text": "claimed"
-        }
-      ],
+      "status": "todo",
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
       "depends_on": []
     },
     {
