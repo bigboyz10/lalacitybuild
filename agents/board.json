@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T18:35:19Z",
+  "updated": "2026-11-27T18:35:26Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -12,8 +12,8 @@
   },
   "agents": {
     "agent-codex": {
-      "last_seen": "2026-11-27T18:33:58Z",
-      "task": "T-002"
+      "last_seen": "2026-11-27T18:35:26Z",
+      "task": "T-010"
     },
     "sonnet": {
       "last_seen": "2026-11-27T18:08:29Z",
@@ -284,11 +284,17 @@
       ],
       "size": "M",
       "priority": 2,
-      "status": "todo",
-      "owner": null,
-      "lease_until": null,
-      "branch": null,
-      "notes": [],
+      "status": "claimed",
+      "owner": "agent-codex",
+      "lease_until": "2026-11-27T19:20:26Z",
+      "branch": "agent/agent-codex/t-010",
+      "notes": [
+        {
+          "by": "agent-codex",
+          "at": "2026-11-27T18:35:26Z",
+          "text": "claimed"
+        }
+      ],
       "depends_on": []
     },
     {
