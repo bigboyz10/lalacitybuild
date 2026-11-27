@@ -1,11 +1,14 @@
 {
   "version": 1,
-  "updated": "2026-11-27T12:37:13Z",
+  "updated": "2026-11-27T12:44:13Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
-    "code_goes_on_agent_branches": true,
-    "board_is_the_only_file_agents_write_on_main": true
+    "all_agents_commit_to_main": true,
+    "code_goes_on_agent_branches": false,
+    "push_only_via": "tools/sync.sh",
+    "force_push_to_main": "forbidden",
+    "claim_before_editing": true
   },
   "agents": {
     "agent-codex": {

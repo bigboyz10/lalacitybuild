@@ -20,12 +20,40 @@ blender -b -P master.py -- --size 200 --no-render
 
 ## The three rules
 
-1. **Never push code to `main`.** Your work goes on the branch the board gives
-   you: `agent/<your-id>/<task-id>`. `main` is shared ground.
-2. **The board is the only file you write on `main`,** and only through
-   `agentctl.py`, which handles the race.
-3. **Claim before you touch anything.** If it is not claimed by you, another
-   agent may already be mid-edit in the same file.
+1. **Everyone commits to `main`.** The owner asked for a single shared branch,
+   so there are no per-agent code branches any more. You push to `main` like
+   everyone else — but only ever through `bash tools/sync.sh`, never with a
+   bare `git push`, and **never** with `--force`.
+2. **Claim before you touch anything.** The board is what stops two agents
+   editing the same file at the same second. A rebase can merge edits to
+   different files automatically; it cannot merge two rewrites of the same
+   function.
+3. **Commit small and sync often.** On a shared branch the cost of a conflict
+   scales with how long you sat on your changes. Minutes, not hours.
+
+## Working on a shared main
+
+```bash
+bash tools/sync.sh "T-00X: what you changed"
+```
+
+`sync.sh` commits, fetches, rebases your work on top of whatever arrived while
+you were busy, and pushes. If two agents push at the same instant git rejects
+the loser as non-fast-forward — never a silent overwrite — and the script
+rebases and retries with a jittered backoff. Verified with two agents pushing
+simultaneously: both edits ended up on `main`, in a linear history.
+
+If your change genuinely collides with someone else's, `sync.sh` **aborts and
+pushes nothing**, names the conflicting files, and leaves your tree and your
+commit exactly as they were:
+
+```
+[sync beta] CONFLICT with another agent in: shared_file.txt
+[sync beta] nothing was pushed and your tree is untouched.
+[sync beta] resolve with:  git fetch origin && git rebase origin/main
+```
+
+Resolve it deliberately, then run `sync.sh` again. Never "fix" it by forcing.
 
 ## Why claiming is safe
 
@@ -49,28 +77,32 @@ Write notes as you go. They are the handoff record.
 **When you are about to run out of context, budget or time:**
 
 ```bash
-git push origin HEAD:agent/<your-id>/t-003   # push the partial work first
+bash tools/sync.sh "T-003 WIP: jitter works for brick"   # land the partial work
 python3 agents/agentctl.py handoff T-003 "60% done: jitter works for brick,
-  plaster still uniform; see branch agent/me/t-003, continue in emit_building()"
+  plaster still uniform; continue in emit_building()"
 ```
 
-The task returns to `todo` with every note intact, and the branch stays on the
-remote. The next agent reads the notes, checks out the branch, and continues
-from where you stopped rather than starting over.
+Partial work on a shared branch must still *build*. If it does not, keep it
+local and hand off with a note saying so rather than breaking `main` for
+everyone.
+
+The task returns to `todo` with every note intact, and your commits are
+already on `main`. The next agent reads the notes and continues from where you
+stopped rather than starting over.
 
 **If you vanish without handing off,** the lease simply expires. Any agent can
-then run `release-stale` and reclaim the task; your pushed branch is still
-there, and your notes explain where you got to.
+then run `release-stale` and reclaim the task; whatever you synced is already
+on `main`, and your notes explain where you got to.
 
 ## Finishing
 
 ```bash
-git push origin HEAD:agent/<your-id>/<task-id>
-python3 agents/agentctl.py done T-003 "ready for merge: both looks build clean"
+bash tools/sync.sh "T-003: per-building window jitter"
+python3 agents/agentctl.py done T-003 "landed on main: both looks build clean"
 ```
 
-That marks it `review`. A human or a designated merge agent merges to `main`
-and runs `done --merged`.
+Your code is already on `main`, so `done` marks the task `review` for a second
+pair of eyes rather than gating a merge.
 
 ## Picking work when several agents are online
 
@@ -100,6 +132,7 @@ starts editing.
 - `--look la|nyc` switches the city style; LA edits are gated by `C.is_la()`.
 - Rendering uses Cycles on CPU headless; EEVEE needs a GPU and crawls here.
 - A sandbox reset wipes everything outside the workspace, Blender included.
-  `tools/setup_env.sh` rebuilds it; only tracked files survive.
+  `tools/setup_env.sh` rebuilds it, `tools/set_token.sh` re-arms pushes; only
+  tracked files survive, so sync before you stop.
 - The self-critique at the end of a master run lists the remaining realism
   gaps. Most open board tasks come straight from it.

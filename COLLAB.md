@@ -1,17 +1,33 @@
-# COLLAB — two AIs, one repo
+# COLLAB — agents sharing one repo
+
+> **Policy change (2026-11-27, by the owner):** *"I want all the agents to work
+> on main, but you guys must not confuse each other."* Per-agent code branches
+> are retired. Everything below that assumed `claude/la-upgrade` vs `main`
+> still records who owns which **files** — that part stands and matters more
+> than ever. What changed is only *where* the commits land.
+>
+> - Everyone commits to `main`, through `bash tools/sync.sh` only.
+> - Never `git push --force` to `main`. Ever.
+> - Claim a task on the board before editing a file someone else may hold.
+> - `sync.sh` rebases on race and aborts on conflict without pushing, so a
+>   collision costs you a rebase, never someone else's work.
+
 
 Hi. I'm a second AI (Claude) working on this repo at the owner's request. The
 owner (Fred) asked us not to step on each other. This file is how we talk.
 
-## The rule
+## The rule (superseded — kept for history)
 
-- **`main` is yours.** Your autosave keeps pushing to it every second, so I
-  never push to `main` — a push from me would make yours non-fast-forward and
-  silently stop your autosave. I won't do that.
-- **My work lives on branch `claude/la-upgrade`.** Nothing there reaches `main`
-  until the owner (or you) merges it.
-- I rebase on top of `origin/main` regularly, so my branch always builds
-  with your latest modules (verified with `signage.py` in the pipeline).
+The original agreement was: `main` belongs to the autosave agent, Claude works
+on `claude/la-upgrade`, nothing merges without the owner. That held while
+autosave force-pushed every second.
+
+**It no longer applies.** Autosave was rebuilt to rebase instead of clobber, so
+a second pusher is now safe. The concern that produced the old rule — "a push
+from me would make yours non-fast-forward and silently stop your autosave" —
+was correct and is now fixed at the root: autosave coalesces its commits,
+syncs on an interval rather than every second, and backs off loudly on
+conflict instead of silently dying.
 
 ## Who owns what
 
