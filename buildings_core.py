@@ -221,30 +221,70 @@ def emit_window(bm_frame, bm_glass, bm_sill, bm_balcony, bm_rail,
 def emit_shopfront(bm_frame, bm_glass, bm_bulk, bm_awning, bm_sign,
                    px, py, ux, uy, nx, ny, length, z0, R, style):
     rot = math.atan2(uy, ux)
-    # bulkhead
-    _box_bm(bm_bulk, px + nx * 0.10, py + ny * 0.10, z0 + 0.35,
-            length - 0.4, 0.24, 0.70, rot)
-    # glazing bays
-    bays = max(1, int((length - 0.8) / 2.4))
-    bw = (length - 0.8) / bays
-    for i in range(bays):
-        s = -length * 0.5 + 0.4 + bw * (i + 0.5)
-        cx = px + ux * s
-        cy = py + uy * s
-        _box_bm(bm_frame, cx + nx * 0.02, cy + ny * 0.02, z0 + 1.55,
-                bw - 0.10, 0.12, 2.30, rot)
-        _vquad_bm(bm_glass, cx, cy, z0 + 1.55, ux, uy, nx, ny,
-                  bw - 0.22, 2.10, out=0.08)
-    # awning
-    if R.random() < 0.6:
-        aw = length * 0.92
-        _box_bm(bm_awning, px + nx * 0.85, py + ny * 0.85, z0 + 3.05,
-                aw, 1.70, 0.10, rot)
-        _box_bm(bm_awning, px + nx * 1.68, py + ny * 1.68, z0 + 2.80,
-                aw, 0.08, 0.55, rot)
-    # sign band
-    _box_bm(bm_sign, px + nx * 0.14, py + ny * 0.14, z0 + 3.55,
-            length - 0.3, 0.16, 0.85, rot)
+    # --- split the frontage into separate tenancies ----------------------
+    # A block is not one shop repeated: it is several businesses of different
+    # widths, each with its own bay module, awning depth and door position.
+    run = length - 0.8
+    units = []
+    remaining = run
+    while remaining > 3.0:
+        u = min(remaining, R.uniform(4.0, 9.5))
+        if remaining - u < 3.0:
+            u = remaining
+        units.append(u)
+        remaining -= u
+    if not units:
+        units = [run]
+
+    cursor = -length * 0.5 + 0.4
+    for unit_len in units:
+        unit_mid = cursor + unit_len * 0.5
+        bay_target = R.uniform(1.8, 3.2)
+        bays = max(1, int(unit_len / bay_target))
+        bw = unit_len / bays
+        sill_h = R.uniform(0.55, 0.95)
+        head_h = R.uniform(2.95, 3.55)
+        gh = head_h - sill_h
+
+        # bulkhead for this tenancy only
+        _box_bm(bm_bulk, px + nx * 0.10 + ux * unit_mid,
+                py + ny * 0.10 + uy * unit_mid, z0 + sill_h * 0.5,
+                unit_len - 0.18, 0.24, sill_h, rot)
+
+        door_bay = R.randrange(bays)
+        for i in range(bays):
+            s = cursor + bw * (i + 0.5)
+            cx = px + ux * s
+            cy = py + uy * s
+            if i == door_bay:
+                _box_bm(bm_frame, cx + nx * 0.02, cy + ny * 0.02, z0 + 1.15,
+                        min(bw - 0.10, 1.35), 0.14, 2.30, rot)
+                _vquad_bm(bm_glass, cx, cy, z0 + 1.15, ux, uy, nx, ny,
+                          min(bw - 0.26, 1.12), 2.08, out=0.07)
+            else:
+                _box_bm(bm_frame, cx + nx * 0.02, cy + ny * 0.02,
+                        z0 + sill_h + gh * 0.5, bw - 0.10, 0.12, gh + 0.12, rot)
+                _vquad_bm(bm_glass, cx, cy, z0 + sill_h + gh * 0.5,
+                          ux, uy, nx, ny, bw - 0.24, gh - 0.08, out=0.08)
+
+        # per-tenancy awning, varied depth and drop
+        if R.random() < 0.55:
+            depth = R.uniform(1.1, 2.1)
+            drop = R.uniform(0.35, 0.75)
+            az = z0 + head_h + R.uniform(-0.1, 0.25)
+            _box_bm(bm_awning, px + nx * (depth * 0.5) + ux * unit_mid,
+                    py + ny * (depth * 0.5) + uy * unit_mid, az,
+                    unit_len - 0.3, depth, 0.09, rot)
+            _box_bm(bm_awning, px + nx * depth + ux * unit_mid,
+                    py + ny * depth + uy * unit_mid, az - drop * 0.5,
+                    unit_len - 0.3, 0.07, drop, rot)
+
+        # fascia above this unit
+        _box_bm(bm_sign, px + nx * 0.14 + ux * unit_mid,
+                py + ny * 0.14 + uy * unit_mid,
+                z0 + head_h + R.uniform(0.35, 0.65),
+                unit_len - 0.25, 0.16, R.uniform(0.60, 0.95), rot)
+        cursor += unit_len
 
 
 def emit_fire_escape(bm, px, py, ux, uy, nx, ny, length, z0, floors, R):
