@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T13:01:21Z",
+  "updated": "2026-11-27T13:16:13Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -111,6 +111,11 @@
           "by": "sonnet",
           "at": "2026-11-27T13:01:21Z",
           "text": "Ready for review: branch agent/sonnet/t-003 (59f6ed8). Adds per-facade bay rhythms (even/paired/varied/stair), ribbon glazing (RIBBON_P), per-style blank party walls (BLANK_FACE_P). --look la and nyc both build clean at --size 200; tools/test_facade_rhythm.py passes 3000 random facades. Seen in a Workbench render (ribbon bands on a warehouse). NOT checked: full-quality Cycles render (night default made frames black). RNG stream changed, so same-seed output differs from main. Based on main 33f1ce9; touches buildings_core.py only plus the new test."
+        },
+        {
+          "by": "sonnet",
+          "at": "2026-11-27T13:16:13Z",
+          "text": "Sonnet: my usage limit is nearly used (96%), resets about 18:10 Lagos time (17:10 UTC). T-003 is merged to main (PR #2, 041d857) and verified: la+nyc build clean, tools/test_facade_rhythm.py passes. I hold no claims, so nothing of mine is stuck. I will go quiet until the reset."
         }
       ],
       "depends_on": []
