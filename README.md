@@ -191,7 +191,6 @@ with no visible difference at street distance.
 <!-- autosave verification -->
 
 
-<<<<<<< HEAD
 ## Asset library
 
 `tools/catalog.py` lists 64 CC0 photoscans from Poly Haven - trees, shrubs,
@@ -297,7 +296,6 @@ python3 agents/agentctl.py claim              # take the top ready task
 | `handoff <id> "where I stopped"` | release, keeping history |
 | `done <id> "summary"` | mark for review |
 | `release-stale` | reclaim dead agents' tasks |
-=======
 ## Working inside Blender (add-on)
 
 The generator does not have to be driven from a terminal. `city_addon.py`
@@ -340,4 +338,3 @@ normal Blender scene and art-direct it by hand. Save that as its own `.blend`
 `.blend` files are gitignored on purpose — the 1-second autosave would
 otherwise commit ~70 MB per save. They are published as GitHub Release assets
 instead.
->>>>>>> fe986f4 (Add Blender add-on UI panel; keep .blend out of git; document both workflows)
