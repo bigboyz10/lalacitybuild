@@ -268,50 +268,70 @@ def build():
     spacing = 11.0          # real street-tree spacing
     sw = U["sidewalk"]
 
-    # --- street trees along block frontages ------------------------------
-    for blk in plan["blocks"]:
-        cx, cy, bw, bh = blk["cx"], blk["cy"], blk["w"], blk["h"]
-        district = blk.get("district", "midtown")
-        if district == "industrial" and R.random() < 0.55:
-            continue
-        for (along, cross, horiz) in ((bw, bh, True), (bh, bw, False)):
-            count = max(0, int(along / spacing))
-            for i in range(count):
-                if R.random() > 0.78 * density:
-                    continue
-                t = (i + 0.5) / max(1, count) - 0.5
-                for sgn in (-1, 1):
-                    if R.random() > 0.72:
+    # --- street trees -----------------------------------------------------
+    # The sidewalk module already cuts real tree pits; use them when present so
+    # trunks land in the pits instead of through paving.
+    pits = C.get_asset("tree_pits", [])
+    if pits:
+        for (x, y) in pits:
+            if R.random() > 0.90 * density:
+                continue
+            parts = pick("street_plane", "street_maple") \
+                if R.random() < 0.86 else pick("sapling", "bare")
+            if not parts:
+                continue
+            _instance(parts, "Tree_{:04d}".format(n), col,
+                      (x + R.gauss(0, 0.12), y + R.gauss(0, 0.12), BASE_Z),
+                      R.uniform(0, math.tau), R.uniform(0.86, 1.16))
+            n += 1
+    else:
+        # fallback: space them along block frontages at real street spacing
+        for blk in plan["blocks"]:
+            cx, cy, bw, bh = blk["cx"], blk["cy"], blk["w"], blk["h"]
+            if blk.get("district") == "industrial" and R.random() < 0.55:
+                continue
+            for (along, cross, horiz) in ((bw, bh, True), (bh, bw, False)):
+                count = max(0, int(along / spacing))
+                for i in range(count):
+                    if R.random() > 0.78 * density:
                         continue
-                    if horiz:
-                        x = cx + along * t
-                        y = cy + sgn * (cross * 0.5 + sw * 0.42)
-                    else:
-                        y = cy + along * t
-                        x = cx + sgn * (cross * 0.5 + sw * 0.42)
-                    if abs(x) > half or abs(y) > half:
-                        continue
-                    parts = pick("street_plane", "street_maple") \
-                        if R.random() < 0.88 else pick("sapling", "bare")
-                    if not parts:
-                        continue
-                    _instance(parts, "Tree_{:04d}".format(n), col,
-                              (x + R.gauss(0, 0.20), y + R.gauss(0, 0.20), BASE_Z),
-                              R.uniform(0, math.tau), R.uniform(0.86, 1.16))
-                    n += 1
+                    t = (i + 0.5) / max(1, count) - 0.5
+                    for sgn in (-1, 1):
+                        if R.random() > 0.72:
+                            continue
+                        if horiz:
+                            x = cx + along * t
+                            y = cy + sgn * (cross * 0.5 + sw * 0.42)
+                        else:
+                            y = cy + along * t
+                            x = cx + sgn * (cross * 0.5 + sw * 0.42)
+                        if abs(x) > half or abs(y) > half:
+                            continue
+                        parts = pick("street_plane", "street_maple")
+                        if not parts:
+                            continue
+                        _instance(parts, "Tree_{:04d}".format(n), col,
+                                  (x + R.gauss(0, 0.20), y + R.gauss(0, 0.20), BASE_Z),
+                                  R.uniform(0, math.tau), R.uniform(0.86, 1.16))
+                        n += 1
 
     # --- parks: mixed stands, bigger canopies ----------------------------
     for park in plan.get("parks", []):
-        px, py = park.get("cx", 0.0), park.get("cy", 0.0)
-        pw, ph = park.get("w", 40.0), park.get("h", 40.0)
-        for _ in range(int(max(6, (pw * ph) / 90.0) * density)):
+        x0, x1 = park["x0"], park["x1"]
+        y0, y1 = park["y0"], park["y1"]
+        area = max(1.0, (x1 - x0) * (y1 - y0))
+        for _ in range(int(max(6, area / 90.0) * density)):
             parts = pick("park_oak", "street_plane", "conifer", "poplar")
             if not parts:
                 continue
+            x = R.uniform(x0 + 3.0, x1 - 3.0)
+            y = R.uniform(y0 + 3.0, y1 - 3.0)
+            # keep the centre of the park open, as the bush pass does
+            if (x - park["cx"]) ** 2 + (y - park["cy"]) ** 2 < 36.0:
+                continue
             _instance(parts, "Tree_park_{:04d}".format(n), col,
-                      (px + R.uniform(-pw * 0.45, pw * 0.45),
-                       py + R.uniform(-ph * 0.45, ph * 0.45), BASE_Z),
-                      R.uniform(0, math.tau), R.uniform(0.90, 1.35))
+                      (x, y, BASE_Z), R.uniform(0, math.tau),
+                      R.uniform(0.90, 1.35))
             n += 1
 
     print("  trees: {} instances from {} grown variants".format(n, len(variants)))

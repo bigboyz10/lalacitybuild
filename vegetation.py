@@ -120,6 +120,14 @@ def _instance(variant, name, collection, loc, rot, scale):
 
 
 # -----------------------------------------------------------------------------
+def _trees_module_active():
+    """True when trees.py will run, so we skip the legacy blob canopies."""
+    only = CONFIG.get("only") or []
+    if only:
+        return "trees" in only
+    return os.path.exists(os.path.join(_HERE, "trees.py"))
+
+
 def build():
     collection = C.col("CITY_Vegetation")
     assets = C.ensure_collection("CITY_Assets", "CITY")
@@ -144,10 +152,17 @@ def build():
 
     n_street = n_park = 0
 
+    # Trees are grown by trees.py (M19) with real branching; the blob variants
+    # below are kept only as a fallback when that module is excluded.
+    if "trees" not in (CONFIG.get("only") or []) and _trees_module_active():
+        variants = []
+
     # ---- street trees in the pits cut by the sidewalk module
     for (x, y) in C.get_asset("tree_pits", []):
         if R.random() > 0.88 * detail:
             continue
+        if not variants:
+            break
         v = variants[R.choice([0, 0, 1, 2])]
         s = R.uniform(0.85, 1.15)
         _instance(v, "StreetTree_{:04d}_".format(n_street), collection,
@@ -162,6 +177,8 @@ def build():
             y = R.uniform(y0 + 4.0, y1 - 4.0)
             if (x - p["cx"]) ** 2 + (y - p["cy"]) ** 2 < 36.0:
                 continue
+            if not variants:
+                break
             v = variants[R.choice([0, 1, 1, 2])]
             _instance(v, "ParkTree_{:04d}_".format(n_park), collection,
                       (x, y, BASE_Z), R.uniform(0, math.tau), R.uniform(0.9, 1.35))
