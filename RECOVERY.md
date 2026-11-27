@@ -80,17 +80,32 @@ Hydration between turns was observed doing two destructive things. Both are now 
 The mirror path is hardcoded inside `snapshot.sh` rather than stored as a git remote, precisely so
 a config wipe cannot sever it.
 
-### The one gap left
+### Gap closed: off-sandbox backup is live
 
-The mirror lives in the same sandbox. It beats a workspace wipe, but a **full sandbox reset**
-destroys it along with everything else — that is the failure that caused this incident. Only an
-off-sandbox remote closes it:
+`origin` is `https://github.com/bigboyz10/lalacitybuild.git` and pushing works.
+GitHub is the only copy that survives a full sandbox reset, and three resets
+have already occurred during this project — each one destroyed the local
+mirror, the global git config and the Blender install, while the workspace
+itself was rehydrated from tracked files only. Anything gitignored (`build/`,
+renders, the .blend) does **not** come back.
+
+`restore.sh` now prefers GitHub and falls back to the local mirror.
+
+### After a reset, two commands
 
 ```bash
-git remote add origin <url>
-bash snapshot.sh "first push"
+bash tools/setup_env.sh        # reinstalls Blender, no root needed
+bash tools/set_token.sh        # re-arms GitHub pushes
 ```
 
-`snapshot.sh` then pushes there on every run, and records the URL so a config wipe cannot lose it.
-A GitHub connector was checked and is unsupported in this environment, so the URL has to come
-from you.
+The token cannot be stored durably inside the sandbox: a reset wipes
+`/home/user/.git-credentials` and the global git config, and the only files
+that survive are tracked ones — where a token must never go. Re-running
+`set_token.sh` is the deliberate trade-off.
+
+### Credential safety
+
+`.snapshot-remote` is committed, so `snapshot.sh` strips any `user:pass@` from
+the remote URL before writing it. Verified with a dummy token: the file stayed
+clean and the string never entered history. The real token lives only in
+`/home/user/.git-credentials`, mode 600, outside the workspace and gitignored.

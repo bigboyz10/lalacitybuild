@@ -14,11 +14,11 @@ fi
 mkdir -p "$TARGET"
 if [ -d "$TARGET/.git" ]; then
   echo "Repo already present in ${TARGET}; fetching any missing history."
-  git -C "$TARGET" fetch -q "$MIRROR" 'refs/heads/*:refs/remotes/mirror/*'
-  echo "Mirror history available under refs/remotes/mirror/*."
+  git -C "$TARGET" fetch -q "$SOURCE" 'refs/heads/*:refs/remotes/recovered/*'
+  echo "Recovered history available under refs/remotes/recovered/*."
 else
-  git clone -q "$MIRROR" "$TARGET"
-  echo "Restored ${TARGET} from mirror."
+  git clone -q "$SOURCE" "$TARGET"
+  echo "Restored ${TARGET} from ${SOURCE}."
 fi
 
 git -C "$TARGET" config user.name "Workspace"
