@@ -73,6 +73,7 @@ CRITIQUE = """
  6. Street trees still repeat their 17 silhouettes on long avenues; a
     species-per-street rule would read better.
 ==============================================================================
+"""
 
 
 
