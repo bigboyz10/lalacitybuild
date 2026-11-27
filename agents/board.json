@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T11:57:23Z",
+  "updated": "2026-11-27T11:58:06Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -11,6 +11,10 @@
     "agent-solo": {
       "last_seen": "2026-11-27T11:57:23Z",
       "task": "T-001"
+    },
+    "agent-alpha": {
+      "last_seen": "2026-11-27T11:58:06Z",
+      "task": "T-002"
     }
   },
   "tasks": [
@@ -48,11 +52,17 @@
       ],
       "size": "M",
       "priority": 1,
-      "status": "todo",
-      "owner": null,
-      "lease_until": null,
-      "branch": null,
-      "notes": [],
+      "status": "claimed",
+      "owner": "agent-alpha",
+      "lease_until": "2026-11-27T12:43:06Z",
+      "branch": "agent/agent-alpha/t-002",
+      "notes": [
+        {
+          "by": "agent-alpha",
+          "at": "2026-11-27T11:58:06Z",
+          "text": "claimed"
+        }
+      ],
       "depends_on": []
     },
     {
