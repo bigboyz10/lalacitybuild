@@ -29,15 +29,19 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 if _HERE not in sys.path:
     sys.path.insert(0, _HERE)
 
-PIPELINE_KEYS = [
-    ("terrain", "terrain"), ("roads", "roads"), ("sidewalks", "sidewalks"),
-    ("buildings", "buildings_types"), ("facade", "facade_detail"),
-    ("roofs", "roofs"), ("damage", "damage"), ("props", "props"),
-    ("utilities", "utilities"), ("vehicles", "vehicles"),
-    ("vegetation", "vegetation"), ("story", "story"),
-    ("models", "assets_models"), ("people", "people"),
-    ("lighting", "lighting"), ("enhance", "enhance"),
-]
+def _load_pipeline():
+    """Read the module list straight out of master.py so the panel never drifts
+    out of sync when the pipeline gains or loses a stage."""
+    try:
+        import master
+        importlib.reload(master)
+        return [(key, mod) for (key, mod, _fn) in master.PIPELINE]
+    except Exception:
+        return [("terrain", "terrain"), ("roads", "roads"),
+                ("sidewalks", "sidewalks"), ("buildings", "buildings_types")]
+
+
+PIPELINE_KEYS = _load_pipeline()
 
 
 # -----------------------------------------------------------------------------
@@ -60,6 +64,10 @@ class CityProps(PropertyGroup):
     build_models: BoolProperty(name="Scanned props", default=True)
     build_vehicles: BoolProperty(name="Vehicles", default=True)
     build_vegetation: BoolProperty(name="Vegetation", default=True)
+    build_trees: BoolProperty(name="Trees", default=True)
+    build_traffic: BoolProperty(name="Traffic", default=True)
+    build_signage: BoolProperty(name="Signage", default=True)
+    build_animals: BoolProperty(name="Animals", default=True)
     out_dir: StringProperty(name="Output", subtype="DIR_PATH",
                             default="//", description="Where renders and exports go")
 
@@ -97,7 +105,15 @@ def _enabled_keys(props):
         skip.add("vehicles")
     if not props.build_vegetation:
         skip.add("vegetation")
-    return [(k, m) for (k, m) in PIPELINE_KEYS if k not in skip]
+    if not props.build_trees:
+        skip.add("trees")
+    if not props.build_traffic:
+        skip.add("traffic")
+    if not props.build_signage:
+        skip.add("signage")
+    if not props.build_animals:
+        skip.add("animals")
+    return [(k, m) for (k, m) in _load_pipeline() if k not in skip]
 
 
 # -----------------------------------------------------------------------------
@@ -168,7 +184,7 @@ class CITY_OT_rebuild_part(Operator):
         props = context.scene.city_props
         C = _reload_core()
         _apply_props(C, props, only=[self.module])
-        name = dict(PIPELINE_KEYS).get(self.module, self.module)
+        name = dict(_load_pipeline()).get(self.module, self.module)
         try:
             mod = importlib.import_module(name)
             importlib.reload(mod)
@@ -262,6 +278,10 @@ class CITY_PT_main(Panel):
         grid.prop(props, "build_models")
         grid.prop(props, "build_vehicles")
         grid.prop(props, "build_vegetation")
+        grid.prop(props, "build_trees")
+        grid.prop(props, "build_traffic")
+        grid.prop(props, "build_signage")
+        grid.prop(props, "build_animals")
         box.prop(props, "use_textures")
 
         layout.separator()
@@ -273,7 +293,7 @@ class CITY_PT_main(Panel):
         layout.separator()
         layout.label(text="Rebuild one module")
         flow = layout.grid_flow(columns=2, even_columns=True, align=True)
-        for key, _mod in PIPELINE_KEYS:
+        for key, _mod in _load_pipeline():
             op = flow.operator("city.rebuild_part", text=key.capitalize())
             op.module = key
 

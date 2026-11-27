@@ -1,113 +1,124 @@
 {
-<<<<<<< HEAD
- "objects": 22,
- "triangles": 6620,
-=======
- "objects": 1516,
- "triangles": 382370,
->>>>>>> 30f4f06 (autosave 2026-11-27 12:12:48 UTC)
+ "objects": 1777,
+ "triangles": 727006,
  "collections": {
   "CITY": {
    "objects": 0,
    "triangles": 0
   },
-<<<<<<< HEAD
-  "CITY_Signage": {
-   "objects": 10,
-   "triangles": 5464
+  "CITY_Animals": {
+   "objects": 108,
+   "triangles": 24830
   },
-  "CITY_Story": {
-   "objects": 12,
-   "triangles": 1156
-  }
- },
- "config": {
-  "seed": 1337,
-  "city_size": 200.0,
-  "density": 0.85,
-=======
+  "CITY_Animals_src": {
+   "objects": 11,
+   "triangles": 2706
+  },
   "CITY_Assets": {
    "objects": 6,
    "triangles": 1096
   },
   "CITY_Buildings": {
-   "objects": 54,
-   "triangles": 41428
+   "objects": 5,
+   "triangles": 188
   },
   "CITY_Damage": {
-   "objects": 4,
-   "triangles": 930
+   "objects": 3,
+   "triangles": 24
   },
   "CITY_Enhance": {
-   "objects": 17,
-   "triangles": 4076
+   "objects": 8,
+   "triangles": 2102
   },
   "CITY_FacadeDetail": {
-   "objects": 18,
-   "triangles": 3076
+   "objects": 7,
+   "triangles": 162
+  },
+  "CITY_LA": {
+   "objects": 51,
+   "triangles": 38434
+  },
+  "CITY_LA_src": {
+   "objects": 19,
+   "triangles": 13709
+  },
+  "CITY_Lib_src": {
+   "objects": 27,
+   "triangles": 58328
+  },
+  "CITY_Library": {
+   "objects": 389,
+   "triangles": 442958
   },
   "CITY_Lighting": {
-   "objects": 19,
-   "triangles": 1734
-  },
-  "CITY_Models": {
-   "objects": 128,
-   "triangles": 163222
-  },
-  "CITY_Models_src": {
-   "objects": 13,
-   "triangles": 43914
+   "objects": 3,
+   "triangles": 56
   },
   "CITY_People": {
-   "objects": 25,
-   "triangles": 8900
+   "objects": 17,
+   "triangles": 6052
   },
   "CITY_People_src": {
    "objects": 14,
    "triangles": 4984
   },
   "CITY_Props": {
-   "objects": 20,
-   "triangles": 1836
+   "objects": 14,
+   "triangles": 1776
   },
   "CITY_Roads": {
-   "objects": 43,
-   "triangles": 2482
+   "objects": 23,
+   "triangles": 1423
   },
   "CITY_Roofs": {
-   "objects": 64,
-   "triangles": 1266
+   "objects": 13,
+   "triangles": 298
   },
   "CITY_Sidewalks": {
-   "objects": 10,
-   "triangles": 2824
+   "objects": 8,
+   "triangles": 2500
+  },
+  "CITY_Signage": {
+   "objects": 5,
+   "triangles": 1892
   },
   "CITY_Story": {
-   "objects": 11,
-   "triangles": 1120
+   "objects": 7,
+   "triangles": 1080
   },
   "CITY_Terrain": {
-   "objects": 519,
-   "triangles": 27068
+   "objects": 496,
+   "triangles": 25202
+  },
+  "CITY_Traffic": {
+   "objects": 355,
+   "triangles": 22636
+  },
+  "CITY_Trees": {
+   "objects": 48,
+   "triangles": 51904
+  },
+  "CITY_Trees_src": {
+   "objects": 16,
+   "triangles": 13914
   },
   "CITY_Utilities": {
-   "objects": 56,
-   "triangles": 3532
+   "objects": 20,
+   "triangles": 1912
   },
   "CITY_Vegetation": {
-   "objects": 289,
-   "triangles": 55894
+   "objects": 7,
+   "triangles": 748
   },
   "CITY_Vehicles": {
-   "objects": 206,
-   "triangles": 12988
+   "objects": 97,
+   "triangles": 6092
   }
  },
  "config": {
-  "seed": 99,
-  "city_size": 180.0,
-  "density": 0.6000000238418579,
->>>>>>> 30f4f06 (autosave 2026-11-27 12:12:48 UTC)
+  "seed": 1337,
+  "city_size": 150.0,
+  "density": 0.5,
   "quality": "preview",
   "render": false,
   "export": false,
@@ -126,7 +137,7 @@
   "textures": true,
   "engine": "auto",
   "samples_render": 64,
-  "look": "nyc",
+  "look": "la",
   "time": null,
   "damage": false
  }
