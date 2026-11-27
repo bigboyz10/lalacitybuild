@@ -1,163 +1,309 @@
 {
   "version": 1,
-  "updated": "2026-11-27T12:00:00Z",
+  "updated": "2026-11-27T11:57:23Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
     "code_goes_on_agent_branches": true,
     "board_is_the_only_file_agents_write_on_main": true
   },
-  "agents": {},
+  "agents": {
+    "agent-solo": {
+      "last_seen": "2026-11-27T11:57:23Z",
+      "task": "T-001"
+    }
+  },
   "tasks": [
     {
       "id": "T-001",
       "title": "Fix road-kind mismatch between core._road_kind and traffic.HEADWAY",
       "detail": "core._road_kind() emits arterial|collector|residential, but traffic.HEADWAY keys are arterial|avenue|street|lane. 'collector' and 'residential' silently fall back to 'street', so headway differentiation is partly dead. Align the vocabularies in one place.",
-      "area": ["core.py", "traffic.py"],
+      "area": [
+        "core.py",
+        "traffic.py"
+      ],
       "size": "S",
       "priority": 1,
-      "status": "todo",
-      "owner": null, "lease_until": null, "branch": null, "notes": [], "depends_on": []
+      "status": "claimed",
+      "owner": "agent-solo",
+      "lease_until": "2026-11-27T12:42:23Z",
+      "branch": "agent/agent-solo/t-001",
+      "notes": [
+        {
+          "by": "agent-solo",
+          "at": "2026-11-27T11:57:23Z",
+          "text": "claimed"
+        }
+      ],
+      "depends_on": []
     },
     {
       "id": "T-002",
       "title": "Merge claude/la-upgrade into main",
       "detail": "Branch claude/la-upgrade carries the LA look behind C.is_la() gates. Rebase on main, verify --look la and --look nyc both build clean, then merge. Coordinate in collab/FROM_OTHER_AI.md before merging.",
-      "area": ["la_style.py", "core.py", "master.py"],
+      "area": [
+        "la_style.py",
+        "core.py",
+        "master.py"
+      ],
       "size": "M",
       "priority": 1,
       "status": "todo",
-      "owner": null, "lease_until": null, "branch": null, "notes": [], "depends_on": []
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
+      "depends_on": []
     },
     {
       "id": "T-003",
       "title": "Per-building window-size jitter (critique 1)",
       "detail": "Every window on a building is identical, so elevations read as wallpaper. Add a per-building jitter pass over opening size and rhythm; mix punched openings, ribbon windows and blank party walls by style.",
-      "area": ["buildings_core.py"],
+      "area": [
+        "buildings_core.py"
+      ],
       "size": "M",
       "priority": 2,
       "status": "todo",
-      "owner": null, "lease_until": null, "branch": null, "notes": [], "depends_on": []
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
+      "depends_on": []
     },
     {
       "id": "T-004",
       "title": "Window interior parallax (critique 2)",
       "detail": "Glass is a flat quad so windows read as decals at eye level. Add a parallax interior shader or shallow recessed interior boxes with a depth cue.",
-      "area": ["buildings_core.py", "core.py"],
+      "area": [
+        "buildings_core.py",
+        "core.py"
+      ],
       "size": "M",
       "priority": 3,
       "status": "todo",
-      "owner": null, "lease_until": null, "branch": null, "notes": [], "depends_on": ["T-003"]
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
+      "depends_on": [
+        "T-003"
+      ]
     },
     {
       "id": "T-005",
       "title": "Ground-floor shopfront variety (critique 3)",
       "detail": "Shopfronts repeat the same bay width and awning depth on every block. Vary bay rhythm, awning depth/colour, stall-riser height, security shutters and recessed entrances.",
-      "area": ["buildings_core.py", "signage.py"],
+      "area": [
+        "buildings_core.py",
+        "signage.py"
+      ],
       "size": "M",
       "priority": 2,
       "status": "todo",
-      "owner": null, "lease_until": null, "branch": null, "notes": [], "depends_on": []
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
+      "depends_on": []
     },
     {
       "id": "T-006",
       "title": "Construction sequencing (critique 4)",
       "detail": "Cranes exist but nothing is half-built. Add buildings under construction: exposed slabs, formwork, scaffold wrap, material lay-down areas, site hoarding.",
-      "area": ["enhance.py", "buildings_types.py"],
+      "area": [
+        "enhance.py",
+        "buildings_types.py"
+      ],
       "size": "L",
       "priority": 3,
       "status": "todo",
-      "owner": null, "lease_until": null, "branch": null, "notes": [], "depends_on": []
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
+      "depends_on": []
     },
     {
       "id": "T-007",
       "title": "Elevated highway ramps, gantries, expansion joints (critique 10)",
       "detail": "The elevated highway is a clean toy: no on/off ramps, no signage gantries, no expansion-joint noise, no pier variation.",
-      "area": ["terrain.py", "roads.py"],
+      "area": [
+        "terrain.py",
+        "roads.py"
+      ],
       "size": "L",
       "priority": 3,
       "status": "todo",
-      "owner": null, "lease_until": null, "branch": null, "notes": [], "depends_on": []
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
+      "depends_on": []
     },
     {
       "id": "T-008",
       "title": "Puddle reflections (critique 9)",
       "detail": "Puddles are flat discs that do not reflect. Give them a proper low-roughness layer and enable the reflection path for the active engine.",
-      "area": ["story.py", "core.py"],
+      "area": [
+        "story.py",
+        "core.py"
+      ],
       "size": "S",
       "priority": 3,
       "status": "todo",
-      "owner": null, "lease_until": null, "branch": null, "notes": [], "depends_on": []
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
+      "depends_on": []
     },
     {
       "id": "T-009",
       "title": "Canopy variety for street trees (critique 7)",
       "detail": "Street trees are evenly spaced with three repeating silhouettes. Add spacing jitter, species mix by district, seasonal/health variation and some missing or stumped slots.",
-      "area": ["trees.py", "vegetation.py"],
+      "area": [
+        "trees.py",
+        "vegetation.py"
+      ],
       "size": "M",
       "priority": 2,
       "status": "todo",
-      "owner": null, "lease_until": null, "branch": null, "notes": [], "depends_on": []
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
+      "depends_on": []
     },
     {
       "id": "T-010",
       "title": "Render performance pass: LOD + instancing audit",
       "detail": "A 900 m city is 3.7M triangles and renders slowly on CPU. Audit which collections dominate, push far geometry to LOD proxies, and confirm every repeated object is a linked duplicate rather than a copy.",
-      "area": ["core.py", "assets_models.py"],
+      "area": [
+        "core.py",
+        "assets_models.py"
+      ],
       "size": "M",
       "priority": 2,
       "status": "todo",
-      "owner": null, "lease_until": null, "branch": null, "notes": [], "depends_on": []
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
+      "depends_on": []
     },
     {
       "id": "T-011",
       "title": "Pedestrian variety: gait, props, groups",
       "detail": "people.py has 14 silhouettes in 5 poses. Add carried props (bags, umbrellas, strollers), grouped conversations facing each other, children scaled correctly, and wheelchair/bike users.",
-      "area": ["people.py"],
+      "area": [
+        "people.py"
+      ],
       "size": "M",
       "priority": 2,
       "status": "todo",
-      "owner": null, "lease_until": null, "branch": null, "notes": [], "depends_on": []
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
+      "depends_on": []
     },
     {
       "id": "T-012",
       "title": "Deterministic regression harness",
       "detail": "No automated check that a build still works. Add a headless smoke test: build a small city for --look la and --look nyc, assert object/triangle counts land in expected bands and that no module reports a failure, so five agents can verify before merging.",
-      "area": ["tools/"],
+      "area": [
+        "tools/"
+      ],
       "size": "M",
       "priority": 1,
       "status": "todo",
-      "owner": null, "lease_until": null, "branch": null, "notes": [], "depends_on": []
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
+      "depends_on": []
     },
     {
       "id": "T-013",
       "title": "Interior clutter visible through ground-floor glass",
       "detail": "Shops read as empty boxes. Add low-detail interior clutter behind ground-floor glazing: shelving, counters, hanging stock, lit signage.",
-      "area": ["buildings_core.py", "story.py"],
+      "area": [
+        "buildings_core.py",
+        "story.py"
+      ],
       "size": "M",
       "priority": 3,
       "status": "todo",
-      "owner": null, "lease_until": null, "branch": null, "notes": [], "depends_on": ["T-004"]
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
+      "depends_on": [
+        "T-004"
+      ]
     },
     {
       "id": "T-014",
       "title": "Weather and wetness variants",
       "detail": "Add --weather dry|wet|overcast: wet road darkening and specular, puddle density, overcast sky swap, and damp patches on sidewalks.",
-      "area": ["lighting.py", "core.py", "story.py"],
+      "area": [
+        "lighting.py",
+        "core.py",
+        "story.py"
+      ],
       "size": "M",
       "priority": 3,
       "status": "todo",
-      "owner": null, "lease_until": null, "branch": null, "notes": [], "depends_on": ["T-008"]
+      "owner": null,
+      "lease_until": null,
+      "branch": null,
+      "notes": [],
+      "depends_on": [
+        "T-008"
+      ]
     }
   ],
   "done": [
-    {"id": "D-001", "title": "People module (critique 8)", "by": "main-agent"},
-    {"id": "D-002", "title": "Readable signage (critique 6)", "by": "main-agent"},
-    {"id": "D-003", "title": "Traffic lane discipline and queueing (critique 5)", "by": "main-agent"},
-    {"id": "D-004", "title": "Scanned CC0 model library with decimation", "by": "main-agent"},
-    {"id": "D-005", "title": "Photographic PBR materials + HDRI sky", "by": "main-agent"},
-    {"id": "D-006", "title": "Lofted realistic vehicle bodies", "by": "main-agent"},
-    {"id": "D-007", "title": ".blend output with packed textures", "by": "main-agent"},
-    {"id": "D-008", "title": "GitHub push + 1s autosave durability", "by": "main-agent"}
+    {
+      "id": "D-001",
+      "title": "People module (critique 8)",
+      "by": "main-agent"
+    },
+    {
+      "id": "D-002",
+      "title": "Readable signage (critique 6)",
+      "by": "main-agent"
+    },
+    {
+      "id": "D-003",
+      "title": "Traffic lane discipline and queueing (critique 5)",
+      "by": "main-agent"
+    },
+    {
+      "id": "D-004",
+      "title": "Scanned CC0 model library with decimation",
+      "by": "main-agent"
+    },
+    {
+      "id": "D-005",
+      "title": "Photographic PBR materials + HDRI sky",
+      "by": "main-agent"
+    },
+    {
+      "id": "D-006",
+      "title": "Lofted realistic vehicle bodies",
+      "by": "main-agent"
+    },
+    {
+      "id": "D-007",
+      "title": ".blend output with packed textures",
+      "by": "main-agent"
+    },
+    {
+      "id": "D-008",
+      "title": "GitHub push + 1s autosave durability",
+      "by": "main-agent"
+    }
   ]
 }
