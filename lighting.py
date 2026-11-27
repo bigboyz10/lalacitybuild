@@ -21,8 +21,8 @@ from buildings_core import BASE_Z, FLOOR_H, GROUND_H, STYLES
 
 # time of day: LA defaults to bright daylight, the original city stays a dusk/night scene
 TOD = {
-    "day":    dict(elev=46.0, sky_int=1.0, bg=1.0, sun=4.3, color=(1.0, 0.95, 0.86),
-                   haze=0.00030, exposure=0.0, air=1.0, dust=1.8, lamps=False),
+    "day":    dict(elev=34.0, sky_int=1.0, bg=0.85, sun=3.4, color=(1.0, 0.94, 0.84),
+                   haze=0.00030, exposure=-0.7, air=1.0, dust=1.6, lamps=False),
     "golden": dict(elev=10.0, sky_int=1.0, bg=0.95, sun=3.4, color=(1.0, 0.76, 0.50),
                    haze=0.00045, exposure=0.15, air=1.0, dust=2.6, lamps=False),
     "night":  dict(elev=11.0, sky_int=0.35, bg=0.55, sun=3.2, color=(1.0, 0.86, 0.68),
@@ -112,19 +112,30 @@ def build_world():
         except Exception:
             pass
 
+    if not T["lamps"]:
+        # the Sun lamp is the direct light; letting the sky's own sun disc light
+        # the scene as well would double the sun and blow every roof out
+        try:
+            sky.sun_disc = False
+        except Exception:
+            pass
     nt.links.new(sky.outputs[0], bg.inputs["Color"])
     bg.inputs["Strength"].default_value = T["bg"]
     nt.links.new(bg.outputs[0], out.inputs["Surface"])
 
-    # aerial haze
-    vol = nt.nodes.new("ShaderNodeVolumePrincipled")
-    vol.inputs["Color"].default_value = (0.72, 0.78, 0.86, 1.0)
-    vol.inputs["Density"].default_value = T["haze"]
-    try:
-        vol.inputs["Anisotropy"].default_value = 0.35
-    except Exception:
-        pass
-    nt.links.new(vol.outputs[0], out.inputs["Volume"])
+    # aerial haze. A world volume is unbounded: sun and sky rays traverse it all
+    # the way to infinity, so in Cycles even a tiny density extinguishes the whole
+    # daylight (black render). LA daylight therefore uses a bounded haze box
+    # (build_haze_box) instead; the night/NYC look keeps the original behaviour.
+    if T["lamps"] or not C.is_la():
+        vol = nt.nodes.new("ShaderNodeVolumePrincipled")
+        vol.inputs["Color"].default_value = (0.72, 0.78, 0.86, 1.0)
+        vol.inputs["Density"].default_value = T["haze"]
+        try:
+            vol.inputs["Anisotropy"].default_value = 0.35
+        except Exception:
+            pass
+        nt.links.new(vol.outputs[0], out.inputs["Volume"])
     return world
 
 

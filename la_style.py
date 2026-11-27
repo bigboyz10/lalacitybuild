@@ -287,6 +287,33 @@ def build_palms(R, plan):
 # -----------------------------------------------------------------------------
 # backdrop: mountains + apron
 # -----------------------------------------------------------------------------
+def _tint_mountain(mat):
+    """Height-graded colour: hazy tan foothills -> dusty brown -> cool grey summits."""
+    if mat is None or not mat.use_nodes:
+        return
+    nt = mat.node_tree
+    bsdf = next((n for n in nt.nodes if n.bl_idname == "ShaderNodeBsdfPrincipled"), None)
+    if bsdf is None:
+        return
+    geo = nt.nodes.new("ShaderNodeNewGeometry")
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    mapr = nt.nodes.new("ShaderNodeMapRange")
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    mapr.inputs["From Min"].default_value = 0.0
+    mapr.inputs["From Max"].default_value = 900.0
+    el = ramp.color_ramp.elements
+    el[0].position, el[0].color = 0.0, (0.60, 0.55, 0.47, 1.0)
+    el[1].position, el[1].color = 1.0, (0.34, 0.35, 0.38, 1.0)
+    mid = el.new(0.35)
+    mid.color = (0.42, 0.33, 0.25, 1.0)
+    nt.links.new(geo.outputs["Position"], sep.inputs["Vector"])
+    nt.links.new(sep.outputs["Z"], mapr.inputs["Value"])
+    nt.links.new(mapr.outputs["Result"], ramp.inputs["Fac"])
+    for l in list(bsdf.inputs["Base Color"].links):
+        nt.links.remove(l)
+    nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+
+
 def build_backdrop(R, plan):
     col = C.col("CITY_LA")
     half = plan["half"]
@@ -327,7 +354,8 @@ def build_backdrop(R, plan):
         for i in range(n_theta):
             i2 = (i + 1) % n_theta
             bm.faces.new((a[i], a[i2], b[i2], b[i]))
-    _finish("LA_Mountains", bm, "la_mountain", col, smooth=True)
+    mt = _finish("LA_Mountains", bm, "la_mountain", col, smooth=True)
+    _tint_mountain(mt.data.materials[0] if mt else None)
 
     # dusty apron so the horizon is ground, not void
     bm2 = bmesh.new()
