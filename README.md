@@ -184,3 +184,5 @@ source is decimated once on import to a per-key budget (`TRI_BUDGET` in
 `assets_models.py`). That cut the scanned layer from 9.2M triangles to 420k
 with no visible difference at street distance.
 
+
+<!-- autosave verification -->
