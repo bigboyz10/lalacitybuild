@@ -14,7 +14,8 @@ MODELS = {
     "tree_island_01":   dict(slug="island_tree_01",        height=8.5,  tris=6000,  tags=["tree"]),
     "tree_island_02":   dict(slug="island_tree_02",        height=7.2,  tris=6000,  tags=["tree"]),
     "tree_island_03":   dict(slug="island_tree_03",        height=9.0,  tris=6000,  tags=["tree"]),
-    "tree_fir":         dict(slug="fir_tree_01",           height=11.0, tris=7000,  tags=["tree"]),
+    # fir_tree_01 is excluded on purpose: 465 MB / ~8M triangles, which fails
+    # to import even with 3.6 GB free. The island trees cover the same role.
     "tree_fir_sapling": dict(slug="fir_sapling_medium",    height=3.2,  tris=3000,  tags=["tree", "sapling"]),
     "tree_dead":        dict(slug="dead_tree_trunk",       height=5.5,  tris=2500,  tags=["tree", "dead"]),
     "tree_dead_02":     dict(slug="dead_tree_trunk_02",    height=4.8,  tris=2500,  tags=["tree", "dead"]),
