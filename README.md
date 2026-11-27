@@ -93,6 +93,7 @@ build-only runs. Force either with `--engine eevee` / `--engine cycles`.
 | vehicles | `vehicles.py` | 16 vehicle types, parked + moving + abandoned |
 | vegetation | `vegetation.py` | street/park trees, hedges, weeds, ivy, moss, stumps |
 | story | `story.py` | signs, billboards, graffiti, posters, litter, puddles |
+| trees | `trees.py` | branching trees grown from botanical rules, 7 species |
 | models | `assets_models.py` | places the 64-asset CC0 scan library: trees, shrubs, flowers, rocks, furniture, clutter |
 | people | `people.py` | proportioned pedestrians: walking, standing, sitting, leaning, on phones |
 | animals | `animals.py` | pigeons, gulls, crows, sparrows, dogs, cats, rats - perched, flocking, in flight |
@@ -218,3 +219,29 @@ SHA-256 sums and installs it with no network and no root:
 ```bash
 bash tools/setup_env.sh && source tools/env.sh
 ```
+
+
+### Trees
+
+`trees.py` replaces the original sphere-on-a-stick canopies. Branches are grown
+recursively from real botanical rules rather than modelled:
+
+- **da Vinci's rule** — parent radius squared equals the sum of child radii
+  squared, so limbs taper the way wood actually does
+- **Phyllotaxis** — successive children rotate 137.5 degrees around the parent,
+  which is what stops a tree reading as a flat candelabra
+- **Gravitropism** — thinning shoots bend back toward vertical, so outer twigs
+  lift rather than drooping in straight lines
+- **Apical dominance** varies by species: a poplar holds one leader, an oak
+  forks low and spreads
+- **Root flare** — buttress roots at the base, because a trunk meeting the
+  ground as a clean cylinder is one of the clearest giveaways of a fake tree
+
+Seven species (street plane, street maple, park oak, poplar, conifer, sapling,
+bare winter) at roughly 1,700 triangles each, instanced across the city. Leaves
+are crossed quad clusters at the twig tips, so canopies break up against the
+sky instead of reading as solid balls.
+
+Street trees land in the pits the sidewalk module cuts, so trunks never punch
+through paving. Poly Haven's photoscanned trees were rejected deliberately:
+about 500 MB of geometry each, unusable at city scale.
