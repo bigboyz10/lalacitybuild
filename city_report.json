@@ -1,14 +1,14 @@
 {
- "objects": 251,
- "triangles": 380622,
+ "objects": 234,
+ "triangles": 241278,
  "collections": {
   "CITY": {
    "objects": 0,
    "triangles": 0
   },
   "CITY_Buildings": {
-   "objects": 251,
-   "triangles": 380622
+   "objects": 234,
+   "triangles": 241278
   }
  },
  "config": {
