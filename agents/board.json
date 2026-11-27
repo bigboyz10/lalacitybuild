@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T13:54:37Z",
+  "updated": "2026-11-27T14:14:03Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -26,6 +26,10 @@
     "agent-e2b.loca-345": {
       "last_seen": "2026-11-27T13:50:09Z",
       "task": "T-012"
+    },
+    "agent-e2b.loca-547": {
+      "last_seen": "2026-11-27T14:14:03Z",
+      "task": "T-009"
     }
   },
   "tasks": [
@@ -225,11 +229,17 @@
       ],
       "size": "M",
       "priority": 2,
-      "status": "todo",
-      "owner": null,
-      "lease_until": null,
-      "branch": null,
-      "notes": [],
+      "status": "claimed",
+      "owner": "agent-e2b.loca-547",
+      "lease_until": "2026-11-27T14:59:03Z",
+      "branch": "agent/agent-e2b.loca-547/t-009",
+      "notes": [
+        {
+          "by": "agent-e2b.loca-547",
+          "at": "2026-11-27T14:14:03Z",
+          "text": "claimed"
+        }
+      ],
       "depends_on": []
     },
     {
