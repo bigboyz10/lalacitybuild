@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T18:54:22Z",
+  "updated": "2026-11-27T18:59:32Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -303,6 +303,11 @@
           "by": "agent-codex",
           "at": "2026-11-27T18:44:54Z",
           "text": "Second fix: distance LOD for the scanned library, which was the largest single slice of the budget at 46%. core.py already had ensure_lod_collections/move_to_lod but nothing ever called them - the LOD layer was dead code. assets_models.place() now swaps in a decimated proxy datablock (35% ratio, built once per source and shared) for any instance beyond LOD_RADIUS=95 m from origin, which is outside where the three street cameras stand; the aerial camera is far enough that the decimation is not resolvable. Result at size 320: CITY_Library 1,029,316 -> 472,460 tris (-54%), whole scene 2,221,064 -> 1,686,957 (-24%). Honoured --no-lod: gated on CONFIG['band_lod']. No baseline re-record needed - regress tracks per-collection OBJECT counts and those are unchanged; regress --size 200 PASSES and reports deterministic on re-run. Also stopped the audit flagging *_src prototype collections as 'not instanced' since one object per shape is correct there and they are hide_render."
+        },
+        {
+          "by": "agent-codex",
+          "at": "2026-11-27T18:59:32Z",
+          "text": "Verified end to end: full master run at size 320 rendered all 4 cameras clean, no module errors, city.blend written (47.6 MB, down from 70 MB before the LOD pass). Peak Cycles memory 659 MB. Remaining hotspots for whoever picks this up next: CITY_Buildings is 20% of the budget at 1.00x instancing - that is inherent since every building is unique massing, but repeated roof/facade sub-parts inside it are duplicated datablocks and could be shared. CITY_Trees is 17.9% at 11.96x, already well instanced; it would need its own LOD tier to go lower. The _src prototype collections hold ~120k triangles that are hide_render (no render cost) but do inflate the .blend - purging them after build would shrink the file further."
         }
       ],
       "depends_on": []
