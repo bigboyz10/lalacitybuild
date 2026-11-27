@@ -893,6 +893,37 @@ def _classify(cx, cy, half):
     return "residential"
 
 
+# -----------------------------------------------------------------------------
+# Road vocabulary - single source of truth.
+#
+# plan_city() tags every segment with one of ROAD_KINDS. roads.py, lighting.py
+# and utilities.py branch on those names directly. Consumers that key tables by
+# road class (traffic.HEADWAY, and any look-specific naming such as the LA
+# boulevards) must normalise through normalise_road_kind() rather than inventing
+# their own key set, otherwise unknown names silently collapse to one bucket.
+ROAD_KINDS = ("arterial", "collector", "residential")
+
+ROAD_KIND_ALIASES = {
+    "avenue": "collector",
+    "boulevard": "arterial",
+    "blvd": "arterial",
+    "street": "residential",
+    "lane": "residential",
+    "local": "residential",
+    "alley": "residential",
+}
+
+
+def normalise_road_kind(kind):
+    """Map any road-class name onto the canonical ROAD_KINDS vocabulary."""
+    if not kind:
+        return "residential"
+    k = str(kind).strip().lower()
+    if k in ROAD_KINDS:
+        return k
+    return ROAD_KIND_ALIASES.get(k, "residential")
+
+
 def _road_kind(dist_norm):
     if dist_norm < 0.35:
         return "arterial"

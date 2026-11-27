@@ -37,8 +37,11 @@ LANE_W = U["lane"]
 ROAD_Z = getattr(V, "ROAD_Z", 0.16)
 
 # metres of clear road a moving vehicle keeps in front of it, by road class
-HEADWAY = {"arterial": (16.0, 30.0), "avenue": (12.0, 24.0),
-           "street": (9.0, 20.0), "lane": (8.0, 16.0)}
+# keyed on core.ROAD_KINDS; anything else is normalised through
+# core.normalise_road_kind(), so new look-specific names (LA boulevards, etc.)
+# only need an alias in core.ROAD_KIND_ALIASES, not a change here.
+HEADWAY = {"arterial": (16.0, 30.0), "collector": (12.0, 24.0),
+           "residential": (9.0, 20.0)}
 QUEUE_GAP = (1.4, 2.6)          # bumper-to-bumper when stopped
 STOP_LINE_SETBACK = 2.2         # metres back from the junction edge
 
@@ -100,8 +103,8 @@ def build():
         if length < 14.0:
             continue
         lanes = _lanes(seg)
-        kind = seg.get("kind", "street")
-        lo_gap, hi_gap = HEADWAY.get(kind, HEADWAY["street"])
+        kind = C.normalise_road_kind(seg.get("kind"))
+        lo_gap, hi_gap = HEADWAY.get(kind, HEADWAY["residential"])
 
         juncs = _junctions_on(seg, plan)
         # junction this segment ends at, in the +axis direction
