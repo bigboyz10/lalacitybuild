@@ -96,6 +96,7 @@ build-only runs. Force either with `--engine eevee` / `--engine cycles`.
 | trees | `trees.py` | branching trees grown from botanical rules, 7 species |
 | models | `assets_models.py` | places the 64-asset CC0 scan library: trees, shrubs, flowers, rocks, furniture, clutter |
 | people | `people.py` | proportioned pedestrians: walking, standing, sitting, leaning, on phones |
+| signage | `signage.py` | readable extruded type: shop blades, billboard copy, street plates, door numbers |
 | animals | `animals.py` | pigeons, gulls, crows, sparrows, dogs, cats, rats - perched, flocking, in flight |
 | lighting | `lighting.py` | physical sky, sun/moon, practicals, lit windows, fog, steam, birds |
 | enhance | `enhance.py` | post-critique additions: cranes, food carts, fences, stands, piles |
@@ -245,3 +246,20 @@ sky instead of reading as solid balls.
 Street trees land in the pits the sidewalk module cuts, so trunks never punch
 through paving. Poly Haven's photoscanned trees were rejected deliberately:
 about 500 MB of geometry each, unusable at city scale.
+
+
+## Signage
+
+`signage.py` closes the last of the original self-critique: signs now carry
+real, readable type rather than coloured slabs.
+
+- Shop blades take trade names from a mix of surnames, trades and prefixes
+  (`OKONKWO & SONS`, `24H LAUNDROMAT`), set on both faces of the blade.
+- Billboards get short ad lines auto-sized to the hoarding width.
+- Intersections get street-name plates on poles, numbered east-west and named
+  north-south, so the grid reads consistently as you move through it.
+- Entrances get door numbers derived from position along the block.
+
+Type is set in Blender's built-in font and **converted to mesh**, so the signs
+are real geometry: they survive `.glb` export and need no font installed on
+whatever machine opens the file. Each string is auto-shrunk to fit its board.
