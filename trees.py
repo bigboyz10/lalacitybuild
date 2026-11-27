@@ -72,6 +72,134 @@ SPECIES = {
 }
 
 
+# --- T-009: canopy variety ---------------------------------------------------
+#
+# Critique 7 was that street trees are evenly spaced and the same three
+# silhouettes repeat. Four things fix that, and they are separable:
+#
+#   1. species mix varies by district - a civic boulevard is planted
+#      differently from an industrial back street
+#   2. health varies - councils plant, then neglect; a real street has
+#      thriving trees next to stressed ones, dead stumps and empty pits
+#   3. foliage colour varies per instance, so even two copies of the same
+#      grown silhouette do not read as clones
+#   4. spacing wanders - planting follows driveways, hydrants and crossings,
+#      so gaps are irregular rather than metronomic
+
+# district -> (species, weight). Weights are relative.
+DISTRICT_MIX = {
+    "downtown":    [("street_plane", 5), ("street_maple", 3), ("poplar", 1)],
+    "midtown":     [("street_plane", 4), ("street_maple", 4), ("park_oak", 1),
+                    ("poplar", 1)],
+    "residential": [("street_maple", 5), ("park_oak", 3), ("street_plane", 2),
+                    ("conifer", 1)],
+    "waterfront":  [("street_plane", 3), ("poplar", 3), ("conifer", 2)],
+    "industrial":  [("poplar", 3), ("street_maple", 2), ("bare", 2),
+                    ("sapling", 2)],
+}
+
+# health state -> (weight, canopy scale, foliage tint, trunk-only?)
+#   tint multiplies the base foliage colour, so a stressed tree yellows and a
+#   dying one browns without needing separate grown geometry.
+HEALTH = [
+    ("thriving", 46, 1.08, (1.00, 1.06, 0.94), False),
+    ("healthy",  28, 1.00, (1.00, 1.00, 1.00), False),
+    ("stressed", 13, 0.86, (1.18, 1.02, 0.62), False),
+    ("dying",     7, 0.72, (1.22, 0.88, 0.48), False),
+    ("dead",      6, 0.80, (0.70, 0.62, 0.52), True),
+]
+
+# fraction of pits that hold no tree at all, by district: councils remove
+# trees and do not always replant.
+EMPTY_PIT = {"downtown": 0.07, "midtown": 0.09, "residential": 0.06,
+             "waterfront": 0.12, "industrial": 0.26}
+
+# of the empty pits, how many keep a cut stump rather than bare soil
+STUMP_SHARE = 0.45
+
+_TINT_MATS = {}
+
+
+def _weighted(pairs, R):
+    total = sum(w for _, w in pairs)
+    t = R.uniform(0.0, total)
+    acc = 0.0
+    for item, w in pairs:
+        acc += w
+        if t <= acc:
+            return item
+    return pairs[0][0]
+
+
+def _health(R):
+    pick = _weighted([(h[0], h[1]) for h in HEALTH], R)
+    for row in HEALTH:
+        if row[0] == pick:
+            return row
+    return HEALTH[1]
+
+
+def _tinted_foliage(base_name, tint, R):
+    """A per-instance foliage material. Mesh data stays shared; only the
+    material slot is overridden on the object, so this costs no geometry."""
+    # Quantise the jitter: without this every tree gets its own material and
+    # the palette balloons to one entry per instance, which kills batching for
+    # no visible gain. A 0.05 grid still yields dozens of distinguishable
+    # greens while keeping the material count in the tens.
+    def q(v):
+        return round(round(v / 0.05) * 0.05, 3)
+    jitter = (q(tint[0] * R.uniform(0.93, 1.07)),
+              q(tint[1] * R.uniform(0.93, 1.07)),
+              q(tint[2] * R.uniform(0.93, 1.07)))
+    key = (base_name, jitter)
+    if key in _TINT_MATS:
+        return _TINT_MATS[key]
+    src = C.PALETTE.get(base_name, dict(base="#3d5929", roughness=0.90))
+    hexv = src.get("base", "#3d5929").lstrip("#")
+    rgb = [int(hexv[i:i + 2], 16) / 255.0 for i in (0, 2, 4)]
+    out = []
+    for channel, mul in zip(rgb, jitter):
+        out.append(max(0, min(255, int(channel * mul * 255))))
+    name = "foliage_t{:02x}{:02x}{:02x}".format(*out)
+    if name not in C.MATS:
+        spec = dict(src)
+        spec["base"] = "#{:02x}{:02x}{:02x}".format(*out)
+        C.make_pbr(name, **spec)
+    mat = C.MATS[name]
+    _TINT_MATS[key] = mat
+    return mat
+
+
+def _build_stump(name, R, col):
+    """A cut stump for a slot whose tree was removed."""
+    import bmesh as _bmesh
+    bm = _bmesh.new()
+    h = R.uniform(0.22, 0.55)
+    r = R.uniform(0.13, 0.26)
+    seg = 8
+    ring_b, ring_t = [], []
+    for i in range(seg):
+        a = 2.0 * math.pi * i / seg
+        wobble = 1.0 + 0.14 * math.sin(a * 3.0 + R.random())
+        ring_b.append(bm.verts.new((r * wobble * math.cos(a),
+                                    r * wobble * math.sin(a), 0.0)))
+        ring_t.append(bm.verts.new((r * 0.88 * wobble * math.cos(a),
+                                    r * 0.88 * wobble * math.sin(a),
+                                    h * R.uniform(0.92, 1.08))))
+    for i in range(seg):
+        j = (i + 1) % seg
+        bm.faces.new((ring_b[i], ring_b[j], ring_t[j], ring_t[i]))
+    bm.faces.new(ring_t)
+    _bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    me = bpy.data.meshes.new(name + "_mesh")
+    bm.to_mesh(me)
+    bm.free()
+    me.materials.append(C.M("bark"))
+    ob = bpy.data.objects.new(name, me)
+    C.link_object(ob, col)
+    return ob
+
+
 class Growth:
     """Accumulates branch geometry into one bmesh."""
 
@@ -223,12 +351,14 @@ def build_tree(name, species, R, col):
 # -----------------------------------------------------------------------------
 def _variants(R, src_col):
     """Grow a palette of trees once; the city instances these."""
-    plan = [("street_plane", 3), ("street_maple", 3), ("park_oak", 3),
-            ("poplar", 2), ("conifer", 2), ("sapling", 2), ("bare", 2)]
+    # more silhouettes per species: the old palette gave street frontages
+    # three shapes to repeat, which is what read as wallpaper.
+    plan = [("street_plane", 5), ("street_maple", 5), ("park_oak", 4),
+            ("poplar", 3), ("conifer", 3), ("sapling", 3), ("bare", 3)]
     if C.is_la():
         # broadleaf shade trees only; palms come from la_style.py
-        plan = [("street_plane", 2), ("street_maple", 2), ("park_oak", 3),
-                ("sapling", 1)]
+        plan = [("street_plane", 4), ("street_maple", 4), ("park_oak", 4),
+                ("sapling", 2), ("bare", 2)]
     out = []
     for species, n in plan:
         for i in range(n):
@@ -240,13 +370,29 @@ def _variants(R, src_col):
     return out
 
 
-def _instance(parts, name, col, loc, rot, scale):
+def _instance(parts, name, col, loc, rot, scale, foliage_mat=None,
+              canopy_scale=1.0, trunk_only=False):
+    """Place one tree. Mesh data is shared with the grown source; only the
+    object-level material slot is overridden, so per-instance colour and a
+    dead/bare state cost nothing in geometry."""
+    made = []
     for src in parts:
-        ob = bpy.data.objects.new(name + "_" + src.name.split("_")[-1], src.data)
+        tag = src.name.split("_")[-1]
+        is_canopy = tag.lower().startswith("leaves") or tag.lower().startswith("canopy")
+        if trunk_only and is_canopy:
+            continue
+        ob = bpy.data.objects.new(name + "_" + tag, src.data)
         ob.location = loc
         ob.rotation_euler = (0.0, 0.0, rot)
-        ob.scale = (scale, scale, scale)
+        sc = scale * (canopy_scale if is_canopy else 1.0)
+        ob.scale = (sc, sc, sc)
         C.link_object(ob, col)
+        if is_canopy and foliage_mat is not None and ob.material_slots:
+            for slot in ob.material_slots:
+                slot.link = "OBJECT"
+                slot.material = foliage_mat
+        made.append(ob)
+    return made
 
 
 def build():
@@ -269,8 +415,59 @@ def build():
         return R.choice(pool) if pool else None
 
     n = 0
-    spacing = 11.0          # real street-tree spacing
+    n_stump = 0
+    n_empty = 0
+    spacing = 11.0          # nominal street-tree spacing, jittered below
     sw = U["sidewalk"]
+
+    def district_at(x, y):
+        """Nearest block's district, so a pit inherits its street's planting."""
+        best, bestd = "midtown", 1e18
+        for blk in plan["blocks"]:
+            d = (blk["cx"] - x) ** 2 + (blk["cy"] - y) ** 2
+            if d < bestd:
+                bestd, best = d, blk.get("district", "midtown")
+        return best
+
+    def plant(x, y, district, name, park=False):
+        """Place one slot: tree, stump or nothing, with health and tint."""
+        nonlocal n, n_stump, n_empty
+
+        if not park and R.random() < EMPTY_PIT.get(district, 0.08):
+            if R.random() < STUMP_SHARE:
+                _build_stump("Stump_{:04d}".format(n_stump), R, col)
+                n_stump += 1
+            else:
+                n_empty += 1
+            return
+
+        mix = DISTRICT_MIX.get(district, DISTRICT_MIX["midtown"])
+        # LA grows a smaller palette, so drop species that were never grown
+        # rather than silently collapsing them all onto one fallback.
+        mix = [(sp, w) for (sp, w) in mix if by_species.get(sp)]
+        if not mix:
+            mix = [(sp, 1) for sp in by_species]
+        species = _weighted(mix, R)
+        parts = by_species.get(species)
+        if not parts:
+            return
+        parts = R.choice(parts)
+
+        state, _w, canopy_scale, tint, trunk_only = _health(R)
+        if species == "bare":
+            trunk_only = True
+        spec = SPECIES.get(species, {})
+        leaf = spec.get("leaf")
+        base_leaf = leaf[0] if leaf else "foliage"
+        mat = None if trunk_only else _tinted_foliage(base_leaf, tint, R)
+
+        scale = R.uniform(0.80, 1.22) * (1.14 if park else 1.0)
+        _instance(parts, name.format(n), col,
+                  (x + R.gauss(0, 0.14), y + R.gauss(0, 0.14), BASE_Z),
+                  R.uniform(0, math.tau), scale,
+                  foliage_mat=mat, canopy_scale=canopy_scale,
+                  trunk_only=trunk_only)
+        n += 1
 
     # --- street trees -----------------------------------------------------
     # The sidewalk module already cuts real tree pits; use them when present so
@@ -280,48 +477,37 @@ def build():
         for (x, y) in pits:
             if C.is_la() and C.la_palm_slot(x, y):
                 continue          # this slot belongs to a palm (la_style.py)
-            if R.random() > 0.90 * density:
+            if R.random() > 0.94 * density:
                 continue
-            parts = pick("street_plane", "street_maple") \
-                if R.random() < 0.86 else pick("sapling", "bare")
-            if not parts:
-                continue
-            _instance(parts, "Tree_{:04d}".format(n), col,
-                      (x + R.gauss(0, 0.12), y + R.gauss(0, 0.12), BASE_Z),
-                      R.uniform(0, math.tau), R.uniform(0.86, 1.16))
-            n += 1
+            plant(x, y, district_at(x, y), "Tree_{:04d}")
     else:
-        # fallback: space them along block frontages at real street spacing
+        # fallback: walk each frontage with wandering spacing. Real planting
+        # skips driveways, hydrants and crossings, so the gap between trees
+        # is irregular - stepping by a jittered interval reproduces that far
+        # better than an evenly divided count.
         for blk in plan["blocks"]:
             cx, cy, bw, bh = blk["cx"], blk["cy"], blk["w"], blk["h"]
-            if blk.get("district") == "industrial" and R.random() < 0.55:
+            district = blk.get("district", "midtown")
+            if district == "industrial" and R.random() < 0.45:
                 continue
             for (along, cross, horiz) in ((bw, bh, True), (bh, bw, False)):
-                count = max(0, int(along / spacing))
-                for i in range(count):
-                    if R.random() > 0.78 * density:
-                        continue
-                    t = (i + 0.5) / max(1, count) - 0.5
-                    for sgn in (-1, 1):
-                        if R.random() > 0.72:
-                            continue
-                        if horiz:
-                            x = cx + along * t
-                            y = cy + sgn * (cross * 0.5 + sw * 0.42)
-                        else:
-                            y = cy + along * t
-                            x = cx + sgn * (cross * 0.5 + sw * 0.42)
-                        if abs(x) > half or abs(y) > half:
-                            continue
-                        if C.is_la() and C.la_palm_slot(x, y):
-                            continue
-                        parts = pick("street_plane", "street_maple")
-                        if not parts:
-                            continue
-                        _instance(parts, "Tree_{:04d}".format(n), col,
-                                  (x + R.gauss(0, 0.20), y + R.gauss(0, 0.20), BASE_Z),
-                                  R.uniform(0, math.tau), R.uniform(0.86, 1.16))
-                        n += 1
+                for sgn in (-1, 1):
+                    pos = -along * 0.5 + R.uniform(1.5, spacing)
+                    while pos < along * 0.5 - 1.0:
+                        gap = spacing * R.uniform(0.62, 1.65)
+                        if R.random() < 0.10:
+                            gap += spacing * R.uniform(0.8, 1.8)   # driveway
+                        if R.random() <= 0.80 * density:
+                            if horiz:
+                                x = cx + pos
+                                y = cy + sgn * (cross * 0.5 + sw * 0.42)
+                            else:
+                                y = cy + pos
+                                x = cx + sgn * (cross * 0.5 + sw * 0.42)
+                            if abs(x) <= half and abs(y) <= half:
+                                if not (C.is_la() and C.la_palm_slot(x, y)):
+                                    plant(x, y, district, "Tree_{:04d}")
+                        pos += gap
 
     # --- parks: mixed stands, bigger canopies ----------------------------
     for park in plan.get("parks", []):
@@ -329,20 +515,16 @@ def build():
         y0, y1 = park["y0"], park["y1"]
         area = max(1.0, (x1 - x0) * (y1 - y0))
         for _ in range(int(max(6, area / 90.0) * density)):
-            parts = pick("park_oak", "street_plane", "conifer", "poplar")
-            if not parts:
-                continue
             x = R.uniform(x0 + 3.0, x1 - 3.0)
             y = R.uniform(y0 + 3.0, y1 - 3.0)
             # keep the centre of the park open, as the bush pass does
             if (x - park["cx"]) ** 2 + (y - park["cy"]) ** 2 < 36.0:
                 continue
-            _instance(parts, "Tree_park_{:04d}".format(n), col,
-                      (x, y, BASE_Z), R.uniform(0, math.tau),
-                      R.uniform(0.90, 1.35))
-            n += 1
+            plant(x, y, "residential", "Tree_park_{:04d}", park=True)
 
-    print("  trees: {} instances from {} grown variants".format(n, len(variants)))
+    print("  trees: {} instances from {} grown variants "
+          "({} stumps, {} empty pits, {} tints)".format(
+              n, len(variants), n_stump, n_empty, len(_TINT_MATS)))
     return n
 
 
