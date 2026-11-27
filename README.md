@@ -93,8 +93,9 @@ build-only runs. Force either with `--engine eevee` / `--engine cycles`.
 | vehicles | `vehicles.py` | 16 vehicle types, parked + moving + abandoned |
 | vegetation | `vegetation.py` | street/park trees, hedges, weeds, ivy, moss, stumps |
 | story | `story.py` | signs, billboards, graffiti, posters, litter, puddles |
-| models | `assets_models.py` | CC0 photoscanned props, grass, weeds, ferns, boulders, barriers |
+| models | `assets_models.py` | places the 64-asset CC0 scan library: trees, shrubs, flowers, rocks, furniture, clutter |
 | people | `people.py` | proportioned pedestrians: walking, standing, sitting, leaning, on phones |
+| animals | `animals.py` | pigeons, gulls, crows, sparrows, dogs, cats, rats - perched, flocking, in flight |
 | lighting | `lighting.py` | physical sky, sun/moon, practicals, lit windows, fog, steam, birds |
 | enhance | `enhance.py` | post-critique additions: cranes, food carts, fences, stands, piles |
 | render | `render_export.py` | 3 street cameras + 1 aerial, test renders, GLB export |
@@ -186,3 +187,34 @@ with no visible difference at street distance.
 
 
 <!-- autosave verification -->
+
+
+## Asset library
+
+`tools/catalog.py` lists 64 CC0 photoscans from Poly Haven - trees, shrubs,
+ferns, flowers, grass, weeds, moss, boulders, coastal rocks, street furniture,
+fences, poles, floodlights and industrial clutter.
+
+```bash
+python3 tools/fetch_models.py      # raw scans -> assets/raw/   (~950 MB, gitignored)
+bash    tools/bake_all.sh          # decimate  -> assets/lib/   (22 MB, committed)
+```
+
+The raw scans are film resolution: one island tree is 2,085,320 triangles and
+the fir is 465 MB. `tools/build_library.py` decimates each to a per-asset
+budget, normalises it to a real height, drops it onto z=0 and downscales
+embedded textures to 512 px, producing a 22 MB library that is committed. A
+fresh clone therefore has every asset without downloading a gigabyte.
+
+Baking runs one Blender process per asset (`tools/bake_all.sh`) because
+importing several multi-million-triangle scans in sequence exhausts memory.
+
+## Vendored Blender
+
+`vendor/blender/` holds Blender 4.2.1 as four 90 MB parts (GitHub rejects any
+single file over 100 MB). `tools/setup_env.sh` reassembles, verifies the
+SHA-256 sums and installs it with no network and no root:
+
+```bash
+bash tools/setup_env.sh && source tools/env.sh
+```
