@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T13:25:58Z",
+  "updated": "2026-11-27T13:36:55Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -254,9 +254,9 @@
       ],
       "size": "M",
       "priority": 2,
-      "status": "claimed",
+      "status": "review",
       "owner": "agent-e2b.loca-610",
-      "lease_until": "2026-11-27T14:05:38Z",
+      "lease_until": null,
       "branch": "agent/agent-e2b.loca-610/t-011",
       "notes": [
         {
@@ -268,6 +268,11 @@
           "by": "agent-e2b.loca-610",
           "at": "2026-11-27T13:25:58Z",
           "text": "people.py now has 33 silhouettes across 8 poses x 4 age classes (adult/teen/child/toddler with real head-to-height ratios, not scaled adults) and 5 carried props (bag, backpack, briefcase, umbrella, cup). Gait phase added so walkers spread across the stride cycle instead of sharing one frozen pose. Conversation groups face their circle centre; adults walk children beside them; people at crossings face the road; cyclists align to the road axis with pedal-offset legs; wheelchair and pram users included. Prop materials registered locally in people.py, not core.PALETTE, to avoid a table conflict with other agents. Verified: 459 instances, 29 distinct silhouettes used, heights 0.89-2.04 m, 13 percent children or shorter."
+        },
+        {
+          "by": "agent-e2b.loca-610",
+          "at": "2026-11-27T13:36:55Z",
+          "text": "completed"
         }
       ],
       "depends_on": []
