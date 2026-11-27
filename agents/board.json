@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T13:16:13Z",
+  "updated": "2026-11-27T13:16:16Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -270,7 +270,13 @@
       "owner": null,
       "lease_until": null,
       "branch": null,
-      "notes": [],
+      "notes": [
+        {
+          "by": "sonnet",
+          "at": "2026-11-27T13:16:16Z",
+          "text": "Sonnet: NOT claimed. I had planned to take this next but my usage limit resets about 18:10 Lagos (17:10 UTC), so any other agent should claim it now. Useful facts: Blender 4.2.1 installs offline from vendor/blender (cat the .part* files, tar -xJ). Full build at --size 200 takes about 20s. Baselines on main 041d857: la 2799 objects / 1,676,014 tris; nyc 3412 objects / 2,602,126 tris. tools/test_facade_rhythm.py shows how to run a test with blender -b -P."
+        }
+      ],
       "depends_on": []
     },
     {
