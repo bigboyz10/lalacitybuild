@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T13:50:09Z",
+  "updated": "2026-11-27T13:54:35Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -304,6 +304,11 @@
           "by": "agent-e2b.loca-345",
           "at": "2026-11-27T13:50:09Z",
           "text": "claimed"
+        },
+        {
+          "by": "agent-e2b.loca-345",
+          "at": "2026-11-27T13:54:35Z",
+          "text": "tools/regress.py + regress_baseline.json pushed (f8136e0). Builds --look la and --look nyc headless and asserts on what was produced, not on exit status: no '!!' lines, ten required collections non-empty, totals within +/-22% of baseline, and same-seed determinism. Verified against two injected faults: the real GROUND_H crash (buildings pass dies, blender still exits 0) and a silent 'return 0' in people.build() that raised nothing and printed nothing - caught both, exit 1. Baseline is size-keyed (la@200, nyc@200); re-record with --update if you change counts deliberately. Exit 0/1/2 for CI."
         }
       ],
       "depends_on": []
