@@ -46,35 +46,34 @@ CRITIQUE = """
 ==============================================================================
  SELF-CRITIQUE  --  what is missing / what still looks fake
 ==============================================================================
- 1. Facade rhythm is uniform. Every window is the same size on a given
-    building, so elevations read as wallpaper. Real facades mix punched
-    openings, ribbon windows and blank party walls.
-      -> varied by style, but a per-building window-size jitter pass is
-         still missing.
- 2. No interior depth. Glass is a flat quad; there is no parallax, so
-    windows read as decals at street level.
-      -> partially faked with the interior-clutter boxes in M6.
- 3. Ground floor is repetitive. Shopfronts repeat the same bay width and
-    the same awning depth on every block.
- 4. No construction sequencing. Cranes exist (M-Enhance) but there are no
-    half-built floors, formwork or material lay-down areas.
- 5. Traffic is frozen. Cars are placed, not simulated, so there is no
-    queueing at lights and no lane discipline.
- 6. Signage has no readable content. Blades and billboards are coloured
-    slabs; no type, no logos.
- 7. Vegetation is sparse at the canopy level. Street trees are evenly
-    spaced and the same three silhouettes repeat.
- 8. No people. A AAA street scene at eye level needs figures, even as
-    low-detail impostors, or it reads as a model village.
- 9. Puddles are flat discs; they do not reflect the sky because EEVEE
-    screen-space reflections are off by default in this build.
-10. The elevated highway has no ramps, no signage gantries and no
-    expansion-joint noise, so it reads as a clean toy.
+ CLOSED in later passes:
+   x Facade rhythm   -- per-building window jitter, floor bands, blank party
+                        walls and skipped openings (buildings_core).
+   x Interior depth  -- glass is recessed into a lined reveal with a dark room
+                        volume and furniture slabs behind it.
+   x Ground floor    -- frontages split into separate tenancies with their own
+                        bay module, sill height, awning depth and fascia.
+   x Signage         -- extruded readable type on blades, billboards, street
+                        plates and door numbers (signage).
+   x Vegetation      -- grown branching trees, 17 variants (trees), plus CC0
+                        photoscanned grass, weeds and ferns (assets_models).
+   x People          -- proportioned figures in five poses (people).
+   x Animals         -- birds, dogs, pigeons and rats (animals).
 
-Everything above is a deliberate scope boundary for this pass, not an
-oversight: each is listed here so the next pass can target it directly.
+ STILL OPEN:
+ 1. Traffic is frozen. Cars are placed, not simulated, so there is no
+    queueing at lights and no lane discipline.
+ 2. No construction sequencing. Cranes exist but there are no half-built
+    floors, formwork or material lay-down areas.
+ 3. Puddles are flat discs and do not reflect the sky.
+ 4. The elevated highway has no ramps, no signage gantries and no
+    expansion-joint noise.
+ 5. Interiors are a single dark volume. There is no per-room lighting
+    variation behind the glass at night beyond the lit-window pass.
+ 6. Street trees still repeat their 17 silhouettes on long avenues; a
+    species-per-street rule would read better.
 ==============================================================================
-"""
+
 
 
 def run():
