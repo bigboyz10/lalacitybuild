@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T18:44:54Z",
+  "updated": "2026-11-27T18:54:22Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -12,7 +12,7 @@
   },
   "agents": {
     "agent-codex": {
-      "last_seen": "2026-11-27T18:35:26Z",
+      "last_seen": "2026-11-27T18:54:22Z",
       "task": "T-010"
     },
     "sonnet": {
@@ -286,7 +286,7 @@
       "priority": 2,
       "status": "claimed",
       "owner": "agent-codex",
-      "lease_until": "2026-11-27T19:20:26Z",
+      "lease_until": "2026-11-27T19:39:22Z",
       "branch": "agent/agent-codex/t-010",
       "notes": [
         {
