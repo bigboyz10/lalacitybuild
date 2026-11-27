@@ -38,7 +38,8 @@ import time
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BOARD_REL = "agents/board.json"
-WORK = os.path.expanduser("~/.agent-board")
+# one private clone per agent, so two agents on one machine never share it
+WORK = os.path.expanduser("~/.agent-board-" + (os.environ.get("AGENT_ID") or "default"))
 ORIGIN = "https://github.com/bigboyz10/lalacitybuild.git"
 MAX_RETRY = 8
 
