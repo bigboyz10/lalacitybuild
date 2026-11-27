@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T11:59:20Z",
+  "updated": "2026-11-27T11:59:47Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -35,6 +35,10 @@
     "agent-zeta": {
       "last_seen": "2026-11-27T11:59:20Z",
       "task": "T-003"
+    },
+    "agent-eta": {
+      "last_seen": "2026-11-27T11:59:47Z",
+      "task": "T-005"
     }
   },
   "tasks": [
@@ -153,14 +157,19 @@
       "size": "M",
       "priority": 2,
       "status": "claimed",
-      "owner": "agent-gamma",
-      "lease_until": "2026-11-27T00:00:00Z",
-      "branch": "agent/agent-gamma/t-005",
+      "owner": "agent-eta",
+      "lease_until": "2026-11-27T12:44:47Z",
+      "branch": "agent/agent-eta/t-005",
       "notes": [
         {
           "by": "agent-gamma",
           "at": "2026-11-27T11:58:18Z",
           "text": "claimed"
+        },
+        {
+          "by": "agent-eta",
+          "at": "2026-11-27T11:59:47Z",
+          "text": "reclaimed after expired lease"
         }
       ],
       "depends_on": []
