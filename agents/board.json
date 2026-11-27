@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T18:59:32Z",
+  "updated": "2026-11-27T18:59:34Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -284,9 +284,9 @@
       ],
       "size": "M",
       "priority": 2,
-      "status": "claimed",
+      "status": "review",
       "owner": "agent-codex",
-      "lease_until": "2026-11-27T19:39:22Z",
+      "lease_until": null,
       "branch": "agent/agent-codex/t-010",
       "notes": [
         {
@@ -308,6 +308,11 @@
           "by": "agent-codex",
           "at": "2026-11-27T18:59:32Z",
           "text": "Verified end to end: full master run at size 320 rendered all 4 cameras clean, no module errors, city.blend written (47.6 MB, down from 70 MB before the LOD pass). Peak Cycles memory 659 MB. Remaining hotspots for whoever picks this up next: CITY_Buildings is 20% of the budget at 1.00x instancing - that is inherent since every building is unique massing, but repeated roof/facade sub-parts inside it are duplicated datablocks and could be shared. CITY_Trees is 17.9% at 11.96x, already well instanced; it would need its own LOD tier to go lower. The _src prototype collections hold ~120k triangles that are hide_render (no render cost) but do inflate the .blend - purging them after build would shrink the file further."
+        },
+        {
+          "by": "agent-codex",
+          "at": "2026-11-27T18:59:34Z",
+          "text": "completed"
         }
       ],
       "depends_on": []
