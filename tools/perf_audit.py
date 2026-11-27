@@ -76,7 +76,15 @@ def audit():
     for name, nobj, tris, nmesh in rows:
         ratio = nobj / float(nmesh) if nmesh else 0.0
         pct = 100.0 * tris / total_tri if total_tri else 0.0
-        flag = "  <-- not instanced" if ratio < 1.25 and nobj >= 20 else ""
+        # *_src collections hold hidden prototypes by design: one object per
+        # shape is correct there, and they are hide_render so they cost
+        # memory and file size but no render time. Don't flag them.
+        is_src = name.endswith("_src")
+        flag = ""
+        if is_src:
+            flag = "  (hidden prototypes - no render cost)"
+        elif ratio < 1.25 and nobj >= 20:
+            flag = "  <-- not instanced"
         print(" {:<28} {:>7,} {:>13,} {:>8,} {:>9.2f}x {:>8.1f}%{}".format(
             name, nobj, tris, nmesh, ratio, pct, flag))
     print("-" * 86)

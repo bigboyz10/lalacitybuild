@@ -113,11 +113,56 @@ def _load(key):
     return src
 
 
+# --- distance LOD -----------------------------------------------------------
+# The library is the single largest slice of the triangle budget. Every
+# instance carried full scan detail regardless of where it sat, even though the
+# three street cameras only ever stand near the centre and the aerial camera is
+# far enough that decimation is invisible. Instances beyond LOD_RADIUS get a
+# decimated proxy datablock instead; near ones are untouched.
+LOD_RADIUS = 95.0      # metres from origin: full detail inside, proxy outside
+LOD_RATIO = 0.35       # proxy triangle fraction
+
+_PROXY = {}
+
+
+def _proxy_mesh(src):
+    """A decimated twin of a source mesh, built once and shared."""
+    key = src.data.name
+    hit = _PROXY.get(key)
+    if hit is not None:
+        return hit
+    me = src.data
+    tris = sum(len(poly.vertices) - 2 for poly in me.polygons)
+    if tris < 300:
+        _PROXY[key] = me          # already cheap, no point proxying
+        return me
+    tmp = bpy.data.objects.new(src.name + "_LODtmp", me.copy())
+    C.col("CITY_LOD_src").objects.link(tmp)
+    tmp.hide_render = True
+    tmp.hide_viewport = True
+    try:
+        mod = tmp.modifiers.new("lod", "DECIMATE")
+        mod.ratio = LOD_RATIO
+        bpy.context.view_layer.objects.active = tmp
+        bpy.ops.object.modifier_apply(modifier=mod.name)
+    except Exception:
+        pass
+    _PROXY[key] = tmp.data
+    return tmp.data
+
+
+def _lod_for(loc):
+    return (loc[0] * loc[0] + loc[1] * loc[1]) > (LOD_RADIUS * LOD_RADIUS)
+
+
 def place(key, name, collection, loc, rot=0.0, scale=1.0, tilt=0.0):
     src = _load(key)
     if src is None:
         return None
-    ob = bpy.data.objects.new(name, src.data)
+    data = src.data
+    if CONFIG.get("band_lod", True) and _lod_for(loc):
+        data = _proxy_mesh(src)
+    ob = bpy.data.objects.new(name, data)
     ob.location = loc
     ob.rotation_euler = (tilt, 0.0, rot)
     base = src.scale.x * scale
