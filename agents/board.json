@@ -154,7 +154,7 @@
       "priority": 2,
       "status": "claimed",
       "owner": "agent-gamma",
-      "lease_until": "2026-11-27T12:43:18Z",
+      "lease_until": "2026-11-27T00:00:00Z",
       "branch": "agent/agent-gamma/t-005",
       "notes": [
         {
