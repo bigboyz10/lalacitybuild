@@ -7,6 +7,17 @@ set -uo pipefail
 cd "$(dirname "$0")"
 MIRROR="/home/user/.workspace-backup/repo.git"
 INTERVAL="${AUTOSAVE_INTERVAL:-1}"
+
+# With several agents sharing the repo, pushing every commit to main would make
+# everyone else's push non-fast-forward and silently stall their autosave.
+# When AGENT_ID is set we push to a per-agent branch instead; main is then only
+# ever written through agents/agentctl.py.
+AGENT_ID="${AGENT_ID:-}"
+if [ -n "$AGENT_ID" ]; then
+  PUSH_REF="refs/heads/agent/${AGENT_ID}/autosave"
+else
+  PUSH_REF="refs/heads/main"
+fi
 LOG="/home/user/.workspace-backup/autosave.log"
 
 mkdir -p "$(dirname "$MIRROR")"
@@ -27,7 +38,7 @@ repair() {
   fi
 }
 
-log "autosave started (every ${INTERVAL}s) pid=$$"
+log "autosave started (every ${INTERVAL}s) pid=$$ -> ${PUSH_REF##refs/heads/}"
 push_fail_logged=0
 
 while true; do
@@ -40,8 +51,8 @@ while true; do
         && log "saved $sha -> workspace + repo + mirror" \
         || log "saved $sha -> workspace + repo (mirror push failed)"
       if git remote get-url origin >/dev/null 2>&1; then
-        if git push -q origin HEAD:refs/heads/main 2>/dev/null; then
-          log "  pushed $sha to origin"
+        if git push -q origin "HEAD:${PUSH_REF}" 2>/dev/null; then
+          log "  pushed $sha to origin ${PUSH_REF##refs/heads/}"
           push_fail_logged=0
         elif [ "$push_fail_logged" -eq 0 ]; then
           log "  origin push needs credentials - local copies still safe"
