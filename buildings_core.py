@@ -308,6 +308,8 @@ def emit_building(name, rect, height, style, collection, R, base_z=BASE_Z,
     bm_sign = bmesh.new()
     bm_ac = bmesh.new()
     bm_fire = bmesh.new()
+    bm_reveal = bmesh.new()
+    bm_room = bmesh.new()
 
     # main mass
     _box_bm(bm_wall, cx, cy, base_z + height * 0.5, w, h, height)
@@ -332,11 +334,25 @@ def emit_building(name, rect, height, style, collection, R, base_z=BASE_Z,
 
     glass_mat = R.choice(["glass", "glass", "glass_dark", "glass_dirty"])
 
-    for (px, py, ux, uy, nx, ny, length) in _facades(rect):
+    # --- per-building facade rhythm --------------------------------------
+    # Real elevations are not one window repeated. Each building draws its own
+    # proportions once, so neighbours in the same style still differ, and a
+    # few get a blank party wall or a piano-nobile band.
+    jitter_w = R.uniform(0.84, 1.22)
+    jitter_h = R.uniform(0.88, 1.18)
+    jitter_cols = R.uniform(0.86, 1.18)
+    recess = R.uniform(0.14, 0.34)
+    tall_ground_band = R.random() < 0.35      # taller windows on the first floor
+    top_band = R.random() < 0.30              # squatter windows on the top floor
+    blank_wall_face = R.randint(0, 5)         # >3 means no blank face at all
+
+    for (face_i, (px, py, ux, uy, nx, ny, length)) in enumerate(_facades(rect)):
         rot = math.atan2(uy, ux)
-        cols = max(1, int(length // st["cols"]))
-        win_w = st["win_w"]
-        win_h = st["win_h"]
+        if face_i == blank_wall_face and length > 7.0:
+            continue                           # blank party wall
+        cols = max(1, int(length // (st["cols"] * jitter_cols)))
+        win_w = st["win_w"] * jitter_w
+        win_h = st["win_h"] * jitter_h
         step = length / cols
 
         # ---- upper floors
@@ -344,14 +360,25 @@ def emit_building(name, rect, height, style, collection, R, base_z=BASE_Z,
             z = base_z + (GROUND_H if ground_floor else 0.0) + f * FLOOR_H + 1.45
             if z + win_h * 0.5 > base_z + height - 0.4:
                 continue
+            fw, fh = win_w, win_h
+            if tall_ground_band and f == 0:
+                fh *= 1.26
+            elif top_band and f == floors - 1:
+                fh *= 0.80
             for c in range(cols):
                 if detail < 1.0 and R.random() > detail:
                     continue
+                # occasional bricked-up or blanked opening breaks the grid
+                if R.random() < 0.035:
+                    continue
                 s = -length * 0.5 + step * (c + 0.5)
+                cw = fw * R.uniform(0.95, 1.05)
                 emit_window(bm_frame, bm_glass, bm_sill, bm_balcony, bm_rail,
-                            px, py, ux, uy, nx, ny, s, z, win_w, win_h,
+                            px, py, ux, uy, nx, ny, s, z, cw, fh,
                             style, R,
-                            balcony=(st["balcony"] > 0.3 and R.random() < st["balcony"]))
+                            balcony=(st["balcony"] > 0.3 and R.random() < st["balcony"]),
+                            bm_reveal=bm_reveal, bm_room=bm_room, recess=recess,
+                            interior=(f < 6))
         # ---- ground floor
         if ground_floor:
             if st["shop"] > 0.3 and R.random() < st["shop"]:
