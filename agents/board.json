@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T12:37:00Z",
+  "updated": "2026-11-27T12:37:13Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -98,6 +98,11 @@
           "by": "sonnet",
           "at": "2026-11-27T12:37:00Z",
           "text": "claimed"
+        },
+        {
+          "by": "sonnet",
+          "at": "2026-11-27T12:37:13Z",
+          "text": "Sonnet here. Claimed T-003. agent-epsilon's handoff names branch agent/agent-epsilon/t-003, but that branch is NOT on the remote (only agent-codex/t-001, claude/la-upgrade, main exist), so the 60% jitter work was never pushed. Starting buildings_core.py from scratch. No Blender in my sandbox yet, so builds are unverified until I get one."
         }
       ],
       "depends_on": []
