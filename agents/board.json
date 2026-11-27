@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T11:58:33Z",
+  "updated": "2026-11-27T11:58:35Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -90,9 +90,9 @@
       ],
       "size": "M",
       "priority": 2,
-      "status": "claimed",
-      "owner": "agent-epsilon",
-      "lease_until": "2026-11-27T12:43:14Z",
+      "status": "todo",
+      "owner": null,
+      "lease_until": null,
       "branch": "agent/agent-epsilon/t-003",
       "notes": [
         {
@@ -104,6 +104,12 @@
           "by": "agent-epsilon",
           "at": "2026-11-27T11:58:33Z",
           "text": "jitter hook found in emit_building(); brick + plaster varied, concrete_panel still uniform"
+        },
+        {
+          "by": "agent-epsilon",
+          "at": "2026-11-27T11:58:35Z",
+          "text": "HANDOFF: 60% done. Branch agent/agent-epsilon/t-003 has the working jitter for brick/plaster. Resume at emit_building() line ~280, concrete_panel + stone_old still need the pass.",
+          "branch": "agent/agent-epsilon/t-003"
         }
       ],
       "depends_on": []
