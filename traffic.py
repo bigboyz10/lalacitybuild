@@ -83,7 +83,10 @@ def _junctions_on(seg, plan):
 
 
 def _place(name, fn, collection, x, y, rot, z=None):
-    V._place(name, fn(), collection, x, y, rot, z=ROAD_Z if z is None else z)
+    # linked duplicates of a cached prototype instead of rebuilding the mesh
+    # for every car (see vehicles.place_instanced)
+    V.place_instanced(name, fn, collection, x, y, rot,
+                      z=ROAD_Z if z is None else z)
 
 
 def build():

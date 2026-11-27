@@ -340,7 +340,49 @@ def _pick(R):
     return KINDS[0][0], KINDS[0][2]
 
 
+# Prototype cache: one mesh datablock per vehicle kind, reused by every
+# placement.  Without this each call rebuilt the bmesh, so 156 identical parked
+# sedans became 156 separate datablocks - 156 BVH builds and 156 copies of the
+# same geometry in memory.  The factories live in the module-level KINDS list
+# for the life of the process, so their ids are stable cache keys; the factory
+# is stored alongside the meshes to keep that reference alive.
+_PROTO = {}
+
+
+def _prototype(fn):
+    """Build one vehicle kind once; later placements link to these meshes."""
+    key = id(fn)
+    hit = _PROTO.get(key)
+    if hit is not None:
+        return hit[1]
+    meshes = []
+    for part, mat in fn():
+        bmesh.ops.recalc_face_normals(part.bm, faces=part.bm.faces)
+        me = bpy.data.meshes.new("VehProto_{}_{}".format(key, len(meshes)))
+        part.bm.to_mesh(me)
+        part.bm.free()
+        if mat:
+            me.materials.append(C.M(mat))
+        meshes.append(me)
+    _PROTO[key] = (fn, meshes)
+    return meshes
+
+
+def place_instanced(name, fn, collection, x, y, rot, z=ROAD_Z):
+    """Place a vehicle as linked duplicates of its cached prototype meshes."""
+    out = []
+    for i, me in enumerate(_prototype(fn)):
+        ob = bpy.data.objects.new("{}_{}".format(name, i), me)
+        ob.location = (x, y, z)
+        ob.rotation_euler = (0.0, 0.0, rot)
+        C.link_object(ob, collection)
+        out.append(ob)
+    return out
+
+
 def _place(name, parts, collection, x, y, rot, z=ROAD_Z, flat=False):
+    """Legacy path: consumes already-built Parts. Kept for callers that build
+    one-off geometry; prefer place_instanced() for anything repeated."""
     for part, mat in parts:
         part.obj(name, mat, collection, loc=(x, y, z), rot=rot)
 
@@ -368,8 +410,8 @@ def build():
                     kind, fn = _pick(R)
                     y = y0 - 1.15 if side == "S" else y1 + 1.15
                     rot = 0.0 if side == "S" else math.pi
-                    _place("Parked_{:04d}".format(count), fn(), collection,
-                           x, y, rot)
+                    place_instanced("Parked_{:04d}".format(count), fn,
+                                    collection, x, y, rot)
                     count += 1
                 x += R.uniform(6.0, 9.0)
 
@@ -394,7 +436,8 @@ def build():
             else:
                 x, y = along, s["c"] + off
                 rot = 0.0 if R.random() < 0.5 else math.pi
-            _place("Traffic_{:04d}".format(count), fn(), collection, x, y, rot)
+            place_instanced("Traffic_{:04d}".format(count), fn, collection,
+                            x, y, rot)
             count += 1
 
     # ---- abandoned / stripped cars in the industrial belt
@@ -405,8 +448,8 @@ def build():
             kind, fn = _pick(R)
             x = R.uniform(b["x0"] + 3.0, b["x1"] - 3.0)
             y = R.uniform(b["y0"] + 3.0, b["y1"] - 3.0)
-            _place("Abandoned_{:04d}".format(abandoned), fn(), collection,
-                   x, y, R.uniform(0, math.tau), z=BASE_Z)
+            place_instanced("Abandoned_{:04d}".format(abandoned), fn,
+                            collection, x, y, R.uniform(0, math.tau), z=BASE_Z)
             abandoned += 1
 
     print("  vehicles: {}  (abandoned: {})".format(count, abandoned))
