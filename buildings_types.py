@@ -116,12 +116,31 @@ def townhouse(name, rect, R, collection, detail):
     x0, y0, x1, y1 = rect
     w = x1 - x0
     h = y1 - y0
-    floors = R.randint(2, 4)
+    la = C.is_la()
+    floors = R.choice([1, 1, 2, 2, 2]) if la else R.randint(2, 4)
     height = floors * FLOOR_H + 0.6
-    style = R.choice(["brick_old", "plaster", "plaster_pink", "plaster_teal",
-                      "brick_modern", "stone_old"])
+    style = pick_style("residential", R) if la else R.choice(
+        ["brick_old", "plaster", "plaster_pink", "plaster_teal",
+         "brick_modern", "stone_old"])
     res = emit_building(name, rect, height, style, collection, R,
                         detail=detail, ground_floor=True)
+    if la:
+        # LA bungalow / duplex: low-pitch terracotta roof on about half of them,
+        # flat stucco box on the rest. No stoop; front path instead.
+        if R.random() < 0.55:
+            bm = bmesh.new()
+            _gable_bm(bm, (x0 + x1) * 0.5, (y0 + y1) * 0.5,
+                      BASE_Z + height + 0.12, w + 0.7, h + 0.7,
+                      min(2.3, h * 0.28))
+            _mesh(name + "_TileRoof", bm, "roof_tile", collection)
+        if R.random() < 0.5:
+            try:
+                import la_style
+                la_style.request_palm((x0 + x1) * 0.5 + R.uniform(-w * 0.3, w * 0.3),
+                                      y0 - 0.1)
+            except Exception:
+                pass
+        return res
     # stoop: steps down to the sidewalk on the south face
     bm = bmesh.new()
     steps = R.randint(3, 5)
@@ -138,10 +157,11 @@ def townhouse(name, rect, R, collection, detail):
 
 
 def midrise(name, rect, R, collection, detail):
-    floors = R.randint(4, 8)
+    la = C.is_la()
+    floors = R.randint(2, 4) if la else R.randint(4, 8)
     height = floors * FLOOR_H + GROUND_H * 0.5
-    style = R.choice(["brick_old", "brick_modern", "plaster", "concrete_panel",
-                      "stone_old"])
+    style = pick_style("midtown", R) if la else R.choice(
+        ["brick_old", "brick_modern", "plaster", "concrete_panel", "stone_old"])
     return emit_building(name, rect, height, style, collection, R, detail=detail)
 
 
@@ -346,9 +366,11 @@ def bank(name, rect, R, collection, detail):
 
 
 def hotel(name, rect, R, collection, detail):
-    floors = R.randint(8, 16)
+    floors = R.randint(5, 9) if C.is_la() else R.randint(8, 16)
     height = floors * FLOOR_H
-    res = emit_building(name, rect, height, R.choice(["brick_old", "stone_old"]),
+    res = emit_building(name, rect, height,
+                        R.choice(["modern_la", "stucco_white"]) if C.is_la()
+                        else R.choice(["brick_old", "stone_old"]),
                         collection, R, detail=detail)
     x0, y0, x1, y1 = rect
     add_box(name + "_VerticalSign", (1.2, 0.35, 6.0),
@@ -449,6 +471,13 @@ def build():
                 if r[2] - r[0] < 7.0 or r[3] - r[1] < 7.0:
                     continue
                 roll = R.random()
+                if C.is_la() and roll < 0.40:
+                    import la_style
+                    if roll < 0.10:
+                        placed.append(parking_garage("Garage_{}_{}".format(bi, k), r, R, collection, detail))
+                    else:
+                        placed.append(la_style.strip_mall("StripMall_{}_{}".format(bi, k), r, R, collection, detail))
+                    continue
                 if roll < 0.18:
                     placed.append(parking_garage("Garage_{}_{}".format(bi, k), r, R, collection, detail))
                 elif roll < 0.30:

@@ -317,11 +317,23 @@ KINDS = [
 ]
 
 
+_LA_WEIGHT = {"taxi": 0.1, "suv": 1.6, "pickup": 1.3, "bus": 0.6,
+              "garbage": 0.5, "moto": 0.7}
+
+
+def _kinds():
+    if not C.is_la():
+        return KINDS
+    return [(k, max(1, int(round(w * _LA_WEIGHT.get(k, 1.0)))), fn)
+            for (k, w, fn) in KINDS]
+
+
 def _pick(R):
-    total = sum(w for _, w, _ in KINDS)
+    kinds = _kinds()
+    total = sum(w for _, w, _ in kinds)
     t = R.uniform(0, total)
     acc = 0.0
-    for kind, w, fn in KINDS:
+    for kind, w, fn in kinds:
         acc += w
         if t <= acc:
             return kind, fn
@@ -385,7 +397,7 @@ def build():
 
     # ---- abandoned / stripped cars in the industrial belt
     for b in plan["blocks"]:
-        if b["district"] != "industrial":
+        if b["district"] != "industrial" or C.is_la():
             continue
         for i in range(R.randint(0, 3)):
             kind, fn = _pick(R)

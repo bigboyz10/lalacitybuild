@@ -56,8 +56,50 @@ STYLES = {
                       cornice=0.0, shop=0.0, plinth="concrete", roof="flat"),
 }
 
+# --- Los Angeles: stucco boxes, dingbat apartments, strip malls, glass modern.
+# No fire escapes, no cornices; wide windows and white trim.
+def _stucco(wall, **kw):
+    d = dict(wall=wall, frame="trim_white", sill="trim_white", win_w=1.35,
+             win_h=1.50, cols=3.30, balcony=0.15, fire=0.0, cornice=0.0,
+             shop=0.0, plinth="concrete", roof="flat")
+    d.update(kw)
+    return d
+
+
+STYLES.update({
+    "stucco_cream":      _stucco("stucco_cream"),
+    "stucco_peach":      _stucco("stucco_peach"),
+    "stucco_white":      _stucco("stucco_white", win_w=1.50, balcony=0.30),
+    "stucco_terracotta": _stucco("stucco_terracotta", frame="stucco_white"),
+    "stucco_sage":       _stucco("stucco_sage"),
+    "stucco_sky":        _stucco("stucco_sky"),
+    "stucco_butter":     _stucco("stucco_butter"),
+    # the classic LA "dingbat": two or three storeys of stucco and balconies
+    "dingbat":           _stucco("stucco_white", frame="metal_dark", win_w=1.60,
+                                 win_h=1.40, cols=3.00, balcony=0.70),
+    "modern_la":         _stucco("stucco_white", frame="metal_dark", win_w=2.20,
+                                 win_h=2.20, cols=3.60, balcony=0.55),
+    "strip_mall":        _stucco("stucco_cream", frame="metal_dark", win_w=2.00,
+                                 win_h=1.40, cols=5.20, balcony=0.0, shop=1.0,
+                                 plinth="concrete"),
+})
+
+_LA_PICKS = {
+    "downtown":   ["curtain", "curtain", "curtain", "concrete_panel", "modern_la"],
+    "midtown":    ["dingbat", "dingbat", "stucco_cream", "stucco_peach",
+                   "modern_la", "stucco_white", "concrete_panel", "stucco_sky"],
+    "residential": ["stucco_cream", "stucco_peach", "stucco_white",
+                    "stucco_terracotta", "stucco_sage", "stucco_butter",
+                    "stucco_sky", "dingbat"],
+    "industrial": ["warehouse", "warehouse", "industrial", "stucco_white"],
+    "waterfront": ["stucco_white", "stucco_cream", "warehouse", "modern_la"],
+    "parkland":   ["stucco_cream", "stucco_white"],
+}
+
 
 def pick_style(district, R):
+    if C.is_la():
+        return R.choice(_LA_PICKS.get(district, _LA_PICKS["residential"]))
     if district == "downtown":
         return R.choice(["curtain", "curtain", "stone_old", "concrete_panel"])
     if district == "midtown":

@@ -41,6 +41,9 @@ CONFIG = {
     "textures": True,         # use downloaded photographic PBR when available
     "engine": "auto",         # auto | eevee | cycles  (auto -> cycles headless)
     "samples_render": 64,     # cycles samples for a normal --render pass
+    "look": "la",             # la (Los Angeles) | nyc (the original dense, dark city)
+    "time": None,             # day | golden | night ; None -> day for la, night for nyc
+    "damage": False,          # LA look skips the decay/boarded-up pass unless asked
 }
 
 # real-world unit constants (metres)
@@ -103,10 +106,31 @@ def parse_argv():
             CONFIG["engine"] = nxt.lower(); i += 2
         elif a == "--samples" and nxt is not None:
             CONFIG["samples_render"] = int(nxt); i += 2
+        elif a == "--look" and nxt is not None:
+            CONFIG["look"] = nxt.lower(); i += 2
+        elif a == "--time" and nxt is not None:
+            CONFIG["time"] = nxt.lower(); i += 2
+        elif a == "--damage":
+            CONFIG["damage"] = True; i += 1
         else:
             i += 1
     os.makedirs(CONFIG["out_dir"], exist_ok=True)
     return CONFIG
+
+
+def is_la():
+    """True when the Los Angeles look is active (the default)."""
+    return CONFIG.get("look", "la") == "la"
+
+
+def la_palm_slot(x, y):
+    """Deterministic ~55% of street-tree slots become palms in the LA look.
+
+    Both trees.py (which skips those slots) and la_style.py (which fills them)
+    call this, so the two modules never need to talk to each other.
+    """
+    h = (int(round(x * 2.0)) * 73856093) ^ (int(round(y * 2.0)) * 19349663)
+    return (h & 0xFFFF) % 100 < 55
 
 
 def wants(module_key):
@@ -373,6 +397,21 @@ PALETTE = {
     "plaster":        dict(base="#c8c1b1", roughness=0.88, bump=0.22, bump_scale=12, var_noise=5, grime=0.5),
     "plaster_pink":   dict(base="#c09a8d", roughness=0.88, bump=0.22, bump_scale=12, var_noise=5, grime=0.5),
     "plaster_teal":   dict(base="#7f9a96", roughness=0.88, bump=0.22, bump_scale=12, var_noise=5, grime=0.5),
+    # --- Los Angeles palette: sun-bleached stucco, terracotta tile, palms ---
+    "stucco_cream":   dict(base="#dccaa2", roughness=0.93, bump=0.38, bump_scale=34, var_noise=6, grime=0.22),
+    "stucco_peach":   dict(base="#dba98a", roughness=0.93, bump=0.38, bump_scale=34, var_noise=6, grime=0.22),
+    "stucco_white":   dict(base="#e6e2d6", roughness=0.92, bump=0.36, bump_scale=34, var_noise=5, grime=0.20),
+    "stucco_terracotta": dict(base="#b96a4c", roughness=0.93, bump=0.38, bump_scale=34, var_noise=6, grime=0.22),
+    "stucco_sage":    dict(base="#a9b39a", roughness=0.93, bump=0.38, bump_scale=34, var_noise=6, grime=0.22),
+    "stucco_sky":     dict(base="#9fbac6", roughness=0.93, bump=0.38, bump_scale=34, var_noise=6, grime=0.22),
+    "stucco_butter":  dict(base="#e3d08f", roughness=0.93, bump=0.38, bump_scale=34, var_noise=6, grime=0.22),
+    "trim_white":     dict(base="#ece8de", roughness=0.70, bump=0.10, var_noise=3, grime=0.15),
+    "roof_tile":      dict(base="#a8553a", roughness=0.75, bump=0.55, bump_scale=44, var_noise=8, grime=0.3),
+    "palm_bark":      dict(base="#7b6a55", roughness=0.95, bump=0.85, bump_scale=22, var_noise=10, grime=0.3),
+    "palm_frond":     dict(base="#5a7630", roughness=0.62, bump=0.10, bump_scale=10, var_noise=8, grime=0.1),
+    "palm_dead":      dict(base="#7d6a3a", roughness=0.90, bump=0.20, bump_scale=10, var_noise=8, grime=0.1),
+    "la_mountain":    dict(base="#85796a", roughness=1.00, bump=0.50, bump_scale=3, var_noise=10, grime=0.0),
+    "la_ground":      dict(base="#8c7f66", roughness=1.00, bump=0.30, bump_scale=6, var_noise=9, grime=0.0),
     "concrete_panel": dict(base="#8d8a84", roughness=0.84, bump=0.25, bump_scale=10, var_noise=4, grime=0.55),
     # glass / metal
     "glass":          dict(base="#22303a", roughness=0.06, metallic=0.15, bump=0.04, bump_scale=5, var_noise=1.5, grime=0.30, grime_tint=0.5, transmission=0.80, alpha=0.55, ior=1.45),
@@ -834,6 +873,13 @@ def _classify(cx, cy, half):
     if nx > 0.48 and ny > 0.05:
         return "industrial"
     r = max(abs(nx), abs(ny))
+    if is_la():
+        # polycentric sprawl: a small downtown cluster, low-rise everywhere else
+        if r < 0.17:
+            return "downtown"
+        if r < 0.45:
+            return "midtown"
+        return "residential"
     if r < 0.30:
         return "downtown"
     if r < 0.62:
@@ -857,8 +903,13 @@ def plan_city(force=False):
     size = CONFIG["city_size"]
     half = size * 0.5
 
-    bx, rx = _partition(size, R, 66.0, [10, 12, 14, 16])
-    by, ry = _partition(size, R, 66.0, [10, 12, 14, 16])
+    if is_la():
+        # LA: big blocks, wide boulevards (5-9 lanes), nothing like Manhattan
+        target, widths = 92.0, [16, 20, 24, 28]
+    else:
+        target, widths = 66.0, [10, 12, 14, 16]
+    bx, rx = _partition(size, R, target, widths)
+    by, ry = _partition(size, R, target, widths)
 
     roads_x = [{"c": c, "w": w, "kind": _road_kind(abs(c) / half), "axis": "x"}
                for (c, w) in rx]

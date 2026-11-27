@@ -33,6 +33,7 @@ PIPELINE = [
     ("vehicles",   "vehicles",         "build"),
     ("vegetation", "vegetation",       "build"),
     ("trees",      "trees",            "build"),
+    ("la",         "la_style",         "build"),
     ("story",      "story",            "build"),
     ("signage",    "signage",          "build"),
     ("models",     "assets_models",    "build"),
@@ -93,6 +94,11 @@ def run():
     only = C.CONFIG["only"]
     for key, mod_name, fn_name in PIPELINE:
         if only and key not in only:
+            continue
+        if key == "damage" and C.is_la() and not C.CONFIG.get("damage") and not only:
+            print("  -- skipping damage pass (LA look; use --damage to force it)")
+            continue
+        if key == "la" and not C.is_la():
             continue
         try:
             mod = importlib.import_module(mod_name)

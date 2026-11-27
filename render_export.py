@@ -22,6 +22,8 @@ def _camera(name, loc, look_at, lens=35.0, fstop=8.0):
     cd = bpy.data.cameras.new(name)
     cd.lens = lens
     cd.sensor_width = 36.0
+    cd.clip_start = 0.1
+    cd.clip_end = 20000.0      # LA backdrop mountains sit several km out
     ob = bpy.data.objects.new(name, cd)
     ob.location = loc
     direction = Vector(look_at) - Vector(loc)
