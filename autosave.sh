@@ -42,16 +42,18 @@ repair() {
   fi
 }
 
-# true when HEAD is one of our own autosave commits that the remote lacks
+# True when HEAD is one of our own autosave commits that we have not synced
+# yet. Deliberately answered from local state: the earlier version fetched from
+# origin on every tick, which is a network round-trip per second per agent.
 can_amend() {
-  git log -1 --format='%s' | grep -q "^autosave(${AGENT})" || return 1
-  git fetch -q origin main 2>/dev/null || true
-  ! git merge-base --is-ancestor HEAD origin/main 2>/dev/null
+  [ "$(git rev-parse HEAD 2>/dev/null)" != "$last_synced" ] || return 1
+  git log -1 --format='%s' 2>/dev/null | grep -q "^autosave(${AGENT})"
 }
 
 log "autosave started (every ${INTERVAL}s, sync every ${PUSH_EVERY}s) agent=${AGENT} pid=$$"
 last_push=0
 conflict_state=0
+last_synced="$(git rev-parse HEAD 2>/dev/null || echo none)"
 
 while true; do
   repair
@@ -73,7 +75,8 @@ while true; do
     rc=$?
     last_push=$now
     case "$rc" in
-      0) log "synced to origin/main"; conflict_state=0 ;;
+      0) log "synced to origin/main"; conflict_state=0
+         last_synced="$(git rev-parse HEAD)" ;;
       2) if [ "$conflict_state" -eq 0 ]; then
            log "PAUSED: $(printf '%s' "$out" | grep CONFLICT | head -1)"
            log "  commits are safe locally; resolve, then autosave resumes"
