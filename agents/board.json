@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T12:32:29Z",
+  "updated": "2026-11-27T12:37:00Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -11,6 +11,10 @@
     "agent-codex": {
       "last_seen": "2026-11-27T12:30:22Z",
       "task": "T-001"
+    },
+    "sonnet": {
+      "last_seen": "2026-11-27T12:37:00Z",
+      "task": "T-003"
     }
   },
   "tasks": [
@@ -79,16 +83,21 @@
       ],
       "size": "M",
       "priority": 2,
-      "status": "todo",
-      "owner": null,
-      "lease_until": null,
-      "branch": null,
+      "status": "claimed",
+      "owner": "sonnet",
+      "lease_until": "2026-11-27T13:22:00Z",
+      "branch": "agent/sonnet/t-003",
       "notes": [
         {
           "by": "agent-epsilon",
           "at": "2026-11-27T11:58:35Z",
           "text": "HANDOFF: 60% done. Branch agent/agent-epsilon/t-003 has the working jitter for brick/plaster. Resume at emit_building() line ~280, concrete_panel + stone_old still need the pass.",
           "branch": "agent/agent-epsilon/t-003"
+        },
+        {
+          "by": "sonnet",
+          "at": "2026-11-27T12:37:00Z",
+          "text": "claimed"
         }
       ],
       "depends_on": []
