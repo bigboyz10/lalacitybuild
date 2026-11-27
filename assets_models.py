@@ -152,6 +152,10 @@ def build():
     clutter = tag("clutter")
     debris = tag("debris")
     roofkit = tag("roof")
+    if C.is_la():
+        # no wilderness trees, stumps or dead trunks on LA boulevards;
+        # palms and shade trees are grown procedurally instead
+        saplings, big_trees = [], []
 
     def put(keys, x, y, z=BASE_Z, scale=1.0, spread=0.0, tilt=0.0):
         if not keys or abs(x) > half or abs(y) > half:

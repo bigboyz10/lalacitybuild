@@ -19,6 +19,24 @@ from core import CONFIG, U, rng, plan_city
 from buildings_core import BASE_Z, FLOOR_H, GROUND_H, STYLES
 
 
+# time of day: LA defaults to bright daylight, the original city stays a dusk/night scene
+TOD = {
+    "day":    dict(elev=46.0, sky_int=1.0, bg=1.0, sun=4.3, color=(1.0, 0.95, 0.86),
+                   haze=0.00030, exposure=0.0, air=1.0, dust=1.8, lamps=False),
+    "golden": dict(elev=10.0, sky_int=1.0, bg=0.95, sun=3.4, color=(1.0, 0.76, 0.50),
+                   haze=0.00045, exposure=0.15, air=1.0, dust=2.6, lamps=False),
+    "night":  dict(elev=11.0, sky_int=0.35, bg=0.55, sun=3.2, color=(1.0, 0.86, 0.68),
+                   haze=0.0035, exposure=0.55, air=1.4, dust=2.2, lamps=True),
+}
+
+
+def _tod():
+    t = CONFIG.get("time")
+    if not t:
+        t = "day" if C.is_la() else "night"
+    return t if t in TOD else "day"
+
+
 def _extra_materials():
     C.make_pbr("steam", base="#dfe4e8", roughness=1.0, bump=0.0,
                var_noise=2, grime=0.0, alpha=0.22)
@@ -81,12 +99,13 @@ def build_world():
         sky.sky_type = sky_type
     except Exception:
         pass
-    for attr, val in (("sun_elevation", math.radians(11.0)),
+    T = TOD[_tod()]
+    for attr, val in (("sun_elevation", math.radians(T["elev"])),
                       ("sun_rotation", math.radians(215.0)),
-                      ("sun_intensity", 0.35),
-                      ("altitude", 200.0),
-                      ("air_density", 1.4),
-                      ("dust_density", 2.2),
+                      ("sun_intensity", T["sky_int"]),
+                      ("altitude", 90.0),
+                      ("air_density", T["air"]),
+                      ("dust_density", T["dust"]),
                       ("ozone_density", 1.0)):
         try:
             setattr(sky, attr, val)
@@ -94,13 +113,13 @@ def build_world():
             pass
 
     nt.links.new(sky.outputs[0], bg.inputs["Color"])
-    bg.inputs["Strength"].default_value = 0.55
+    bg.inputs["Strength"].default_value = T["bg"]
     nt.links.new(bg.outputs[0], out.inputs["Surface"])
 
     # aerial haze
     vol = nt.nodes.new("ShaderNodeVolumePrincipled")
     vol.inputs["Color"].default_value = (0.72, 0.78, 0.86, 1.0)
-    vol.inputs["Density"].default_value = 0.0035
+    vol.inputs["Density"].default_value = T["haze"]
     try:
         vol.inputs["Anisotropy"].default_value = 0.35
     except Exception:
@@ -111,16 +130,19 @@ def build_world():
 
 def build_sun():
     sc = bpy.context.scene
+    T = TOD[_tod()]
     ld = bpy.data.lights.new("Sun", 'SUN')
-    ld.energy = 3.2
-    ld.color = (1.0, 0.86, 0.68)
+    ld.energy = T["sun"]
+    ld.color = T["color"]
     try:
         ld.angle = math.radians(1.2)
     except Exception:
         pass
     ob = bpy.data.objects.new("Sun", ld)
-    ob.rotation_euler = (math.radians(74.0), 0.0, math.radians(215.0))
+    ob.rotation_euler = (math.radians(74.0 if T["lamps"] else 90.0 - T["elev"]), 0.0, math.radians(215.0))
     C.link_object(ob, C.col("CITY_Lighting"))
+    if not T["lamps"]:
+        return ob                      # no moon in daylight
 
     ld2 = bpy.data.lights.new("Moon", 'SUN')
     ld2.energy = 0.12
@@ -278,16 +300,17 @@ def build():
     _extra_materials()
     build_world()
     build_sun()
-    n_lamps = build_street_lights()
-    n_lit = build_lit_windows()
-    n_steam = build_steam()
+    night = TOD[_tod()]["lamps"]
+    n_lamps = build_street_lights() if night else 0
+    n_lit = build_lit_windows() if night else 0
+    n_steam = build_steam() if not C.is_la() else 0
     build_birds()
     build_aircraft()
 
     sc = bpy.context.scene
     C.set_color_management()
     try:
-        sc.view_settings.exposure = 0.55
+        sc.view_settings.exposure = TOD[_tod()]["exposure"]
     except Exception:
         pass
     print("  street lamps: {}  lit windows: {}  steam plumes: {}".format(

@@ -225,6 +225,10 @@ def _variants(R, src_col):
     """Grow a palette of trees once; the city instances these."""
     plan = [("street_plane", 3), ("street_maple", 3), ("park_oak", 3),
             ("poplar", 2), ("conifer", 2), ("sapling", 2), ("bare", 2)]
+    if C.is_la():
+        # broadleaf shade trees only; palms come from la_style.py
+        plan = [("street_plane", 2), ("street_maple", 2), ("park_oak", 3),
+                ("sapling", 1)]
     out = []
     for species, n in plan:
         for i in range(n):
@@ -274,6 +278,8 @@ def build():
     pits = C.get_asset("tree_pits", [])
     if pits:
         for (x, y) in pits:
+            if C.is_la() and C.la_palm_slot(x, y):
+                continue          # this slot belongs to a palm (la_style.py)
             if R.random() > 0.90 * density:
                 continue
             parts = pick("street_plane", "street_maple") \
@@ -306,6 +312,8 @@ def build():
                             y = cy + along * t
                             x = cx + sgn * (cross * 0.5 + sw * 0.42)
                         if abs(x) > half or abs(y) > half:
+                            continue
+                        if C.is_la() and C.la_palm_slot(x, y):
                             continue
                         parts = pick("street_plane", "street_maple")
                         if not parts:
