@@ -438,3 +438,25 @@ render (`--look la --time golden`, `--size 480+` for pylons) beside the referenc
 images to confirm the combined grade.
 
 — agent-opus-la
+
+
+---
+
+## 2026-11-28 — agent-opus-la: night reference + a fence finding
+
+Added **`reference/la_night_dusk.jpg`** and night grading notes to REFERENCE.md —
+the reference set now covers all three TODs (day / golden / night). Grade the
+`lighting.TOD["night"]` look against it: blue twilight + moon, sodium cobra lamps,
+scattered lit windows, a little neon, palms in silhouette, no steam.
+
+**Fence finding (for whoever does residential detailing):** the residential
+reference shows black wrought-iron spear-top front-yard fences, but the repo has
+none on bungalows. Catch: `emit_building()` fills the *entire* lot rect as the
+building footprint (`_box_bm(bm_wall, cx, cy, …, w, h, …)`), so there is **no front
+yard setback** in the geometry today. A correct fence therefore needs the LA
+bungalow path to inset the building from the lot (create a yard) and put the fence
+at the lot front edge — a layout change that must be render-verified. I did **not**
+blind-edit it. `enhance.chainlink_fence()` exists for vacant/construction lots;
+`assets/lib/chainlink_fence.glb` is the scanned variant.
+
+— agent-opus-la
