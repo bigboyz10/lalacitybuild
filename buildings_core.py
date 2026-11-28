@@ -260,9 +260,20 @@ def emit_window(bm_frame, bm_glass, bm_sill, bm_balcony, bm_rail,
                     z - wh * 0.5 + 0.24, 0.035, 0.035, 0.42, rot)
 
 
+AWNING_MATS = ["fabric_red", "fabric_green", "fabric_blue", "fabric_cream",
+               "fabric_black"]
+
+
 def emit_shopfront(bm_frame, bm_glass, bm_bulk, bm_awning, bm_sign,
-                   px, py, ux, uy, nx, ny, length, z0, R, style):
+                   px, py, ux, uy, nx, ny, length, z0, R, style, extras=None):
+    """extras (optional) unlocks the T-005 variety passes:
+         extras["awnings"]  dict material -> bmesh : awning colour per tenancy
+         extras["shutter"]  bmesh                  : closed roll-down shutters
+       Without extras the original single-awning behaviour is unchanged."""
     rot = math.atan2(uy, ux)
+    ex = extras or {}
+    awn_sets = ex.get("awnings")
+    shut_bm = ex.get("shutter")
     # --- split the frontage into separate tenancies ----------------------
     # A block is not one shop repeated: it is several businesses of different
     # widths, each with its own bay module, awning depth and door position.
@@ -288,16 +299,52 @@ def emit_shopfront(bm_frame, bm_glass, bm_bulk, bm_awning, bm_sign,
         head_h = R.uniform(2.95, 3.55)
         gh = head_h - sill_h
 
-        # bulkhead for this tenancy only
-        _box_bm(bm_bulk, px + nx * 0.10 + ux * unit_mid,
-                py + ny * 0.10 + uy * unit_mid, z0 + sill_h * 0.5,
-                unit_len - 0.18, 0.24, sill_h, rot)
-
         door_bay = R.randrange(bays)
-        for i in range(bays):
+        # closed tenancy: roll-down security shutter instead of glazing
+        closed = (shut_bm is not None and bays >= 1 and
+                  R.random() < (0.22 if C.is_la() else 0.14))
+        # recessed entry: display windows project, the door stays at the wall
+        proud = R.uniform(0.35, 0.60) if (not closed and bays >= 3 and
+                                          R.random() < 0.35) else 0.0
+
+        # bulkhead (stall riser) for this tenancy; split around the door when
+        # the windows project so the door is never blocked
+        if proud:
+            for (a, b) in ((cursor, cursor + bw * door_bay),
+                           (cursor + bw * (door_bay + 1), cursor + unit_len)):
+                if b - a > 0.3:
+                    m = (a + b) * 0.5
+                    _box_bm(bm_bulk, px + nx * (0.10 + proud * 0.5) + ux * m,
+                            py + ny * (0.10 + proud * 0.5) + uy * m,
+                            z0 + sill_h * 0.5, b - a - 0.10, 0.24 + proud,
+                            sill_h, rot)
+            # side returns closing the recess either side of the door bay
+            for edge in (cursor + bw * door_bay, cursor + bw * (door_bay + 1)):
+                _box_bm(bm_frame, px + nx * (0.10 + proud * 0.5) + ux * edge,
+                        py + ny * (0.10 + proud * 0.5) + uy * edge,
+                        z0 + head_h * 0.5, 0.10, 0.24 + proud, head_h, rot)
+        else:
+            _box_bm(bm_bulk, px + nx * 0.10 + ux * unit_mid,
+                    py + ny * 0.10 + uy * unit_mid, z0 + sill_h * 0.5,
+                    unit_len - 0.18, 0.24, sill_h, rot)
+
+        if closed:
+            _box_bm(shut_bm, px + nx * 0.13 + ux * unit_mid,
+                    py + ny * 0.13 + uy * unit_mid, z0 + head_h * 0.5,
+                    unit_len - 0.20, 0.10, head_h, rot)
+            _box_bm(shut_bm, px + nx * 0.19 + ux * unit_mid,
+                    py + ny * 0.19 + uy * unit_mid, z0 + head_h + 0.12,
+                    unit_len - 0.20, 0.24, 0.30, rot)
+            # horizontal slat ribs so it reads as a roll-down shutter
+            for k in range(int(head_h / 0.30)):
+                _box_bm(shut_bm, px + nx * 0.185 + ux * unit_mid,
+                        py + ny * 0.185 + uy * unit_mid, z0 + 0.15 + k * 0.30,
+                        unit_len - 0.24, 0.03, 0.05, rot)
+        for i in range(0 if closed else bays):
             s = cursor + bw * (i + 0.5)
-            cx = px + ux * s
-            cy = py + uy * s
+            off = proud if (proud and i != door_bay) else 0.0
+            cx = px + ux * s + nx * off
+            cy = py + uy * s + ny * off
             if i == door_bay:
                 _box_bm(bm_frame, cx + nx * 0.02, cy + ny * 0.02, z0 + 1.15,
                         min(bw - 0.10, 1.35), 0.14, 2.30, rot)
@@ -309,15 +356,21 @@ def emit_shopfront(bm_frame, bm_glass, bm_bulk, bm_awning, bm_sign,
                 _vquad_bm(bm_glass, cx, cy, z0 + sill_h + gh * 0.5,
                           ux, uy, nx, ny, bw - 0.24, gh - 0.08, out=0.08)
 
-        # per-tenancy awning, varied depth and drop
-        if R.random() < 0.55:
-            depth = R.uniform(1.1, 2.1)
+        # per-tenancy awning, varied depth, drop and (T-005) colour
+        if R.random() < (0.40 if closed else 0.55):
+            depth = R.uniform(1.1, 2.1) + proud
             drop = R.uniform(0.35, 0.75)
             az = z0 + head_h + R.uniform(-0.1, 0.25)
-            _box_bm(bm_awning, px + nx * (depth * 0.5) + ux * unit_mid,
+            target = bm_awning
+            if awn_sets is not None:
+                mat = R.choice(AWNING_MATS)
+                if mat not in awn_sets:
+                    awn_sets[mat] = bmesh.new()
+                target = awn_sets[mat]
+            _box_bm(target, px + nx * (depth * 0.5) + ux * unit_mid,
                     py + ny * (depth * 0.5) + uy * unit_mid, az,
                     unit_len - 0.3, depth, 0.09, rot)
-            _box_bm(bm_awning, px + nx * depth + ux * unit_mid,
+            _box_bm(target, px + nx * depth + ux * unit_mid,
                     py + ny * depth + uy * unit_mid, az - drop * 0.5,
                     unit_len - 0.3, 0.07, drop, rot)
 
@@ -461,6 +514,8 @@ def emit_building(name, rect, height, style, collection, R, base_z=BASE_Z,
     bm_cornice = bmesh.new()
     bm_shop_bulk = bmesh.new()
     bm_awning = bmesh.new()
+    awning_sets = {}                 # T-005: one mesh per awning colour
+    bm_shutter = bmesh.new()         # T-005: closed roll-down shutters
     bm_sign = bmesh.new()
     bm_ac = bmesh.new()
     bm_fire = bmesh.new()
@@ -564,7 +619,9 @@ def emit_building(name, rect, height, style, collection, R, base_z=BASE_Z,
             if st["shop"] > 0.3 and R.random() < st["shop"]:
                 emit_shopfront(bm_frame, bm_glass, bm_shop_bulk, bm_awning,
                                bm_sign, px, py, ux, uy, nx, ny,
-                               length - 0.5, base_z, R, style)
+                               length - 0.5, base_z, R, style,
+                               extras={"awnings": awning_sets,
+                                       "shutter": bm_shutter})
             else:
                 # residential entry: door + two windows
                 s = 0.0
@@ -615,6 +672,15 @@ def emit_building(name, rect, height, style, collection, R, base_z=BASE_Z,
     if len(bm_awning.faces):
         objs.append(_mesh(name + "_Awnings", bm_awning,
                           R.choice(["fabric_red", "fabric_green"]), collection))
+    for mat, abm in awning_sets.items():
+        if len(abm.faces):
+            objs.append(_mesh(name + "_Awnings_" + mat.split("_")[-1], abm, mat, collection))
+        else:
+            abm.free()
+    if len(bm_shutter.faces):
+        objs.append(_mesh(name + "_Shutters", bm_shutter, "metal_galv", collection))
+    else:
+        bm_shutter.free()
     if len(bm_sign.faces):
         objs.append(_mesh(name + "_SignBand", bm_sign, "metal_dark", collection))
     if len(bm_ac.faces):

@@ -45,3 +45,21 @@ volume. EEVEE is unaffected.
   agents' board tasks.
 
 — Claude
+
+## 2026-11-28 — T-005 shopfront variety (claimed after sonnet's lease expired)
+
+`emit_shopfront` already varied tenancy width, bay rhythm and awning depth.
+Added on top, all in `buildings_core.py` (plus three `fabric_*` materials in
+`core.py`):
+
+- awning colour per tenancy (red/green/blue/cream/black), one mesh per colour
+- closed tenancies: roll-down security shutter with slat ribs and a housing box
+  (22% in LA, 14% in NYC)
+- recessed entries: display windows project 0.35-0.60 m with side returns,
+  door stays at the wall plane; stall riser is split around the door
+
+`emit_shopfront(..., extras=None)`: without `extras` it behaves exactly as
+before, so any other caller keeps the old single-awning output.
+Not done: per-tenancy stall-riser *material* and `signage.py` changes (I did
+not touch your file, signage owner).
+Regression harness at `--size 200`: PASS both looks.

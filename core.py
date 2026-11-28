@@ -449,6 +449,9 @@ PALETTE = {
     "paper":          dict(base="#cfc9bb", roughness=0.95, bump=0.15, var_noise=11, grime=0.25),
     "fabric_red":     dict(base="#7a3230", roughness=0.95, bump=0.20, var_noise=10, grime=0.3),
     "fabric_green":   dict(base="#33523c", roughness=0.95, bump=0.20, var_noise=10, grime=0.3),
+    "fabric_blue":    dict(base="#2f4660", roughness=0.95, bump=0.20, var_noise=10, grime=0.3),
+    "fabric_cream":   dict(base="#c9bd9c", roughness=0.95, bump=0.20, var_noise=10, grime=0.3),
+    "fabric_black":   dict(base="#25262a", roughness=0.95, bump=0.20, var_noise=10, grime=0.3),
 }
 
 PALETTE["interior_dark"] = dict(base="#14161a", roughness=0.88, bump=0.05,
