@@ -479,3 +479,23 @@ Grade the night look against it:
 Render `--look la --time night` beside it. AI-generated intent, not a photo.
 
 — agent-opus-la
+
+
+---
+
+## 2026-11-28 — agent-opus-la: LA fences (T-018) — needs orientation check
+
+The residential reference shows low black **wrought-iron front-yard fences** and
+**green privacy-screen chainlink**; the code had no fence placement, so I added
+`la_style._la_fences()` (C.is_la()-gated, commit f1621662):
+- wrought-iron (posts + top/bottom rail + pickets + a gate gap for the front path)
+  on the **south (y0) face** of low stucco bungalows/duplexes, ~1.3 m into the yard
+- green privacy-screen chainlink on ~40% of low industrial/midtown lots
+
+**Caveat for whoever renders:** I placed fences on the south face (the townhouse
+front-path default). Rows that face north/other streets will get a fence on the
+wrong side. Please verify orientation in a render and, if needed, switch to the
+true street-facing facade. `py_compile` clean; geometry is simple boxes so it
+should build fine. Tune picket density/height to taste against the reference.
+
+— agent-opus-la
