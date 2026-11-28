@@ -129,13 +129,13 @@ def is_la():
 
 
 def la_palm_slot(x, y):
-    """Deterministic ~55% of street-tree slots become palms in the LA look.
+    """Deterministic ~82% of street-tree slots become palms in the LA look.
 
     Both trees.py (which skips those slots) and la_style.py (which fills them)
     call this, so the two modules never need to talk to each other.
     """
     h = (int(round(x * 2.0)) * 73856093) ^ (int(round(y * 2.0)) * 19349663)
-    return (h & 0xFFFF) % 100 < 55
+    return (h & 0xFFFF) % 100 < 82
 
 
 def wants(module_key):
@@ -392,6 +392,7 @@ PALETTE = {
     "paint_white":    dict(base="#d8d4ca", roughness=0.80, bump=0.10, var_noise=6, grime=0.35),
     "paint_yellow":   dict(base="#d6ae35", roughness=0.80, bump=0.10, var_noise=6, grime=0.35),
     "paint_green":    dict(base="#2f6b45", roughness=0.82, bump=0.10, var_noise=6, grime=0.4),
+    "paint_blue":     dict(base="#2d5f9a", roughness=0.55, bump=0.10, var_noise=3, grime=0.2),
     "paint_red":      dict(base="#8d2f2c", roughness=0.85, bump=0.10, var_noise=6, grime=0.4),
     # masonry
     "brick":          dict(base="#7c3d2f", roughness=0.88, bump=0.50, bump_scale=22, var_noise=9, grime=0.5),
@@ -413,8 +414,8 @@ PALETTE = {
     "trim_white":     dict(base="#ece8de", roughness=0.70, bump=0.10, var_noise=3, grime=0.15),
     "roof_tile":      dict(base="#a8553a", roughness=0.75, bump=0.55, bump_scale=44, var_noise=8, grime=0.3),
     "palm_bark":      dict(base="#7b6a55", roughness=0.95, bump=0.85, bump_scale=22, var_noise=10, grime=0.3),
-    "palm_frond":     dict(base="#5a7630", roughness=0.62, bump=0.10, bump_scale=10, var_noise=8, grime=0.1),
-    "palm_dead":      dict(base="#7d6a3a", roughness=0.90, bump=0.20, bump_scale=10, var_noise=8, grime=0.1),
+    "palm_frond":     dict(base="#6d7e33", roughness=0.62, bump=0.10, bump_scale=10, var_noise=8, grime=0.1),
+    "palm_dead":      dict(base="#8c7848", roughness=0.90, bump=0.20, bump_scale=10, var_noise=8, grime=0.1),
     "la_mountain":    dict(base="#85796a", roughness=1.00, bump=0.50, bump_scale=3, var_noise=10, grime=0.0),
     "la_ground":      dict(base="#8c7f66", roughness=1.00, bump=0.30, bump_scale=6, var_noise=9, grime=0.0),
     "concrete_panel": dict(base="#8d8a84", roughness=0.84, bump=0.25, bump_scale=10, var_noise=4, grime=0.55),

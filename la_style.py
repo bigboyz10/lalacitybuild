@@ -86,7 +86,7 @@ def _trunk(R, height, r_base, r_top, lean, sides=9):
     return bm, Vector((lx, ly, height))
 
 
-def _fan_frond(bm, o, az, el0, plen, brad, droop, nleaf=11, spread=2.3, wleaf=0.15):
+def _fan_frond(bm, o, az, el0, plen, brad, droop, nleaf=15, spread=2.5, wleaf=0.21):
     """One Washingtonia frond: arched petiole then a fan of spiky leaflets."""
     ca, sa = math.cos(az), math.sin(az)
     side = Vector((-sa, ca, 0.0))
@@ -153,13 +153,13 @@ def _feather_frond(bm, o, az, el0, length, width, droop):
 def build_palm(name, kind, R, col):
     """Return the source parts [trunk, live fronds, dead skirt] of one palm."""
     if kind == "washingtonia":
-        height = R.uniform(13.0, 21.0)
+        height = R.uniform(16.0, 25.0)
         trunk_bm, top = _trunk(R, height, R.uniform(0.30, 0.38),
-                               R.uniform(0.17, 0.22), R.uniform(0.2, 1.4))
+                               R.uniform(0.15, 0.20), R.uniform(0.2, 1.6))
         crown = bmesh.new()
         dead = bmesh.new()
-        tiers = [(8, 62, 1.15, 0.95, 0.45), (10, 36, 1.65, 1.15, 0.70),
-                 (8, 10, 2.05, 1.25, 0.95)]
+        tiers = [(9, 62, 1.15, 0.95, 0.45), (12, 36, 1.65, 1.15, 0.70),
+                 (10, 8, 2.05, 1.25, 1.00)]
         az0 = R.uniform(0, math.tau)
         k = 0
         for (count, el_deg, plen, brad, droop) in tiers:
@@ -171,9 +171,9 @@ def build_palm(name, kind, R, col):
                            droop)
                 k += 1
         # the dead-frond skirt that makes a Washingtonia unmistakable
-        for i in range(R.randint(16, 22)):
+        for i in range(R.randint(26, 34)):
             az = az0 + i * GOLDEN
-            z = top.z - R.uniform(0.15, 2.6)
+            z = top.z - R.uniform(0.15, 4.6)
             ox = top.x * (z / height) ** 2
             oy = top.y * (z / height) ** 2
             r = 0.2
@@ -243,7 +243,7 @@ def build_palms(R, plan):
             return
         _instance(parts, "Palm_{:04d}".format(n), col,
                   (x + R.gauss(0, 0.10), y + R.gauss(0, 0.10), BASE_Z),
-                  R.uniform(0, math.tau), R.uniform(0.85, 1.20))
+                  R.uniform(0, math.tau), R.uniform(0.90, 1.22))
         n += 1
 
     # 1. palm-lined boulevards: take the street-tree slots trees.py handed over
@@ -302,7 +302,7 @@ def _tint_mountain(mat):
     mapr.inputs["From Min"].default_value = 0.0
     mapr.inputs["From Max"].default_value = 900.0
     el = ramp.color_ramp.elements
-    el[0].position, el[0].color = 0.0, (0.60, 0.55, 0.47, 1.0)
+    el[0].position, el[0].color = 0.0, (0.46, 0.40, 0.33, 1.0)
     el[1].position, el[1].color = 1.0, (0.34, 0.35, 0.38, 1.0)
     mid = el.new(0.35)
     mid.color = (0.42, 0.33, 0.25, 1.0)
@@ -312,14 +312,14 @@ def _tint_mountain(mat):
     # LA smog: blend toward a pale warm haze with camera distance
     cam = nt.nodes.new("ShaderNodeCameraData")
     dist = nt.nodes.new("ShaderNodeMapRange")
-    dist.inputs["From Min"].default_value = 500.0
-    dist.inputs["From Max"].default_value = 3800.0
+    dist.inputs["From Min"].default_value = 2500.0
+    dist.inputs["From Max"].default_value = 8000.0
     dist.inputs["To Min"].default_value = 0.10
-    dist.inputs["To Max"].default_value = 0.80
+    dist.inputs["To Max"].default_value = 0.55
     dist.clamp = True
     mix = nt.nodes.new("ShaderNodeMix")
     mix.data_type = "RGBA"
-    mix.inputs["B"].default_value = (0.78, 0.76, 0.74, 1.0)
+    mix.inputs["B"].default_value = (0.62, 0.62, 0.68, 1.0)   # blue-brown smog
     nt.links.new(cam.outputs["View Distance"], dist.inputs["Value"])
     nt.links.new(dist.outputs["Result"], mix.inputs["Factor"])
     nt.links.new(ramp.outputs["Color"], mix.inputs["A"])
@@ -331,8 +331,8 @@ def _tint_mountain(mat):
 def build_backdrop(R, plan):
     col = C.col("CITY_LA")
     half = plan["half"]
-    r_in = half * 2.2 + 500.0
-    depth = 2400.0
+    r_in = half * 2.0 + 3500.0       # far enough to read as a distant range
+    depth = 3500.0
     n_theta, n_r = 180, 8
     ph = [R.uniform(0, math.tau) for _ in range(8)]
 
@@ -344,7 +344,7 @@ def build_backdrop(R, plan):
               0.35 * math.sin(th * 13 + ph[2]) + 0.2 * math.sin(th * 29 + ph[3]))
         n1 = 0.5 + 0.5 * n1 / 2.15
         sides = (abs(math.cos(th)) ** 1.5) * (0.5 + 0.5 * math.sin(th * 5 + ph[4]))
-        h = 820.0 * north * (0.45 + 0.55 * n1) + 170.0 * sides * (0.4 + 0.6 * n1)
+        h = 620.0 * north * (0.45 + 0.55 * n1) + 130.0 * sides * (0.4 + 0.6 * n1)
         return max(0.0, h)
 
     bm = bmesh.new()
@@ -457,14 +457,7 @@ def strip_mall(name, rect, R, collection, detail):
                 bm.faces.new(v)
                 x += stall_w
         _finish(name + "_Stalls", bm, "paint_white", collection)
-    # pole sign
-    px = x0 + w * R.choice([0.12, 0.88])
-    py = y0 + 1.2
-    add_box(name + "_SignPole", (0.45, 0.45, 8.5), loc=(px, py, BASE_Z + 4.25),
-            mat="metal_dark", collection=collection)
-    add_box(name + "_SignBox", (3.4, 0.45, 2.6), loc=(px, py, BASE_Z + 8.6),
-            mat=R.choice(["paint_red", "paint_yellow", "paint_green", "paint_white"]),
-            collection=collection)
+    _pylon_sign(name, x0 + w * R.choice([0.12, 0.88]), y0 + 1.2, R, collection)
     # palms along the kerb edge of the lot
     for k in range(R.randint(1, 3)):
         request_palm(x0 + (k + 0.5) * w / 3.0 + R.uniform(-2, 2), y0 + 0.9)
@@ -472,9 +465,74 @@ def strip_mall(name, rect, R, collection, detail):
 
 
 # -----------------------------------------------------------------------------
+_CENTER_NAMES = ["VALLEY PLAZA", "SUNSET PLAZA", "PACIFIC CENTER", "WESTERN PLAZA",
+                 "LA MESA CENTER", "GOLDEN STATE PLAZA", "CRENSHAW CENTER"]
+_TENANT_FALLBACK = ["LIQUOR", "MARKET", "NAILS", "TACOS", "DONUTS", "SMOG CHECK",
+                    "CHECK CASHING", "PHARMACY"]
+
+
+def _pylon_sign(name, px, py, R, collection):
+    """Twin-post multi-tenant pylon: centre name on top, stacked tenant panels."""
+    try:
+        import signage
+        trades = list(getattr(signage, "LA_TRADES", _TENANT_FALLBACK))
+        text_mesh = signage.text_mesh
+    except Exception:
+        trades, text_mesh = list(_TENANT_FALLBACK), None
+    for sx in (-1.5, 1.5):
+        add_box("{}_Post{}".format(name, "L" if sx < 0 else "R"), (0.40, 0.40, 11.6),
+                loc=(px + sx * 1.3, py, BASE_Z + 5.8), mat="metal_dark", collection=collection)
+    z = BASE_Z + 11.6
+    top = R.choice(_CENTER_NAMES)
+    add_box(name + "_SignTop", (5.8, 0.40, 2.1), loc=(px, py, z),
+            mat="stucco_cream", collection=collection)
+    if text_mesh:
+        text_mesh(top, name + "_SignTopText", size=min(0.95, 5.3 / (len(top) * 0.62)),
+                  extrude=0.03, mat="metal_dark", collection=collection,
+                  loc=(px, py - 0.23, z), rot=(math.pi / 2, 0.0, 0.0))
+    tenants = R.sample(trades, k=min(len(trades), R.randint(2, 3)))
+    z -= 2.1
+    for t in tenants:
+        panel = R.choice(["paint_blue", "paint_red", "paint_yellow", "paint_white"])
+        add_box("{}_Panel{}".format(name, t[:4]), (4.0, 0.36, 1.00), loc=(px, py, z),
+                mat=panel, collection=collection)
+        if text_mesh:
+            text_mesh(t, "{}_PanelText{}".format(name, t[:4]),
+                      size=min(0.55, 3.6 / (len(t) * 0.62)), extrude=0.025,
+                      mat="metal_dark" if panel in ("paint_yellow", "paint_white") else "paint_white",
+                      collection=collection, loc=(px, py - 0.20, z),
+                      rot=(math.pi / 2, 0.0, 0.0))
+        z -= 1.18
+
+
+def _dry_parkways():
+    """Reference look: parkway grass is dry tan, not green (LA drought lawns)."""
+    mat = bpy.data.materials.get("grass")
+    if mat is None or not mat.use_nodes:
+        return
+    nt = mat.node_tree
+    bsdf = next((n for n in nt.nodes if n.bl_idname == "ShaderNodeBsdfPrincipled"), None)
+    if bsdf is None:
+        return
+    inp = bsdf.inputs["Base Color"]
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    mix.inputs["Factor"].default_value = 0.85
+    mix.inputs["B"].default_value = (1.0, 0.86, 0.52, 1.0)
+    if inp.links:
+        src = inp.links[0].from_socket
+        nt.links.remove(inp.links[0])
+        nt.links.new(src, mix.inputs["A"])
+    else:
+        mix.inputs["A"].default_value = (0.80, 0.70, 0.42, 1.0)   # dry tan
+    nt.links.new(mix.outputs["Result"], inp)
+
+
 def build():
     if not C.is_la():
         return 0
+    _dry_parkways()
     R = rng("la_style")
     plan = plan_city()
     build_backdrop(R, plan)

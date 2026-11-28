@@ -90,6 +90,42 @@ def build_cameras():
     return cams
 
 
+def _grade(sc):
+    """LA reference grade (reference/REFERENCE.md target 1): a little warmth in
+    the gain and, at golden hour only, a faint fog-glow around bright sky."""
+    if not C.is_la():
+        return
+    try:
+        import lighting
+        tod = lighting._tod()
+        if tod == "night":
+            return
+        sc.use_nodes = True
+        nt = sc.node_tree
+        for n in list(nt.nodes):
+            nt.nodes.remove(n)
+        rl = nt.nodes.new("CompositorNodeRLayers")
+        cb = nt.nodes.new("CompositorNodeColorBalance")
+        cb.correction_method = "LIFT_GAMMA_GAIN"
+        warm = 1.0 if tod == "golden" else 0.5
+        cb.gain = (1.0 + 0.05 * warm, 1.0, 1.0 - 0.07 * warm)
+        cb.gamma = (1.0 + 0.02 * warm, 1.0, 1.0 - 0.03 * warm)
+        comp = nt.nodes.new("CompositorNodeComposite")
+        last = cb.outputs["Image"]
+        nt.links.new(rl.outputs["Image"], cb.inputs["Image"])
+        if tod == "golden":
+            gl = nt.nodes.new("CompositorNodeGlare")
+            gl.glare_type = "FOG_GLOW"
+            gl.quality = "MEDIUM"
+            gl.threshold = 1.0
+            gl.mix = -0.75
+            nt.links.new(last, gl.inputs["Image"])
+            last = gl.outputs["Image"]
+        nt.links.new(last, comp.inputs["Image"])
+    except Exception as e:                     # never let grading break a render
+        print("  (grade skipped: {})".format(e))
+
+
 def render_all():
     sc = bpy.context.scene
     cams = C.get_asset("cameras", [])
@@ -101,6 +137,7 @@ def render_all():
     sc.render.resolution_y = h
     sc.render.resolution_percentage = 100
     sc.render.image_settings.file_format = "PNG"
+    _grade(sc)
     out = CONFIG["out_dir"]
     paths = []
     for cam in cams:

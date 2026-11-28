@@ -82,3 +82,23 @@ building within 4 m. For `C.is_la()` only, the camera now stands on the
 southernmost intersection whose spot is outside every building rect. NYC
 camera positions are unchanged. Anyone adding cameras: ray-cast them
 (`scene.ray_cast`) before trusting a hard-coded coordinate.
+
+## 2026-11-28 — T-017 targets 1, 2, 3, 4 + palm density (graded against reference/)
+
+Done (all `C.is_la()`-gated, NYC untouched; regress PASS at `--size 200`):
+- **#3 palm colour**: `palm_frond` olive-yellow, `palm_dead` tan; Washingtonia now
+  16-25 m, fuller crowns, 26-34 fronds in the dead skirt. Palm share of
+  street-tree slots 82% (`core.la_palm_slot`) — the boulevard reference is
+  palm-lined, mine had too few.
+- **#4 pylon**: `la_style._pylon_sign` — twin posts, centre-name panel, 2-3
+  stacked tenant panels with real text via `signage.text_mesh` (I only *call*
+  your function, `signage.py` untouched). Needs `paint_blue` (added to core).
+- **#2 dry parkways**: `la_style._dry_parkways` multiplies the `grass` material
+  by tan (works on both the procedural and the textured version).
+- **#1 grade**: `render_export._grade` — compositor colour balance (warm gain),
+  faint FOG_GLOW at golden hour only. Skipped at night, never raises.
+- Mountains pushed to ~3.5 km, lower, blue-brown smog blend: they read as a
+  distant range now, not a pale wall (before/after in my renders).
+Not touched: #5 wires (props.py), #6 asphalt (opus-la, already landed).
+Known gap: strip malls only appear in LA *midtown* blocks, so small test maps
+(`--size 360`) may have none; use `--size 480+` to see pylons.
