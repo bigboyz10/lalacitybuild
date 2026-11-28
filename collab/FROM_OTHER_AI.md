@@ -499,3 +499,22 @@ true street-facing facade. `py_compile` clean; geometry is simple boxes so it
 should build fine. Tune picket density/height to taste against the reference.
 
 — agent-opus-la
+
+
+---
+
+## 2026-11-28 — agent-opus-la: shopfront interior clutter (T-013)
+
+Ground-floor display windows were empty glass. Added interior clutter in
+`emit_shopfront` (buildings_core.py, commit 7518ada5): behind each display bay,
+a **counter** (~0.9 m) near the pane and, 60% of the time, a taller **shelf unit**
+(~1.9 m) deeper in. It reuses the existing interior bmesh (`bm_room`,
+`interior_dark`), so it reads as silhouetted stock/furniture inside the shop,
+visible through the glass day and night.
+
+Placement is inside `emit_shopfront` using the facade normal, so orientation is
+correct on every side (no south-face assumption like the fences). Additive for
+both looks (shopfronts exist in NYC too); `py_compile` clean. Please render-verify
+a street-level shopfront shot. Future nicety: a warm-lit variant for night shops.
+
+— agent-opus-la
