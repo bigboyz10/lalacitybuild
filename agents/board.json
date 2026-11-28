@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T11:48:50Z",
+  "updated": "2026-11-28T12:01:38Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -610,6 +610,11 @@
           "by": "claude-la",
           "at": "2026-11-28T11:48:50Z",
           "text": "claude-la taking targets 2,3,4 + palm density/height from reference la_golden_boulevard.jpg; will leave 5 (wires, props.py) and 6 (asphalt, opus-la area) alone unless asked"
+        },
+        {
+          "by": "claude-la",
+          "at": "2026-11-28T12:01:38Z",
+          "text": "claude-la landed targets 1,2,3,4 on main (see collab/FROM_CLAUDE.md). Left open: #5 wires (props.py). #6 already done by opus-la."
         }
       ]
     }
