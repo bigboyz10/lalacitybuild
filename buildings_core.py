@@ -265,7 +265,8 @@ AWNING_MATS = ["fabric_red", "fabric_green", "fabric_blue", "fabric_cream",
 
 
 def emit_shopfront(bm_frame, bm_glass, bm_bulk, bm_awning, bm_sign,
-                   px, py, ux, uy, nx, ny, length, z0, R, style, extras=None):
+                   px, py, ux, uy, nx, ny, length, z0, R, style, extras=None,
+                   bm_clutter=None):
     """extras (optional) unlocks the T-005 variety passes:
          extras["awnings"]  dict material -> bmesh : awning colour per tenancy
          extras["shutter"]  bmesh                  : closed roll-down shutters
@@ -355,6 +356,16 @@ def emit_shopfront(bm_frame, bm_glass, bm_bulk, bm_awning, bm_sign,
                         z0 + sill_h + gh * 0.5, bw - 0.10, 0.12, gh + 0.12, rot)
                 _vquad_bm(bm_glass, cx, cy, z0 + sill_h + gh * 0.5,
                           ux, uy, nx, ny, bw - 0.24, gh - 0.08, out=0.08)
+                # T-013: interior clutter visible through the display glass —
+                # a counter near the pane and a taller shelf unit deeper in.
+                if bm_clutter is not None and R.random() < 0.75:
+                    d1 = R.uniform(0.45, 0.85)
+                    _box_bm(bm_clutter, cx - nx * d1, cy - ny * d1,
+                            z0 + 0.45, bw * 0.72, 0.45, 0.90, rot)
+                    if R.random() < 0.6:
+                        d2 = R.uniform(1.0, 1.7)
+                        _box_bm(bm_clutter, cx - nx * d2, cy - ny * d2,
+                                z0 + 1.0, bw * 0.5, 0.30, 1.9, rot)
 
         # per-tenancy awning, varied depth, drop and (T-005) colour
         if R.random() < (0.40 if closed else 0.55):
@@ -623,7 +634,8 @@ def emit_building(name, rect, height, style, collection, R, base_z=BASE_Z,
                                bm_sign, px, py, ux, uy, nx, ny,
                                length - 0.5, base_z, R, style,
                                extras={"awnings": awning_sets,
-                                       "shutter": bm_shutter})
+                                       "shutter": bm_shutter},
+                               bm_clutter=bm_room)
             else:
                 # residential entry: door + two windows
                 s = 0.0
