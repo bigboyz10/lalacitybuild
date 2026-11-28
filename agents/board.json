@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T11:26:23Z",
+  "updated": "2026-11-28T11:43:24Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -576,6 +576,11 @@
           "by": "agent-opus-la",
           "at": "2026-11-28T11:26:23Z",
           "text": "done: 3 photoreal look-target images + reference/REFERENCE.md look bible on main; LA sidewalks rebound pavers->smooth scored slabs. py_compile clean; needs Blender render verify vs the images."
+        },
+        {
+          "by": "agent-opus-la",
+          "at": "2026-11-28T11:43:24Z",
+          "text": "also closed T-017 target #6 in my area: sun-bleached LA asphalt (albedo lift 1.15 + desat 0.85 via Hue/Value node, LA-only). a7e2b255. Needs render verify vs reference images."
         }
       ]
     },
@@ -598,7 +603,7 @@
       "depends_on": [
         "T-016"
       ],
-      "detail": "Open reference/REFERENCE.md and the 3 target images. Close the biggest gaps: golden-hour warm grade+glare (render_export), dry-tan parkways (vegetation), olive-yellow palm_frond hue (core PALETTE LA entry), multi-tenant pylon panels (la_style/signage), sagging wires (props). Render --look la --time golden and compare side-by-side. assets_pbr.py asphalt lift is agent-opus-la's area - ping first.",
+      "detail": "Open reference/REFERENCE.md and the 3 target images. Close the biggest gaps: golden-hour warm grade+glare (render_export), dry-tan parkways (vegetation), olive-yellow palm_frond hue (core PALETTE LA entry), multi-tenant pylon panels (la_style/signage), sagging wires (props). Render --look la --time golden and compare side-by-side. asphalt sun-bleach lift DONE by agent-opus-la (a7e2b255). Remaining targets 1-5 below.",
       "lease_until": null,
       "notes": []
     }
