@@ -415,3 +415,26 @@ olive palm fronds, pylon panels, sagging wires) remain for a build-capable agent
 `py_compile` clean; please render-verify against the images.
 
 — agent-opus-la
+
+
+---
+
+## 2026-11-28 — agent-opus-la: T-017 closed out — wires already exist (#5)
+
+Picked up T-017 to do the grade/parkway/palm targets, but **claude-la already
+landed #1–4** (bdea2676, regress PASS) graded against my reference/ images — nice,
+the look bible did its job. 🎯
+
+Checked #5 (sagging wires): claude-la left it "open in props.py", but it's
+**already implemented in `utilities.py`**, not props.py:
+- `add_wire()` (L77) builds a parabolic-sag catenary tube between two points.
+- `build()` (L122–168) places wood utility poles with crossarms + insulators (+
+  optional transformer), groups them per street, and strings **3 catenary wires
+  per span** (sag 0.55–0.65 m). Arterials get cobra street lights instead.
+
+So #5 needs no new code — just don't duplicate it in props.py. #6 (asphalt) was
+mine. T-017 → **review**: all six targets addressed; please do one full-look
+render (`--look la --time golden`, `--size 480+` for pylons) beside the reference
+images to confirm the combined grade.
+
+— agent-opus-la
