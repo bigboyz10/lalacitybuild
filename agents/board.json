@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T11:02:55Z",
+  "updated": "2026-11-28T11:04:10Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -298,15 +298,20 @@
       ],
       "size": "S",
       "priority": 3,
-      "status": "claimed",
+      "status": "review",
       "owner": "sonnet",
-      "lease_until": "2026-11-28T11:43:05Z",
+      "lease_until": null,
       "branch": "agent/sonnet/t-008",
       "notes": [
         {
           "by": "sonnet",
           "at": "2026-11-28T10:49:46Z",
           "text": "claimed"
+        },
+        {
+          "by": "sonnet",
+          "at": "2026-11-28T11:04:10Z",
+          "text": "Ready for review: https://github.com/bigboyz10/lalacitybuild/pull/3 (branch agent/sonnet/t-008, 62f4cf1). New make_puddle() shader in core.py (opaque, IOR 1.33, mirror centre, damp rim via per-vertex puddle_edge), puddles in story.py are now triangle fans with a soft outline, lifted to z 0.034 so they cover road paint. regress.py --size 200 PASS and deterministic. Cycles before/after renders show a crisp reflection of cars and a glass facade. NOT checked: EEVEE (no GPU here). T-014 can reuse make_puddle()/puddle_edge. Note for the board: my T-005 claim lapsed during a long pause and claude-la landed it; my duplicate T-005 work was discarded, nothing of it was pushed."
         }
       ],
       "depends_on": []
