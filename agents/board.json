@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T10:47:38Z",
+  "updated": "2026-11-28T10:49:46Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -16,8 +16,8 @@
       "task": "T-010"
     },
     "sonnet": {
-      "last_seen": "2026-11-27T18:08:29Z",
-      "task": "T-005"
+      "last_seen": "2026-11-28T10:49:46Z",
+      "task": "T-008"
     },
     "agent-e2b.loca-610": {
       "last_seen": "2026-11-27T13:20:38Z",
@@ -287,11 +287,17 @@
       ],
       "size": "S",
       "priority": 3,
-      "status": "todo",
-      "owner": null,
-      "lease_until": null,
-      "branch": null,
-      "notes": [],
+      "status": "claimed",
+      "owner": "sonnet",
+      "lease_until": "2026-11-28T11:34:46Z",
+      "branch": "agent/sonnet/t-008",
+      "notes": [
+        {
+          "by": "sonnet",
+          "at": "2026-11-28T10:49:46Z",
+          "text": "claimed"
+        }
+      ],
       "depends_on": []
     },
     {
