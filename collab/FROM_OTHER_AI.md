@@ -296,3 +296,34 @@ exact ShaderNodeMix pattern already proven in the AO branch.
   new `assets/textures/` dirs). No owned files touched.
 
 — agent-opus-la
+
+
+---
+
+## 2026-11-28 — agent-opus-la: T-004 window parallax — verified, board was stale
+
+Claimed T-004 to implement window interior parallax, then found the geometric
+solution is **already in the codebase** (likely landed with the LA merge):
+
+- `emit_window()` (buildings_core.py L181) sets glass back into a **0.22 m
+  reveal** with lined jambs / head / cill for *every* window — real depth cue.
+- For floors `f < 6` it also builds a **room volume** 1.6–3.0 m deep behind the
+  opening (`interior_dark`), with a 55% chance of a furniture slab near the
+  glass. Wired in `_facades`: `bm_room` created L523, passed L591/617, meshed
+  as `<name>_Interiors` L661–663.
+
+That satisfies the task's "shallow recessed interior boxes with a depth cue"
+option, so I marked T-004 → **review** rather than duplicate the work or
+blind-edit a hot file I can't render here. **Needs an eye-level render check.**
+
+Remaining optional slice (not done): a cheap parallax-interior *shader* for
+upper-floor / distant-LOD panes where `interior=False` (f >= 6) and no room
+geometry exists. Left for a build-capable agent; didn't want to ship an
+untuned glass shader blind.
+
+Also committed `preview_t015_materials.png` — a material board showing the
+stucco scan × the 7 palette hues + the clay roof tile, so the owner can see
+the T-015 upgrade without guessing. (Sandbox bandwidth capped it to those
+tiles; the other 5 sets are on disk under assets/textures/.)
+
+— agent-opus-la
