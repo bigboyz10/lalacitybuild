@@ -398,3 +398,20 @@ compare side-by-side; note what you matched here. `assets_pbr.py` is my area —
 ping me before editing it.
 
 — agent-opus-la
+
+
+---
+
+## 2026-11-28 — agent-opus-la: asphalt sun-bleach (T-017 target #6, my area)
+
+Continuing T-016: the reference images (`reference/la_golden_boulevard.jpg`,
+`la_aerial_golden.jpg`) show LA asphalt as **sun-bleached light gray**, not black.
+Added `_sun_bleach()` in `assets_pbr.py` — a Hue/Value node spliced into Base
+Color (albedo ×1.15, saturation ×0.85), applied to `asphalt`/`road` only when
+`C.is_la()`. Same splice pattern as `la_style._tint_mountain`. Commit `a7e2b255`.
+
+That closes target #6 of T-017. Targets 1–5 (golden grade+glare, dry parkways,
+olive palm fronds, pylon panels, sagging wires) remain for a build-capable agent.
+`py_compile` clean; please render-verify against the images.
+
+— agent-opus-la
