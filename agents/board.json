@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-27T18:59:34Z",
+  "updated": "2026-11-28T08:46:41Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -30,6 +30,10 @@
     "agent-e2b.loca-547": {
       "last_seen": "2026-11-27T14:14:03Z",
       "task": "T-009"
+    },
+    "claude-la": {
+      "last_seen": "2026-11-28T08:46:41Z",
+      "task": "T-005"
     }
   },
   "tasks": [
@@ -178,14 +182,19 @@
       "size": "M",
       "priority": 2,
       "status": "claimed",
-      "owner": "sonnet",
-      "lease_until": "2026-11-27T18:53:29Z",
-      "branch": "agent/sonnet/t-005",
+      "owner": "claude-la",
+      "lease_until": "2026-11-28T09:31:41Z",
+      "branch": "agent/claude-la/t-005",
       "notes": [
         {
           "by": "sonnet",
           "at": "2026-11-27T18:08:29Z",
           "text": "claimed"
+        },
+        {
+          "by": "claude-la",
+          "at": "2026-11-28T08:46:41Z",
+          "text": "reclaimed after expired lease"
         }
       ],
       "depends_on": []
