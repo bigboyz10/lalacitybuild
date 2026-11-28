@@ -581,6 +581,90 @@ def make_emissive(name, color, strength=6.0):
     return mat
 
 
+PUDDLE_ATTR = "puddle_edge"     # per-vertex: 0 at the puddle centre, 1 at its rim
+
+
+def make_puddle(name="puddle"):
+    """Standing water on asphalt (T-008).
+
+    The generic "water" material is blended, transmissive and has noisy
+    roughness, so a flat disc of it shows no clean reflection. This one is
+    opaque and mirror-smooth in the middle. Roughness and colour ramp towards
+    the rim (read from the PUDDLE_ATTR vertex attribute), which gives the damp,
+    darkened edge of a real puddle and stops the polygon outline reading as a
+    hard disc. Works the same in Cycles and EEVEE: the reflection comes from
+    the surface itself, with no transparency to defeat ray tracing.
+    """
+    if name in MATS:
+        return MATS[name]
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    nt.nodes.clear()
+
+    out = nt.nodes.new("ShaderNodeOutputMaterial"); out.location = (700, 0)
+    bsdf = nt.nodes.new("ShaderNodeBsdfPrincipled"); bsdf.location = (420, 0)
+    nt.links.new(bsdf.outputs[0], out.inputs["Surface"])
+
+    edge = nt.nodes.new("ShaderNodeAttribute"); edge.location = (-700, 120)
+    edge.attribute_type = "GEOMETRY"
+    edge.attribute_name = PUDDLE_ATTR
+
+    # base colour: deep water over dark asphalt, a little lighter at the rim
+    col_ramp = nt.nodes.new("ShaderNodeValToRGB"); col_ramp.location = (-420, 260)
+    ce = col_ramp.color_ramp.elements
+    ce[0].position = 0.0; ce[0].color = hexc("#080c0f")
+    ce[1].position = 1.0; ce[1].color = hexc("#1b1f22")
+    nt.links.new(edge.outputs["Fac"], col_ramp.inputs["Fac"])
+    nt.links.new(col_ramp.outputs["Color"], bsdf.inputs["Base Color"])
+
+    # roughness: glass-smooth for most of the puddle, damp and rough at the rim
+    r_ramp = nt.nodes.new("ShaderNodeValToRGB"); r_ramp.location = (-420, 0)
+    re = r_ramp.color_ramp.elements
+    re[0].position = 0.55; re[0].color = (0.02, 0.02, 0.02, 1.0)
+    re[1].position = 1.0;  re[1].color = (0.30, 0.30, 0.30, 1.0)
+    nt.links.new(edge.outputs["Fac"], r_ramp.inputs["Fac"])
+    nt.links.new(r_ramp.outputs["Color"], bsdf.inputs["Roughness"])
+
+    # specular: full strength over the water, faded at the rim. A rough
+    # dielectric at a grazing angle reflects the bright horizon and would
+    # otherwise show as a pale ring around the puddle.
+    s_ramp = nt.nodes.new("ShaderNodeValToRGB"); s_ramp.location = (-420, -150)
+    se = s_ramp.color_ramp.elements
+    se[0].position = 0.6; se[0].color = (0.5, 0.5, 0.5, 1.0)
+    se[1].position = 1.0; se[1].color = (0.1, 0.1, 0.1, 1.0)
+    nt.links.new(edge.outputs["Fac"], s_ramp.inputs["Fac"])
+    spec_in = "Specular IOR Level" if "Specular IOR Level" in bsdf.inputs else "Specular"
+    nt.links.new(s_ramp.outputs["Color"], bsdf.inputs[spec_in])
+
+    # faint ripples so the mirror is not perfectly CG-flat
+    tex = nt.nodes.new("ShaderNodeTexCoord"); tex.location = (-900, -300)
+    noise = nt.nodes.new("ShaderNodeTexNoise"); noise.location = (-700, -300)
+    noise.inputs["Scale"].default_value = 9.0
+    noise.inputs["Detail"].default_value = 3.0
+    nt.links.new(tex.outputs["Object"], noise.inputs["Vector"])
+    bump = nt.nodes.new("ShaderNodeBump"); bump.location = (-180, -300)
+    bump.inputs["Strength"].default_value = 0.025
+    bump.inputs["Distance"].default_value = 0.01
+    nt.links.new(noise.outputs["Fac"], bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+
+    _setin(bsdf, "Metallic", 0.0)
+    _setin(bsdf, "IOR", 1.33)                    # water
+    _setin(bsdf, "Alpha", 1.0)
+    _setin(bsdf, "Transmission Weight", 0.0)
+    if "Transmission Weight" not in bsdf.inputs:
+        _setin(bsdf, "Transmission", 0.0)
+
+    mat.diffuse_color = hexc("#0b0f12")
+    try:
+        mat.blend_method = "OPAQUE"             # no alpha blend: keeps ray-traced reflection
+    except Exception:
+        pass
+    MATS[name] = mat
+    return mat
+
+
 def M(name):
     """Look up / lazily build a material by name.
 
@@ -593,6 +677,8 @@ def M(name):
         return None
     if name in MATS:
         return MATS[name]
+    if name == "puddle":
+        return make_puddle(name)
     if name in EMISSIVE:
         color, strength = EMISSIVE[name]
         return make_emissive(name, color, strength)

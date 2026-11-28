@@ -18,6 +18,9 @@ from core import CONFIG, U, rng, plan_city
 
 BASE_Z = 0.15
 ROAD_Z = 0.02
+# Puddle surface sits just above the road paint (roads.Z_PAINT = 0.030) so water
+# covers lane markings and crosswalks instead of the paint floating on top.
+PUDDLE_Z = 0.034
 
 
 class Part:
@@ -277,7 +280,11 @@ def build():
     _mesh("Story_Litter_Cardboard", bm_card, "cardboard", collection)
 
     # ---------------- puddles on the road
+    # Each puddle is a triangle fan with a centre vertex. The per-vertex
+    # "puddle_edge" value (0 centre, 1 rim) drives the puddle material's
+    # roughness/colour ramp, so the middle mirrors and the rim looks damp.
     bm_puddle = bmesh.new()
+    edge_layer = bm_puddle.verts.layers.float.new(C.PUDDLE_ATTR)
     segs = C.get_asset("road_segments", [])
     for s in segs:
         L = s["b"] - s["a"]
@@ -289,16 +296,28 @@ def build():
             else:
                 x, y = along, across
             r = R.uniform(0.4, 1.5)
-            seg = 12
+            seg = 16
+            zc = PUDDLE_Z
+            hub = bm_puddle.verts.new((x, y, zc))
+            hub[edge_layer] = 0.0
+            # radius noise is smoothed over neighbours so the outline is a
+            # soft blob, not a spiky star
+            raw = [R.random() for _ in range(seg)]
             ring = []
             for k in range(seg):
                 a = math.tau * k / seg
-                rr = r * (0.7 + R.random() * 0.6)
-                ring.append(bm_puddle.verts.new((x + rr * math.cos(a) * 1.4,
-                                                 y + rr * math.sin(a), ROAD_Z + 0.006)))
-            bm_puddle.faces.new(ring)
+                sm = (raw[k - 1] + 2.0 * raw[k] + raw[(k + 1) % seg]) * 0.25
+                rr = r * (0.78 + sm * 0.44)
+                v = bm_puddle.verts.new((x + rr * math.cos(a) * 1.4,
+                                         y + rr * math.sin(a), zc))
+                v[edge_layer] = 1.0
+                ring.append(v)
+            for k in range(seg):
+                bm_puddle.faces.new((hub, ring[k], ring[(k + 1) % seg]))
     if len(bm_puddle.faces):
-        _mesh("Story_Puddles", bm_puddle, "water", collection)
+        _mesh("Story_Puddles", bm_puddle, "puddle", collection)
+    else:
+        bm_puddle.free()
 
     print("  street signs: {}  traffic signs: {}  blades: {}  billboards: {}  graffiti: {}  posters: {}".format(
         n_street_sign, n_traffic_sign, n_blade, n_billboard, n_graffiti, n_poster))
