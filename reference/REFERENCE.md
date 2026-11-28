@@ -10,6 +10,7 @@
 | `reference/la_golden_boulevard.jpg` | street-level, golden hour, wide boulevard | `lighting.py` golden TOD, `la_style.py` palms + strip-mall pylon, `roads.py`/`sidewalks.py`, `signage.py`, `props.py` poles/wires |
 | `reference/la_residential_day.jpg` | residential side street, harsh midday | `buildings_types.py` bungalow/duplex, `roofs.py` terracotta, `vegetation.py` dry parkways, `sidewalks.py`, `vehicles.py` |
 | `reference/la_aerial_golden.jpg` | helicopter aerial, golden hour | `core.py` plan/block scale, `la_style.py` backdrop + haze, `render_export.py` grade, downtown cluster |
+| `reference/la_night_boulevard.jpg` | street-level night / blue dusk | `lighting.py` night TOD (lit windows, cobra lamps, moon), `signage.py` glowing pylon + neon, `render_export.py` (night = no warm grade) |
 | `reference/la_night_dusk.jpg` | street-level, dusk / night | `lighting.py` night TOD, lit windows, cobra street lamps, `signage.py` neon, `props.py` poles |
 
 ## What the pictures say (read off the images)
@@ -47,6 +48,16 @@
   (LIQUOR / MARKET / NAILS panels stacked), not a single blank box.
 - Wooden utility poles with **sagging black wires** crossing the street.
 - Chainlink fences, some with green privacy screen; low wrought-iron on bungalows.
+
+**Night / blue dusk** (`la_night_boulevard.jpg`)
+- Sky is deep blue-purple, not black; a faint moon sits high. `lighting.TOD["night"]`.
+- Cobra-head street lights throw **warm amber pools** on the pale asphalt; keep the
+  warm/cool contrast (amber practicals vs blue sky). `_grade` correctly skips night
+  so it does not wash this out.
+- Dingbat windows glow warm yellow, **some stay dark** (occupied vs vacant) — the
+  lit-window pass should keep that mix, not light every pane.
+- Strip-mall pylon panels and a neon OPEN sign **glow** (emissive), reading as the
+  brightest things on the street. Palms go to silhouette; mountains a faint ridge.
 
 ## Already matching (don't redo)
 - Palms, mountain backdrop + haze, wide boulevards, stucco/terracotta PBR,
