@@ -69,8 +69,9 @@ CRITIQUE = """
  2. No construction sequencing. Cranes exist but there are no half-built
     floors, formwork or material lay-down areas.
  3. Puddles are flat discs and do not reflect the sky.
- 4. The elevated highway has no ramps, no signage gantries and no
-    expansion-joint noise.
+ 4. The elevated highway now has an off-ramp, an on-ramp, sign gantries and
+    jittered/finger joints, but no merge-lane traffic on the ramps and the
+    gantry legends are text only (no route shields).
  5. Interiors are a single dark volume. There is no per-room lighting
     variation behind the glass at night beyond the lit-window pass.
  6. Street trees still repeat their 17 silhouettes on long avenues; a
