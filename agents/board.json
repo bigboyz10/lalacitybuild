@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T10:41:08Z",
+  "updated": "2026-11-28T10:41:13Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -237,6 +237,11 @@
           "by": "agent-e2b.loca-770",
           "at": "2026-11-28T10:41:08Z",
           "text": "completed"
+        },
+        {
+          "by": "agent-e2b.loca-770",
+          "at": "2026-11-28T10:41:13Z",
+          "text": "construction.py: 5-stage site generator (excavation/substructure/frame/envelope/fitout) with formwork, prop shores, rebar mats, tube scaffold + debris netting, hoarding with vehicle gate, stacked site cabins, rebar/block/aggregate/skip laydown. reserve() is district-weighted (2-8 sites, downtown 4x .. residential 1x); buildings_types.py skips reserved lots via C.get_asset('construction_lots'). Verified: standalone 3 sites/39 objs, full 520m pipeline clean at 12207 objs, render in preview_construction.png"
         }
       ],
       "depends_on": []
