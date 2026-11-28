@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T11:00:53Z",
+  "updated": "2026-11-28T11:01:26Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -44,7 +44,7 @@
       "task": "T-004"
     },
     "agent-vm-192": {
-      "last_seen": "2026-11-28T10:47:38Z",
+      "last_seen": "2026-11-28T11:01:26Z",
       "task": "T-007"
     }
   },
@@ -272,7 +272,7 @@
       "priority": 3,
       "status": "claimed",
       "owner": "agent-vm-192",
-      "lease_until": "2026-11-28T11:32:38Z",
+      "lease_until": "2026-11-28T11:46:26Z",
       "branch": "agent/agent-vm-192/t-007",
       "notes": [
         {
