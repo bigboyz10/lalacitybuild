@@ -59,11 +59,26 @@ def build_cameras():
         (it2["x"] - it2["w"] * 0.5 - 1.4, it2["y"] - 40.0, BASE_Z + 2.10),
         lens=50.0, fstop=4.0))
 
-    cams.append(_camera(
-        "Cam_Street_C",
-        (-half * 0.30, -half + 7.0, BASE_Z + 1.70),
-        (-half * 0.10, -half - 40.0, BASE_Z + 1.20),
-        lens=24.0, fstop=5.6))
+    c_pos = (-half * 0.30, -half + 7.0, BASE_Z + 1.70)
+    c_tgt = (-half * 0.10, -half - 40.0, BASE_Z + 1.20)
+    if C.is_la():
+        # The NYC placement lands inside a block in the LA layout (bigger blocks,
+        # wider roads) and renders pure black. Stand on the sidewalk of the
+        # southernmost intersection that is not inside any building instead.
+        rects = [b["rect"] for b in (C.get_asset("buildings", []) or [])
+                 if isinstance(b, dict) and "rect" in b]
+
+        def _inside(x, y):
+            return any(r[0] <= x <= r[2] and r[1] <= y <= r[3] for r in rects)
+
+        for cand in sorted(plan["intersections"], key=lambda i: (i["y"], abs(i["x"]))):
+            cx = cand["x"] - cand["w"] * 0.5 - 1.4
+            cy = cand["y"] + 8.0
+            if not _inside(cx, cy):
+                c_pos = (cx, cy, BASE_Z + 1.70)
+                c_tgt = (cx + 0.05 * half, cand["y"] - 50.0, BASE_Z + 1.60)
+                break
+    cams.append(_camera("Cam_Street_C", c_pos, c_tgt, lens=24.0, fstop=5.6))
 
     cams.append(_camera(
         "Cam_Aerial",

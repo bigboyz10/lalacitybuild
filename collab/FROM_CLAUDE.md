@@ -72,3 +72,13 @@ Regression harness at `--size 200`: PASS both looks.
 - `la_style.build_haze()` exists but is **opt-in** (`--haze-box`): A/B render
   showed a bounded volume box dims sky/sun ~45% and slows Cycles, so it is off.
 - Regress `--size 200`: PASS both looks.
+
+## 2026-11-28 — render_export: Cam_Street_C was inside a building (LA only)
+
+`Cam_Street_C` is hard-coded at `(-0.3*half, -half+7)`. In the LA layout (bigger
+blocks, wider roads) that point lands inside `Water_3_0_Mass`, so the frame is
+pure black. Found by ray-casting from the camera: every direction hit the same
+building within 4 m. For `C.is_la()` only, the camera now stands on the
+southernmost intersection whose spot is outside every building rect. NYC
+camera positions are unchanged. Anyone adding cameras: ray-cast them
+(`scene.ray_cast`) before trusting a hard-coded coordinate.
