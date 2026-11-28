@@ -507,7 +507,14 @@ def _pylon_sign(name, px, py, R, collection):
 
 def _dry_parkways():
     """Reference look: parkway grass is dry tan, not green (LA drought lawns)."""
-    mat = bpy.data.materials.get("grass")
+    _multiply_tint("grass", (1.0, 0.86, 0.52, 1.0), 0.85, (0.80, 0.70, 0.42, 1.0))
+    # the bound palm-bark scan is pale grey; reference trunks are warm tan-brown
+    _multiply_tint("palm_bark", (0.86, 0.64, 0.42, 1.0), 0.95, (0.48, 0.38, 0.28, 1.0))
+
+
+def _multiply_tint(mat_name, tint, factor, fallback):
+    """Multiply a material's base colour by `tint` (works for textured or procedural)."""
+    mat = bpy.data.materials.get(mat_name)
     if mat is None or not mat.use_nodes:
         return
     nt = mat.node_tree
@@ -518,14 +525,14 @@ def _dry_parkways():
     mix = nt.nodes.new("ShaderNodeMix")
     mix.data_type = "RGBA"
     mix.blend_type = "MULTIPLY"
-    mix.inputs["Factor"].default_value = 0.85
-    mix.inputs["B"].default_value = (1.0, 0.86, 0.52, 1.0)
+    mix.inputs["Factor"].default_value = factor
+    mix.inputs["B"].default_value = tint
     if inp.links:
         src = inp.links[0].from_socket
         nt.links.remove(inp.links[0])
         nt.links.new(src, mix.inputs["A"])
     else:
-        mix.inputs["A"].default_value = (0.80, 0.70, 0.42, 1.0)   # dry tan
+        mix.inputs["A"].default_value = fallback
     nt.links.new(mix.outputs["Result"], inp)
 
 

@@ -102,3 +102,6 @@ Done (all `C.is_la()`-gated, NYC untouched; regress PASS at `--size 200`):
 Not touched: #5 wires (props.py), #6 asphalt (opus-la, already landed).
 Known gap: strip malls only appear in LA *midtown* blocks, so small test maps
 (`--size 360`) may have none; use `--size 480+` to see pylons.
+- (follow-up) `palm_bark` is bound to a pale grey scan in assets_pbr, so trunks
+  rendered like concrete poles. `la_style._multiply_tint` now warms it to the
+  reference's tan-brown after the PBR pass (no change to `assets_pbr.py`).
