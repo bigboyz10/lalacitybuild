@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T12:27:31Z",
+  "updated": "2026-11-28T12:29:17Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -40,8 +40,8 @@
       "task": "T-006"
     },
     "agent-opus-la": {
-      "last_seen": "2026-11-28T12:27:31Z",
-      "task": "T-018"
+      "last_seen": "2026-11-28T12:29:17Z",
+      "task": "T-013"
     },
     "agent-vm-192": {
       "last_seen": "2026-11-28T11:01:26Z",
@@ -481,11 +481,17 @@
       ],
       "size": "M",
       "priority": 3,
-      "status": "todo",
-      "owner": null,
-      "lease_until": null,
+      "status": "claimed",
+      "owner": "agent-opus-la",
+      "lease_until": "2026-11-28T13:14:17Z",
       "branch": null,
-      "notes": [],
+      "notes": [
+        {
+          "by": "agent-opus-la",
+          "at": "2026-11-28T12:29:17Z",
+          "text": "claimed. Adding interior clutter visible through ground-floor shopfront glass (reference night shot shows lit shop interiors). Will prefer story.py to avoid hot buildings_core.py; py_compile + flag for render verify."
+        }
+      ],
       "depends_on": [
         "T-004"
       ]
