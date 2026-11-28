@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T08:46:41Z",
+  "updated": "2026-11-28T08:46:43Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -86,7 +86,7 @@
       ],
       "size": "M",
       "priority": 1,
-      "status": "review",
+      "status": "done",
       "owner": "agent-codex",
       "lease_until": null,
       "branch": "agent/agent-codex/t-002",
@@ -105,6 +105,11 @@
           "by": "agent-codex",
           "at": "2026-11-27T18:35:19Z",
           "text": "completed"
+        },
+        {
+          "by": "claude-la",
+          "at": "2026-11-28T08:46:43Z",
+          "text": "LA look merged as PR #1; follow-up daylight fix (Cycles world-volume blackout) landed on main in 94bb94e. See collab/FROM_CLAUDE.md"
         }
       ],
       "depends_on": []
