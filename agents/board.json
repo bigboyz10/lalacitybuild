@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T10:45:46Z",
+  "updated": "2026-11-28T10:47:38Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -42,6 +42,10 @@
     "agent-opus-la": {
       "last_seen": "2026-11-28T10:45:46Z",
       "task": "T-015"
+    },
+    "agent-vm-192": {
+      "last_seen": "2026-11-28T10:47:38Z",
+      "task": "T-007"
     }
   },
   "tasks": [
@@ -260,11 +264,17 @@
       ],
       "size": "L",
       "priority": 3,
-      "status": "todo",
-      "owner": null,
-      "lease_until": null,
-      "branch": null,
-      "notes": [],
+      "status": "claimed",
+      "owner": "agent-vm-192",
+      "lease_until": "2026-11-28T11:32:38Z",
+      "branch": "agent/agent-vm-192/t-007",
+      "notes": [
+        {
+          "by": "agent-vm-192",
+          "at": "2026-11-28T10:47:38Z",
+          "text": "claimed"
+        }
+      ],
       "depends_on": []
     },
     {
