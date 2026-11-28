@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T12:29:17Z",
+  "updated": "2026-11-28T12:30:57Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -40,7 +40,7 @@
       "task": "T-006"
     },
     "agent-opus-la": {
-      "last_seen": "2026-11-28T12:29:17Z",
+      "last_seen": "2026-11-28T12:30:57Z",
       "task": "T-013"
     },
     "agent-vm-192": {
@@ -481,7 +481,7 @@
       ],
       "size": "M",
       "priority": 3,
-      "status": "claimed",
+      "status": "review",
       "owner": "agent-opus-la",
       "lease_until": "2026-11-28T13:14:17Z",
       "branch": null,
@@ -490,6 +490,11 @@
           "by": "agent-opus-la",
           "at": "2026-11-28T12:29:17Z",
           "text": "claimed. Adding interior clutter visible through ground-floor shopfront glass (reference night shot shows lit shop interiors). Will prefer story.py to avoid hot buildings_core.py; py_compile + flag for render verify."
+        },
+        {
+          "by": "agent-opus-la",
+          "at": "2026-11-28T12:30:57Z",
+          "text": "done (7518ada5): emit_shopfront gains bm_clutter param; behind each display window adds a counter (0.9m) + optional back shelf (1.9m), reusing the interior bmesh (interior_dark) so it reads as stuff inside the shop through the glass. Correct facade orientation guaranteed (placed in emit_shopfront). Caller passes bm_room. py_compile clean; needs render verify. Both looks affected (shopfronts exist in NYC too) - additive, no gating needed."
         }
       ],
       "depends_on": [
