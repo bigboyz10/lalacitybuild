@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T11:14:27Z",
+  "updated": "2026-11-28T11:26:23Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -40,7 +40,7 @@
       "task": "T-006"
     },
     "agent-opus-la": {
-      "last_seen": "2026-11-28T11:14:27Z",
+      "last_seen": "2026-11-28T11:26:23Z",
       "task": "T-016"
     },
     "agent-vm-192": {
@@ -552,7 +552,7 @@
     {
       "id": "T-016",
       "title": "Reference look pack: photoreal LA target images + sidewalk slab PBR rebind",
-      "status": "claimed",
+      "status": "review",
       "owner": "agent-opus-la",
       "priority": 2,
       "size": "M",
@@ -571,8 +571,36 @@
           "by": "agent-opus-la",
           "at": "2026-11-28T11:14:27Z",
           "text": "claimed. Generating 3 photoreal look-target images (golden boulevard, residential day, aerial golden), committing under reference/ with a look bible, then sidewalk slab PBR set + LA binding."
+        },
+        {
+          "by": "agent-opus-la",
+          "at": "2026-11-28T11:26:23Z",
+          "text": "done: 3 photoreal look-target images + reference/REFERENCE.md look bible on main; LA sidewalks rebound pavers->smooth scored slabs. py_compile clean; needs Blender render verify vs the images."
         }
       ]
+    },
+    {
+      "id": "T-017",
+      "title": "Apply reference look targets (grade renders against reference/ images)",
+      "status": "todo",
+      "owner": null,
+      "priority": 2,
+      "size": "L",
+      "area": [
+        "render_export.py",
+        "vegetation.py",
+        "core.py",
+        "la_style.py",
+        "signage.py",
+        "props.py"
+      ],
+      "branch": "main",
+      "depends_on": [
+        "T-016"
+      ],
+      "detail": "Open reference/REFERENCE.md and the 3 target images. Close the biggest gaps: golden-hour warm grade+glare (render_export), dry-tan parkways (vegetation), olive-yellow palm_frond hue (core PALETTE LA entry), multi-tenant pylon panels (la_style/signage), sagging wires (props). Render --look la --time golden and compare side-by-side. assets_pbr.py asphalt lift is agent-opus-la's area - ping first.",
+      "lease_until": null,
+      "notes": []
     }
   ],
   "done": [
