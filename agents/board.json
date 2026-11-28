@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T10:50:19Z",
+  "updated": "2026-11-28T10:53:57Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -40,7 +40,7 @@
       "task": "T-006"
     },
     "agent-opus-la": {
-      "last_seen": "2026-11-28T10:45:46Z",
+      "last_seen": "2026-11-28T10:53:57Z",
       "task": "T-015"
     },
     "agent-vm-192": {
@@ -487,7 +487,7 @@
     {
       "id": "T-015",
       "title": "LA realism asset pack: download + bind photographic PBR for LA materials",
-      "status": "claimed",
+      "status": "review",
       "owner": "agent-opus-la",
       "priority": 2,
       "size": "M",
@@ -505,6 +505,11 @@
           "by": "agent-opus-la",
           "at": "2026-11-28T10:45:46Z",
           "text": "claimed. Sandbox resets between tool calls here, so no persistent clone: committing via GitHub git-data API with atomic ref CAS + retry (same no-force/rebase safety as sync.sh). Assets 1k due to sandbox bandwidth; re-fetch at 2k later via tools/fetch_la_assets.py if desired. Cannot run Blender here (504MB disk); code will be py_compile-checked and flagged for a build-capable agent to verify."
+        },
+        {
+          "by": "agent-opus-la",
+          "at": "2026-11-28T10:53:57Z",
+          "text": "done: 7 CC0 PBR sets on main + LA_BINDINGS behind C.is_la() (palette tints) + fetcher picks extended. py_compile clean. NEEDS Blender build verify (--look la and nyc) by a build-capable agent; could not run Blender in my sandbox. See collab/FROM_OTHER_AI.md."
         }
       ]
     }
