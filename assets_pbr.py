@@ -43,6 +43,39 @@ BINDINGS = {
     "tiles_floor":     ("tiles_floor", 2.0),
 }
 
+# LA-only overrides, applied when C.is_la(): (texture set, metres per tile, tinted?)
+# Tinted sets keep each material's PALETTE hue so the sun-bleached stucco variety
+# survives; untinted sets are already the right colour in the scan.
+LA_BINDINGS = {
+    "stucco_cream":      ("stucco", 3.0, True),
+    "stucco_peach":      ("stucco", 3.0, True),
+    "stucco_white":      ("stucco", 3.0, True),
+    "stucco_terracotta": ("stucco", 3.0, True),
+    "stucco_sage":       ("stucco", 3.0, True),
+    "stucco_sky":        ("stucco", 3.0, True),
+    "stucco_butter":     ("stucco", 3.0, True),
+    "plaster":           ("stucco_paint", 4.0, True),
+    "plaster_pink":      ("stucco_paint", 4.0, True),
+    "plaster_teal":      ("stucco_paint", 4.0, True),
+    "roof_tile":         ("roof_tile", 2.2, False),
+    "palm_bark":         ("palm_bark", 1.4, False),
+    "la_ground":         ("dry_ground", 14.0, False),
+    "concrete_panel":    ("concrete_la", 5.0, False),
+    "asphalt":           ("asphalt_la", 6.0, False),
+    "road":              ("asphalt_la", 6.0, False),
+}
+
+
+def _tint_from_palette(mat_name):
+    """Normalised linear-RGB tint from the core palette (hue only, scan keeps luma)."""
+    base = C.PALETTE.get(mat_name, {}).get("base")
+    if not base:
+        return None
+    r, g, b = C.hexc(base)[:3]
+    m = max(r, g, b, 1e-6)
+    return (r / m, g / m, b / m)
+
+
 _IMG_CACHE = {}
 
 
@@ -74,7 +107,7 @@ def _image(path, non_color):
     return img
 
 
-def build_textured_material(mat_name, set_name, scale):
+def build_textured_material(mat_name, set_name, scale, tint=None):
     """Replace a material's node tree with a photographic PBR setup."""
     diffuse = _find(set_name, "diffuse")
     if diffuse is None:
@@ -120,6 +153,17 @@ def build_textured_material(mat_name, set_name, scale):
         nt.links.new(mix.outputs[2], bsdf.inputs["Base Color"])
     else:
         nt.links.new(col.outputs["Color"], bsdf.inputs["Base Color"])
+
+    if tint is not None:
+        # palette-preserving tint: multiply the photo by the material's LA hue
+        # (normalised so brightness comes from the scan, hue from the palette)
+        tmix = nt.nodes.new("ShaderNodeMix"); tmix.location = (360, 300)
+        tmix.data_type = "RGBA"; tmix.blend_type = "MULTIPLY"
+        tmix.inputs["Factor"].default_value = 1.0
+        src = bsdf.inputs["Base Color"].links[0].from_socket
+        nt.links.new(src, tmix.inputs[6])
+        tmix.inputs[7].default_value = (tint[0], tint[1], tint[2], 1.0)
+        nt.links.new(tmix.outputs[2], bsdf.inputs["Base Color"])
 
     rough_path = _find(set_name, "roughness")
     if rough_path:
@@ -187,6 +231,11 @@ def build():
     for mat_name, (set_name, scale) in BINDINGS.items():
         if build_textured_material(mat_name, set_name, scale):
             n += 1
+    if C.is_la():
+        for mat_name, (set_name, scale, tinted) in LA_BINDINGS.items():
+            tint = _tint_from_palette(mat_name) if tinted else None
+            if build_textured_material(mat_name, set_name, scale, tint=tint):
+                n += 1
     build_world_hdri()
     print("  upgraded {} materials to photographic PBR".format(n))
     return n

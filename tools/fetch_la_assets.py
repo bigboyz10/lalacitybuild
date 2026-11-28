@@ -33,6 +33,10 @@ LA_TEXTURES = {
                     ["wet", "cracked_wall"]),
     "concrete_la": (["concrete", "cement", "wall"],
                     ["floor_tiles", "brick"]),
+    "palm_bark":   (["palm_tree_bark", "palm", "bark"],
+                    ["leaf", "leaves", "moss", "floor"]),
+    "stucco_paint": (["painted_plaster", "painted", "plaster", "wall"],
+                     ["brick", "tile", "wood", "floor", "stone_brick"]),
 }
 
 
