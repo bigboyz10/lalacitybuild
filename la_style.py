@@ -536,6 +536,77 @@ def _multiply_tint(mat_name, tint, factor, fallback):
     nt.links.new(mix.outputs["Result"], inp)
 
 
+def _bar(bm, cx, cy, cz, sx, sy, sz):
+    """Axis-aligned box primitive added into an existing bmesh."""
+    res = bmesh.ops.create_cube(bm, size=1.0)
+    vs = res["verts"]
+    bmesh.ops.scale(bm, vec=(sx, sy, sz), verts=vs)
+    bmesh.ops.translate(bm, vec=(cx, cy, cz), verts=vs)
+
+
+def _la_fences(R, plan):
+    """Reference look (reference/la_residential_day.jpg): low black wrought-iron
+    front-yard fences on bungalows/duplexes, and green privacy-screen chainlink
+    on some industrial/midtown lots. All C.is_la()-gated via build()."""
+    col = C.col("CITY_LA")
+    bm_iron = bmesh.new()
+    bm_screen = bmesh.new()
+    n_iron = n_screen = 0
+    for b in C.get_asset("buildings", []) or []:
+        if not isinstance(b, dict) or "rect" not in b:
+            continue
+        x0, y0, x1, y1 = b["rect"]
+        w = x1 - x0
+        if w < 4.0:
+            continue
+        style = b.get("style", "")
+        floors = b.get("floors", 1)
+        ht = b.get("height", 9.0)
+        fy = y0 - 1.3                      # front-yard line, street (south) side
+        residential = style.startswith("stucco") and floors <= 2 and ht < 8.0
+        industrial = style in ("concrete_panel", "brick_old", "brick_modern") and floors <= 2
+        if residential and R.random() < 0.6:
+            gate_c = (x0 + x1) * 0.5
+            span = w - 0.4
+            midx = (x0 + x1) * 0.5
+            _bar(bm_iron, midx, fy, BASE_Z + 0.95, span, 0.05, 0.05)   # top rail
+            _bar(bm_iron, midx, fy, BASE_Z + 0.12, span, 0.05, 0.05)   # bottom rail
+            x = x0 + 0.2
+            while x <= x1 - 0.2:
+                if abs(x - gate_c) < 0.55:        # gate gap for the front path
+                    x += 0.18; continue
+                _bar(bm_iron, x, fy, BASE_Z + 0.50, 0.022, 0.022, 0.86)  # picket
+                x += 0.18
+            for px in (x0 + 0.15, x1 - 0.15, gate_c - 0.6, gate_c + 0.6):
+                _bar(bm_iron, px, fy, BASE_Z + 0.52, 0.06, 0.06, 1.04)   # posts
+            n_iron += 1
+        elif industrial and R.random() < 0.4:
+            span = w - 0.3
+            midx = (x0 + x1) * 0.5
+            _bar(bm_screen, midx, fy, BASE_Z + 0.95, span, 0.02, 1.7)    # green fabric
+            for px in (x0 + 0.1, midx, x1 - 0.1):
+                _bar(bm_screen, px, fy, BASE_Z + 0.9, 0.06, 0.06, 1.8)   # posts
+            n_screen += 1
+    if n_iron:
+        _finish("LA_WroughtIron", bm_iron, "metal_dark", col)
+    else:
+        bm_iron.free()
+    if n_screen:
+        mat = bpy.data.materials.get("screen_green")
+        if mat is None:
+            mat = bpy.data.materials.new("screen_green"); mat.use_nodes = True
+            bsdf = mat.node_tree.nodes.get("Principled BSDF")
+            if bsdf:
+                bsdf.inputs["Base Color"].default_value = (0.05, 0.16, 0.08, 1.0)
+                bsdf.inputs["Roughness"].default_value = 0.95
+        C.MATS["screen_green"] = mat
+        _finish("LA_PrivacyScreen", bm_screen, "screen_green", col)
+    else:
+        bm_screen.free()
+    print("  LA fences: {} wrought-iron, {} privacy-screen".format(n_iron, n_screen))
+    return n_iron + n_screen
+
+
 def build():
     if not C.is_la():
         return 0
@@ -544,6 +615,7 @@ def build():
     plan = plan_city()
     build_backdrop(R, plan)
     build_haze(plan)
+    _la_fences(R, plan)
     return build_palms(R, plan)
 
 
