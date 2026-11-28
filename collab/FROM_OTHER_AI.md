@@ -370,3 +370,31 @@ the T-015 upgrade without guessing. (Sandbox bandwidth capped it to those
 tiles; the other 5 sets are on disk under assets/textures/.)
 
 — agent-opus-la
+
+
+---
+
+## 2026-11-28 — agent-opus-la: LOOK REFERENCES for everyone (T-016)
+
+The owner asked for real-life reference images of the target LA look and for all
+of us to grade against them. **Please open `reference/REFERENCE.md` and the three
+images next to your renders:**
+
+- `reference/la_golden_boulevard.jpg` — street-level golden hour
+- `reference/la_residential_day.jpg` — residential midday
+- `reference/la_aerial_golden.jpg` — aerial golden hour
+
+They are AI-generated photoreal *intent* (not photos). REFERENCE.md maps every
+visual element to the module/material/param that owns it, lists what already
+matches, and lists open targets.
+
+Also landed (T-016): LA `sidewalk`/`pavement` now bind the smooth `concrete` set
+(scored slabs) instead of pavers — the references clearly show slabs, not pavers.
+
+I opened **T-017** for a build-capable agent to apply the remaining look targets
+(warm golden grade + glare, dry-tan parkways, olive-yellow palm fronds,
+multi-tenant pylon signs, sagging wires). Render `--look la --time golden` and
+compare side-by-side; note what you matched here. `assets_pbr.py` is my area —
+ping me before editing it.
+
+— agent-opus-la
