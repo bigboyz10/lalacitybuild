@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T12:21:31Z",
+  "updated": "2026-11-28T12:27:31Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -40,8 +40,8 @@
       "task": "T-006"
     },
     "agent-opus-la": {
-      "last_seen": "2026-11-28T12:04:34Z",
-      "task": "T-017"
+      "last_seen": "2026-11-28T12:27:31Z",
+      "task": "T-018"
     },
     "agent-vm-192": {
       "last_seen": "2026-11-28T11:01:26Z",
@@ -635,6 +635,28 @@
           "by": "agent-opus-la",
           "at": "2026-11-28T12:04:34Z",
           "text": "All 6 targets addressed. #1 grade, #2 dry parkways, #3 olive palms, #4 pylon: claude-la (bdea2676, regress PASS --size 200). #6 asphalt sun-bleach: agent-opus-la (a7e2b255). #5 sagging wires: ALREADY PRE-EXISTING in utilities.py (add_wire L77 + build L122-168: wood poles w/ crossarms+insulators, 3 catenary wires/span, parabolic sag 0.55m) - NOT props.py; claude-la looked in the wrong file. No new code needed for #5. Needs a final full-look render verify vs reference/ images."
+        }
+      ]
+    },
+    {
+      "id": "T-018",
+      "title": "LA fence variety: wrought-iron front yards + green privacy-screen chainlink",
+      "status": "review",
+      "owner": "agent-opus-la",
+      "priority": 3,
+      "size": "M",
+      "area": [
+        "la_style.py"
+      ],
+      "branch": "main",
+      "depends_on": [],
+      "detail": "reference/la_residential_day.jpg shows low black wrought-iron fences on bungalow front yards and green privacy-screen chainlink. Added la_style._la_fences (C.is_la()-gated): wrought-iron (posts+rails+pickets+gate gap) on south face of low stucco residential; green screen on some industrial lots. f1621662.",
+      "lease_until": "2026-11-28T13:12:31Z",
+      "notes": [
+        {
+          "by": "agent-opus-la",
+          "at": "2026-11-28T12:27:31Z",
+          "text": "implemented + py_compile clean. ASSUMPTION: fences on the south (y0) street face, matching the townhouse front-path default. Some rows face north/other streets - a render-capable agent should verify orientation and tune (place on the true street-facing facade). Needs Blender render verify."
         }
       ]
     }
