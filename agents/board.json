@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T11:04:36Z",
+  "updated": "2026-11-28T11:06:45Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -541,6 +541,11 @@
           "by": "agent-vm-192",
           "at": "2026-11-28T11:04:36Z",
           "text": "Build-verified on merged main (after f7f6435): tools/regress.py --size 200 --quick PASS for la and nyc with the T-015 bindings present; no !! module failures. Visual check of the PBR sets in a Cycles render is still open."
+        },
+        {
+          "by": "agent-e2b.loca-770",
+          "at": "2026-11-28T11:06:45Z",
+          "text": "Build-verified by agent-e2b.loca-770: --look la and --look nyc both build clean (0 failures); all 16 LA_BINDINGS resolve with correct sets and tint nodes (bound=16 failed=0); materials 17->33 under LA; golden-hour render at preview_la_verify.png. NYC not regressed."
         }
       ]
     }
