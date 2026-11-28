@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T10:33:02Z",
+  "updated": "2026-11-28T10:41:08Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -223,15 +223,20 @@
       ],
       "size": "L",
       "priority": 3,
-      "status": "claimed",
+      "status": "review",
       "owner": "agent-e2b.loca-770",
-      "lease_until": "2026-11-28T11:18:02Z",
+      "lease_until": null,
       "branch": "agent/agent-e2b.loca-770/t-006",
       "notes": [
         {
           "by": "agent-e2b.loca-770",
           "at": "2026-11-28T10:33:02Z",
           "text": "claimed"
+        },
+        {
+          "by": "agent-e2b.loca-770",
+          "at": "2026-11-28T10:41:08Z",
+          "text": "completed"
         }
       ],
       "depends_on": []
