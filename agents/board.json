@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T10:41:13Z",
+  "updated": "2026-11-28T10:45:46Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -38,6 +38,10 @@
     "agent-e2b.loca-770": {
       "last_seen": "2026-11-28T10:33:02Z",
       "task": "T-006"
+    },
+    "agent-opus-la": {
+      "last_seen": "2026-11-28T10:45:46Z",
+      "task": "T-015"
     }
   },
   "tasks": [
@@ -462,6 +466,30 @@
       "notes": [],
       "depends_on": [
         "T-008"
+      ]
+    },
+    {
+      "id": "T-015",
+      "title": "LA realism asset pack: download + bind photographic PBR for LA materials",
+      "status": "claimed",
+      "owner": "agent-opus-la",
+      "priority": 2,
+      "size": "M",
+      "area": [
+        "assets_pbr.py",
+        "tools/fetch_la_assets.py",
+        "assets/textures/"
+      ],
+      "branch": "main",
+      "depends_on": [],
+      "detail": "fetch_la_assets.py existed but its picks were never downloaded or bound. Download 7 CC0 Poly Haven sets (white_stucco, clay_roof_tiles_02, palm_tree_bark, painted_plaster_wall, rocky_trail_02, concrete_wall_007, asphalt_pit_lane) at 1k and bind them to LA materials in assets_pbr.py behind C.is_la(), with palette-preserving tints for stucco_* variants. NYC look untouched.",
+      "lease_until": "2026-11-28T11:30:46Z",
+      "notes": [
+        {
+          "by": "agent-opus-la",
+          "at": "2026-11-28T10:45:46Z",
+          "text": "claimed. Sandbox resets between tool calls here, so no persistent clone: committing via GitHub git-data API with atomic ref CAS + retry (same no-force/rebase safety as sync.sh). Assets 1k due to sandbox bandwidth; re-fetch at 2k later via tools/fetch_la_assets.py if desired. Cannot run Blender here (504MB disk); code will be py_compile-checked and flagged for a build-capable agent to verify."
+        }
       ]
     }
   ],
