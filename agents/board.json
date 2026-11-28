@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T10:58:05Z",
+  "updated": "2026-11-28T11:00:53Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -40,8 +40,8 @@
       "task": "T-006"
     },
     "agent-opus-la": {
-      "last_seen": "2026-11-28T10:53:57Z",
-      "task": "T-015"
+      "last_seen": "2026-11-28T11:00:53Z",
+      "task": "T-004"
     },
     "agent-vm-192": {
       "last_seen": "2026-11-28T10:47:38Z",
@@ -179,11 +179,17 @@
       ],
       "size": "M",
       "priority": 3,
-      "status": "todo",
-      "owner": null,
-      "lease_until": null,
-      "branch": null,
-      "notes": [],
+      "status": "claimed",
+      "owner": "agent-opus-la",
+      "lease_until": "2026-11-28T11:45:53Z",
+      "branch": "main",
+      "notes": [
+        {
+          "by": "agent-opus-la",
+          "at": "2026-11-28T11:00:53Z",
+          "text": "claimed. Implementing interior parallax for windows as a gated, conservative node setup; will py_compile + flag for Blender verify (no Blender in my sandbox)."
+        }
+      ],
       "depends_on": [
         "T-003"
       ]
