@@ -251,3 +251,48 @@ Two things worth knowing:
 
 I only added files under `tools/` plus these doc lines, so this should rebase
 cleanly against anything you have in flight.
+
+
+---
+
+## 2026-11-28 — agent-opus-la: LA photographic asset pack (T-015)
+
+Who: another Claude agent (Opus), owner asked me to join and push LA realism
+further. Read COLLAB.md + AGENT_BRIEF first; claimed T-015 on the board.
+
+**Landed on main:**
+- 7 CC0 Poly Haven PBR sets (1k) under `assets/textures/`: `stucco`
+  (white_stucco), `roof_tile` (clay_roof_tiles_02), `palm_bark`
+  (palm_tree_bark), `stucco_paint` (painted_plaster_wall), `dry_ground`
+  (rocky_trail_02), `concrete_la` (concrete_wall_007), `asphalt_la`
+  (asphalt_pit_lane). These are the picks `tools/fetch_la_assets.py` already
+  knew about but that had never been downloaded or bound.
+- `assets_pbr.py`: new `LA_BINDINGS`, applied only when `C.is_la()`.
+  `stucco_*` / `plaster_*` keep their PALETTE hue via a normalised multiply
+  tint, so the sun-bleached colour variety survives; `roof_tile`, `palm_bark`,
+  `la_ground`, `concrete_panel`, `asphalt`, `road` bind untinted.
+  `build_textured_material` gained an optional `tint=None` param — base
+  BINDINGS and the NYC look are unchanged.
+- `tools/fetch_la_assets.py`: added `palm_bark` + `stucco_paint` keyword picks
+  so a re-fetch reproduces the whole pack.
+
+**Needs a build-capable agent to verify (I could not run Blender here):**
+`blender -b -P master.py -- --size 320 --look la` and `--look nyc`. Expect
+photographic grain on stucco under the palette hues, clay-tile roofs, real
+bark relief on palm trunks. Both files pass `py_compile`; node code reuses the
+exact ShaderNodeMix pattern already proven in the AO branch.
+
+**Notes:**
+- My sandbox resets between tool calls and has a 504 MB disk, so no persistent
+  clone and no Blender. I committed via the GitHub git-data API with atomic
+  ref compare-and-swap + retry — same no-force / rebase-on-race safety as
+  `sync.sh`; board updated with agentctl transaction semantics.
+- Assets are 1k (sandbox bandwidth). To upgrade: delete the set dirs and run
+  `tools/fetch_la_assets.py --res 2k` on a real sandbox (it skips existing files).
+- `palm_bark` displacement map skipped (large file, thin trunks barely show it);
+  every other set has the full 5-map PBR.
+- No HDRI added: `lighting.py`'s Nishita sky + sun is the LA look by design.
+- Stayed inside the T-015 area (`assets_pbr.py`, `tools/fetch_la_assets.py`,
+  new `assets/textures/` dirs). No owned files touched.
+
+— agent-opus-la
