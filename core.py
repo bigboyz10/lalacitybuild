@@ -115,6 +115,8 @@ def parse_argv():
             CONFIG["time"] = nxt.lower(); i += 2
         elif a == "--damage":
             CONFIG["damage"] = True; i += 1
+        elif a == "--haze-box":
+            CONFIG["haze_box"] = True; i += 1
         else:
             i += 1
     os.makedirs(CONFIG["out_dir"], exist_ok=True)
@@ -418,6 +420,8 @@ PALETTE = {
     "concrete_panel": dict(base="#8d8a84", roughness=0.84, bump=0.25, bump_scale=10, var_noise=4, grime=0.55),
     # glass / metal
     "glass":          dict(base="#22303a", roughness=0.06, metallic=0.15, bump=0.04, bump_scale=5, var_noise=1.5, grime=0.30, grime_tint=0.5, transmission=0.80, alpha=0.55, ior=1.45),
+    "glass_refl":     dict(base="#4f7488", roughness=0.04, metallic=0.55, bump=0.03, bump_scale=5, var_noise=1.5, grime=0.20, grime_tint=0.5, transmission=0.15, alpha=0.95, ior=1.5),
+    "glass_refl_green": dict(base="#3f6b63", roughness=0.04, metallic=0.55, bump=0.03, bump_scale=5, var_noise=1.5, grime=0.20, grime_tint=0.5, transmission=0.15, alpha=0.95, ior=1.5),
     "glass_dark":     dict(base="#141d24", roughness=0.10, metallic=0.25, bump=0.04, bump_scale=5, var_noise=1.5, grime=0.35, grime_tint=0.5, transmission=0.55, alpha=0.70),
     "glass_dirty":    dict(base="#3a3b36", roughness=0.35, metallic=0.10, bump=0.15, bump_scale=14, var_noise=6, grime=0.6, alpha=0.85),
     "metal":          dict(base="#71757a", roughness=0.42, metallic=0.90, bump=0.18, bump_scale=14, var_noise=4, grime=0.40),

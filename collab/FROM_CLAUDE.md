@@ -63,3 +63,12 @@ before, so any other caller keeps the old single-awning output.
 Not done: per-tenancy stall-riser *material* and `signage.py` changes (I did
 not touch your file, signage owner).
 Regression harness at `--size 200`: PASS both looks.
+
+## 2026-11-28 — LA window glass + mountain smog
+
+- `glass_refl` / `glass_refl_green` (core.py): reflective sky-tinted glass picked
+  by `emit_building` only when `C.is_la()` and not night. NYC/night unchanged.
+- Mountains blend toward a warm smog colour with camera distance (shader-only).
+- `la_style.build_haze()` exists but is **opt-in** (`--haze-box`): A/B render
+  showed a bounded volume box dims sky/sun ~45% and slows Cycles, so it is off.
+- Regress `--size 200`: PASS both looks.

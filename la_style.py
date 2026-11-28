@@ -309,9 +309,23 @@ def _tint_mountain(mat):
     nt.links.new(geo.outputs["Position"], sep.inputs["Vector"])
     nt.links.new(sep.outputs["Z"], mapr.inputs["Value"])
     nt.links.new(mapr.outputs["Result"], ramp.inputs["Fac"])
+    # LA smog: blend toward a pale warm haze with camera distance
+    cam = nt.nodes.new("ShaderNodeCameraData")
+    dist = nt.nodes.new("ShaderNodeMapRange")
+    dist.inputs["From Min"].default_value = 500.0
+    dist.inputs["From Max"].default_value = 3800.0
+    dist.inputs["To Min"].default_value = 0.10
+    dist.inputs["To Max"].default_value = 0.80
+    dist.clamp = True
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.inputs["B"].default_value = (0.78, 0.76, 0.74, 1.0)
+    nt.links.new(cam.outputs["View Distance"], dist.inputs["Value"])
+    nt.links.new(dist.outputs["Result"], mix.inputs["Factor"])
+    nt.links.new(ramp.outputs["Color"], mix.inputs["A"])
     for l in list(bsdf.inputs["Base Color"].links):
         nt.links.remove(l)
-    nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+    nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
 
 
 def build_backdrop(R, plan):
@@ -368,6 +382,49 @@ def build_backdrop(R, plan):
 
 
 # -----------------------------------------------------------------------------
+# bounded haze volume (a world volume would extinguish the sun, see lighting.py)
+# -----------------------------------------------------------------------------
+def build_haze(plan):
+    import lighting
+    T = lighting.TOD[lighting._tod()]
+    # opt-in (--haze-box): A/B tested, the bounded volume costs Cycles time and
+    # dims the sky/sun by ~45%, so the default LA haze is the mountains' distance
+    # blend instead.
+    if not CONFIG.get("haze_box") or T["lamps"] or T["haze"] <= 0:
+        return
+    half = plan["half"] * 1.35 + 60.0
+    bm = bmesh.new()
+    bmesh.ops.create_cube(bm, size=1.0)
+    for v in bm.verts:
+        v.co.x *= half * 2.0
+        v.co.y *= half * 2.0
+        v.co.z = BASE_Z + (v.co.z + 0.5) * 300.0
+    me = bpy.data.meshes.new("LA_Haze_mesh")
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new("LA_Haze", me)
+    C.link_object(ob, C.col("CITY_LA"))
+    mat = bpy.data.materials.new("la_haze")
+    mat.use_nodes = True
+    nt = mat.node_tree
+    for n in list(nt.nodes):
+        nt.nodes.remove(n)
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    vol = nt.nodes.new("ShaderNodeVolumePrincipled")
+    vol.inputs["Color"].default_value = (0.80, 0.83, 0.90, 1.0)
+    vol.inputs["Density"].default_value = T["haze"]
+    try:
+        vol.inputs["Anisotropy"].default_value = 0.4
+    except Exception:
+        pass
+    nt.links.new(vol.outputs[0], out.inputs["Volume"])
+    ob.data.materials.append(mat)
+    ob.visible_shadow = False        # keep the sun's shadows crisp
+    print("  haze box: {:.0f} m across, density {}".format(half * 2, T["haze"]))
+
+
+# -----------------------------------------------------------------------------
 # strip mall
 # -----------------------------------------------------------------------------
 def strip_mall(name, rect, R, collection, detail):
@@ -421,6 +478,7 @@ def build():
     R = rng("la_style")
     plan = plan_city()
     build_backdrop(R, plan)
+    build_haze(plan)
     return build_palms(R, plan)
 
 

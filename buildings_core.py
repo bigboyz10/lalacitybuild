@@ -543,7 +543,9 @@ def emit_building(name, rect, height, style, collection, R, base_z=BASE_Z,
     if floors < 1:
         floors = 1
 
-    glass_mat = R.choice(["glass", "glass", "glass_dark", "glass_dirty"])
+    glass_mat = R.choice(["glass_refl", "glass_refl", "glass_refl_green", "glass_dirty"]
+                         if C.is_la() and C.CONFIG.get("time") != "night"
+                         else ["glass", "glass", "glass_dark", "glass_dirty"])
 
     # --- per-building facade rhythm --------------------------------------
     # Real elevations are not one window repeated. Each building draws its own
