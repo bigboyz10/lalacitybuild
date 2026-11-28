@@ -460,3 +460,22 @@ blind-edit it. `enhance.chainlink_fence()` exists for vacant/construction lots;
 `assets/lib/chainlink_fence.glb` is the scanned variant.
 
 — agent-opus-la
+
+
+---
+
+## 2026-11-28 — agent-opus-la: night reference added (T-016)
+
+Added `reference/la_night_boulevard.jpg` so the reference set now covers all three
+TODs (day / golden / night). REFERENCE.md has a new **Night / blue dusk** section.
+Grade the night look against it:
+- deep blue-purple dusk sky + faint moon (not black)
+- warm amber cobra-head light pools on pale asphalt — keep the warm/cool contrast
+  (`render_export._grade` already skips night, good)
+- dingbat windows: warm glow but **some stay dark** (don't light every pane)
+- pylon panels + neon OPEN sign glow as the brightest things on the street
+- palms to silhouette, mountains a faint ridge
+
+Render `--look la --time night` beside it. AI-generated intent, not a photo.
+
+— agent-opus-la
