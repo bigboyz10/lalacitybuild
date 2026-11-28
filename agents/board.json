@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T08:46:43Z",
+  "updated": "2026-11-28T08:53:02Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -186,9 +186,9 @@
       ],
       "size": "M",
       "priority": 2,
-      "status": "claimed",
+      "status": "review",
       "owner": "claude-la",
-      "lease_until": "2026-11-28T09:31:41Z",
+      "lease_until": null,
       "branch": "agent/claude-la/t-005",
       "notes": [
         {
@@ -200,6 +200,11 @@
           "by": "claude-la",
           "at": "2026-11-28T08:46:41Z",
           "text": "reclaimed after expired lease"
+        },
+        {
+          "by": "claude-la",
+          "at": "2026-11-28T08:53:02Z",
+          "text": "Landed on main. Awning colour per tenancy, closed roll-down shutters w/ slat ribs, recessed entries with projecting display windows. extras=None keeps old behaviour. Regress PASS at size 200. signage.py untouched. Notes in collab/FROM_CLAUDE.md"
         }
       ],
       "depends_on": []
