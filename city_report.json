@@ -1,23 +1,19 @@
 {
- "objects": 1939,
- "triangles": 1438703,
+ "objects": 39,
+ "triangles": 38196,
  "collections": {
   "CITY": {
    "objects": 0,
    "triangles": 0
   },
-  "CITY_Trees": {
-   "objects": 1890,
-   "triangles": 1397900
-  },
-  "CITY_Trees_src": {
-   "objects": 49,
-   "triangles": 40803
+  "CITY_Construction": {
+   "objects": 39,
+   "triangles": 38196
   }
  },
  "config": {
   "seed": 1337,
-  "city_size": 700.0,
+  "city_size": 520.0,
   "density": 0.85,
   "quality": "preview",
   "render": false,
@@ -37,7 +33,7 @@
   "textures": true,
   "engine": "auto",
   "samples_render": 64,
-  "look": "nyc",
+  "look": "la",
   "time": null,
   "damage": false
  }

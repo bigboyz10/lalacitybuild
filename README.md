@@ -88,6 +88,7 @@ build-only runs. Force either with `--engine eevee` / `--engine cycles`.
 | facade | `facade_detail.py` | downspouts, conduit, blinds, laundry, vents, wall lamps |
 | roofs | `roofs.py` | decks, bulkheads, HVAC, tanks, antennas, solar, helipads |
 | damage | `damage.py` | boarded windows, stains, soot, cracks, spall, rubble |
+| construction | `construction.py` | building sites at five stages: excavation, substructure, frame, envelope, fit-out |
 | props | `props.py` | 27 street-furniture types |
 | utilities | `utilities.py` | poles, catenary wires, street lights, signals, cabinets, cell towers |
 | vehicles | `vehicles.py` | 16 vehicle types, parked + moving + abandoned |

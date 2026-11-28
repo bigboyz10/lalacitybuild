@@ -441,9 +441,14 @@ def build():
     placed = []
     density = CONFIG["density"]
 
+    # lots handed to construction.py are building sites, not finished buildings
+    site_lots = C.get_asset("construction_lots", set()) or set()
+
     for bi, b in enumerate(plan["blocks"]):
         dist = b["district"]
         if dist == "parkland":
+            continue
+        if bi in site_lots:
             continue
         inner = _inner(b)
         iw = inner[2] - inner[0]

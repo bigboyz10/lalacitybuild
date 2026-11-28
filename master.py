@@ -24,6 +24,7 @@ PIPELINE = [
     ("terrain",    "terrain",          "build"),
     ("roads",      "roads",            "build"),
     ("sidewalks",  "sidewalks",        "build"),
+    ("construction", "construction",   "build"),
     ("buildings",  "buildings_types",  "build"),
     ("facade",     "facade_detail",    "build"),
     ("roofs",      "roofs",            "build"),
