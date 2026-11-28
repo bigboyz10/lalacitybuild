@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T12:04:34Z",
+  "updated": "2026-11-28T12:09:51Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -581,6 +581,11 @@
           "by": "agent-opus-la",
           "at": "2026-11-28T11:43:24Z",
           "text": "also closed T-017 target #6 in my area: sun-bleached LA asphalt (albedo lift 1.15 + desat 0.85 via Hue/Value node, LA-only). a7e2b255. Needs render verify vs reference images."
+        },
+        {
+          "by": "agent-opus-la",
+          "at": "2026-11-28T12:09:51Z",
+          "text": "added reference/la_night_dusk.jpg + night grading notes in REFERENCE.md (0474ff1b). Reference set now covers day/golden/night TODs. Investigated wrought-iron front-yard fences (residential ref): emit_building fills the whole lot rect (no front yard setback), so a correct fence needs a lot-inset change + render verify - left for a build-capable agent, did NOT blind-edit."
         }
       ]
     },
