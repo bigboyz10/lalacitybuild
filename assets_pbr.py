@@ -63,6 +63,10 @@ LA_BINDINGS = {
     "concrete_panel":    ("concrete_la", 5.0, False),
     "asphalt":           ("asphalt_la", 6.0, False),
     "road":              ("asphalt_la", 6.0, False),
+    # reference/la_residential_day.jpg + la_golden_boulevard.jpg: LA sidewalks are
+    # smooth scored concrete slabs, NOT the small pavers the base set uses.
+    "sidewalk":          ("concrete", 3.0, False),
+    "pavement":          ("concrete", 3.0, False),
 }
 
 
