@@ -80,6 +80,24 @@ def _tint_from_palette(mat_name):
     return (r / m, g / m, b / m)
 
 
+def _sun_bleach(mat, value=1.15, sat=0.85):
+    """Lift albedo + desaturate slightly: LA asphalt reads sun-bleached light gray,
+    not black (see reference/la_golden_boulevard.jpg, la_aerial_golden.jpg).
+    Splices a Hue/Value node into Base Color, same pattern as la_style._tint_mountain."""
+    if mat is None or not mat.use_nodes:
+        return
+    nt = mat.node_tree
+    bsdf = next((n for n in nt.nodes if n.bl_idname == "ShaderNodeBsdfPrincipled"), None)
+    if bsdf is None or not bsdf.inputs["Base Color"].links:
+        return
+    src = bsdf.inputs["Base Color"].links[0].from_socket
+    hs = nt.nodes.new("ShaderNodeHueSaturation"); hs.location = (460, 300)
+    hs.inputs["Value"].default_value = value
+    hs.inputs["Saturation"].default_value = sat
+    nt.links.new(src, hs.inputs["Color"])
+    nt.links.new(hs.outputs["Color"], bsdf.inputs["Base Color"])
+
+
 _IMG_CACHE = {}
 
 
@@ -240,6 +258,8 @@ def build():
             tint = _tint_from_palette(mat_name) if tinted else None
             if build_textured_material(mat_name, set_name, scale, tint=tint):
                 n += 1
+        for mn in ("asphalt", "road"):
+            _sun_bleach(bpy.data.materials.get(mn))
     build_world_hdri()
     print("  upgraded {} materials to photographic PBR".format(n))
     return n
