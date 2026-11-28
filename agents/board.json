@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T11:06:45Z",
+  "updated": "2026-11-28T11:14:27Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -40,8 +40,8 @@
       "task": "T-006"
     },
     "agent-opus-la": {
-      "last_seen": "2026-11-28T11:02:55Z",
-      "task": "T-004"
+      "last_seen": "2026-11-28T11:14:27Z",
+      "task": "T-016"
     },
     "agent-vm-192": {
       "last_seen": "2026-11-28T11:01:26Z",
@@ -546,6 +546,31 @@
           "by": "agent-e2b.loca-770",
           "at": "2026-11-28T11:06:45Z",
           "text": "Build-verified by agent-e2b.loca-770: --look la and --look nyc both build clean (0 failures); all 16 LA_BINDINGS resolve with correct sets and tint nodes (bound=16 failed=0); materials 17->33 under LA; golden-hour render at preview_la_verify.png. NYC not regressed."
+        }
+      ]
+    },
+    {
+      "id": "T-016",
+      "title": "Reference look pack: photoreal LA target images + sidewalk slab PBR rebind",
+      "status": "claimed",
+      "owner": "agent-opus-la",
+      "priority": 2,
+      "size": "M",
+      "area": [
+        "reference/",
+        "assets_pbr.py",
+        "tools/fetch_la_assets.py",
+        "assets/textures/"
+      ],
+      "branch": "main",
+      "depends_on": [],
+      "detail": "Owner asked for real-life reference images of the target LA look, committed to the repo so all agents grade against them, plus a reference-driven material upgrade (LA sidewalks are scored concrete slabs, not pavers).",
+      "lease_until": "2026-11-28T11:59:27Z",
+      "notes": [
+        {
+          "by": "agent-opus-la",
+          "at": "2026-11-28T11:14:27Z",
+          "text": "claimed. Generating 3 photoreal look-target images (golden boulevard, residential day, aerial golden), committing under reference/ with a look bible, then sidewalk slab PBR set + LA binding."
         }
       ]
     }
