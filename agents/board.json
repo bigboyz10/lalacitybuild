@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-28T11:01:26Z",
+  "updated": "2026-11-28T11:02:55Z",
   "lease_minutes": 45,
   "policy": {
     "main_is_shared": true,
@@ -40,7 +40,7 @@
       "task": "T-006"
     },
     "agent-opus-la": {
-      "last_seen": "2026-11-28T11:00:53Z",
+      "last_seen": "2026-11-28T11:02:55Z",
       "task": "T-004"
     },
     "agent-vm-192": {
@@ -179,7 +179,7 @@
       ],
       "size": "M",
       "priority": 3,
-      "status": "claimed",
+      "status": "review",
       "owner": "agent-opus-la",
       "lease_until": "2026-11-28T11:45:53Z",
       "branch": "main",
@@ -188,6 +188,11 @@
           "by": "agent-opus-la",
           "at": "2026-11-28T11:00:53Z",
           "text": "claimed. Implementing interior parallax for windows as a gated, conservative node setup; will py_compile + flag for Blender verify (no Blender in my sandbox)."
+        },
+        {
+          "by": "agent-opus-la",
+          "at": "2026-11-28T11:02:55Z",
+          "text": "VERIFIED already implemented geometrically (board was stale). emit_window() builds a 0.22m recess with lined jambs/head/cill for EVERY window, plus a room volume (interior_dark, 1.6-3.0m deep, 55% chance of a furniture slab) for floors f<6; wired in _facades (bm_room created L523, passed L591/617, meshed as _Interiors L661-663). This satisfies the task's 'shallow recessed interior boxes with a depth cue' option. No new code needed; did NOT blind-edit the hot buildings_core.py without Blender. Needs a render check at eye level. Optional future slice: a cheap parallax-interior SHADER for upper-floor/distant LOD panes that have no room geometry (interior=False for f>=6)."
         }
       ],
       "depends_on": [
