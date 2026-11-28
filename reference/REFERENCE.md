@@ -10,6 +10,7 @@
 | `reference/la_golden_boulevard.jpg` | street-level, golden hour, wide boulevard | `lighting.py` golden TOD, `la_style.py` palms + strip-mall pylon, `roads.py`/`sidewalks.py`, `signage.py`, `props.py` poles/wires |
 | `reference/la_residential_day.jpg` | residential side street, harsh midday | `buildings_types.py` bungalow/duplex, `roofs.py` terracotta, `vegetation.py` dry parkways, `sidewalks.py`, `vehicles.py` |
 | `reference/la_aerial_golden.jpg` | helicopter aerial, golden hour | `core.py` plan/block scale, `la_style.py` backdrop + haze, `render_export.py` grade, downtown cluster |
+| `reference/la_night_dusk.jpg` | street-level, dusk / night | `lighting.py` night TOD, lit windows, cobra street lamps, `signage.py` neon, `props.py` poles |
 
 ## What the pictures say (read off the images)
 
@@ -19,6 +20,11 @@
 - Midday = deep blue clear sky, hard short shadows, strong warm bounce off stucco.
 - Distance always softens into warm smog; the San Gabriels read blue-brown, never
   crisp. `la_style._tint_mountain` distance blend is the target.
+- **Night / dusk** (`la_night_dusk.jpg`): deep blue twilight sky with a faint moon,
+  warm sodium cobra street lamps pooling on the asphalt, scattered lit windows in
+  the dingbats, and a few glowing neon signs (LIQUOR / DONUTS). Palms go to
+  silhouette; the mountain ring is a dark mass. No steam in LA night. This is the
+  `lighting.TOD["night"]` target — grade against it, not against daylight.
 
 **Ground plane**
 - Asphalt is **light, sun-bleached gray** with faded yellow paint — not black.
